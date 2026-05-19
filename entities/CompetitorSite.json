@@ -1,0 +1,28 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    },
+    "last_checked": {
+      "type": "string"
+    },
+    "last_snapshot": {
+      "type": "string"
+    },
+    "pricing_snapshot": {
+      "type": "string"
+    },
+    "features_snapshot": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [],
+  "name": "CompetitorSite"
+}
