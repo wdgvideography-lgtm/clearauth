@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://wdgvideography-lgtm.github.io/vc-estate-planning/sitemap.xml
