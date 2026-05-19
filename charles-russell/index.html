@@ -3,1341 +3,499 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Charles Russell Transport Group</title>
+  <title>Charles Russell Transport Group | Heavy Haulage & Specialist Lifting</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --black: #0a0a0a;
-      --dark: #111111;
-      --card: #161616;
-      --border: #222222;
-      --accent: #e8a020;
-      --accent2: #f5c060;
-      --white: #ffffff;
-      --grey: #888888;
-      --light: #cccccc;
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--black);
-      color: var(--white);
-      overflow-x: hidden;
-    }
-
-    /* ── SCROLLBAR ── */
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: var(--black); }
-    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
-
-    /* ── LOADER ── */
-    #loader {
-      position: fixed; inset: 0;
-      background: var(--black);
-      z-index: 9999;
-      display: flex; align-items: center; justify-content: center;
-      flex-direction: column;
-      transition: opacity 0.6s ease, visibility 0.6s ease;
-    }
-    #loader.hidden { opacity: 0; visibility: hidden; }
-    .loader-logo {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(2rem, 6vw, 5rem);
-      letter-spacing: 0.15em;
-      color: var(--white);
-      overflow: hidden;
-    }
-    .loader-logo span { display: inline-block; animation: slideUp 0.8s ease forwards; opacity: 0; }
-    .loader-logo span:nth-child(1) { animation-delay: 0.1s; }
-    .loader-logo span:nth-child(2) { animation-delay: 0.25s; }
-    .loader-logo span:nth-child(3) { animation-delay: 0.4s; }
-    .loader-bar {
-      width: 200px; height: 2px;
-      background: var(--border);
-      margin-top: 24px;
-      position: relative;
-      overflow: hidden;
-    }
-    .loader-bar::after {
-      content: '';
-      position: absolute;
-      top: 0; left: -100%;
-      width: 100%; height: 100%;
-      background: var(--accent);
-      animation: loadBar 1.4s ease forwards;
-    }
-    @keyframes loadBar { to { left: 0; } }
-    @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-    /* ── NAV ── */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0;
-      z-index: 1000;
-      padding: 20px 60px;
-      display: flex; align-items: center; justify-content: space-between;
-      transition: background 0.4s ease, padding 0.4s ease;
-    }
-    nav.scrolled {
-      background: rgba(10,10,10,0.95);
-      backdrop-filter: blur(20px);
-      padding: 14px 60px;
-      border-bottom: 1px solid var(--border);
-    }
-    .nav-logo {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.6rem;
-      letter-spacing: 0.12em;
-      color: var(--white);
-      text-decoration: none;
-    }
-    .nav-logo span { color: var(--accent); }
-    .nav-links { display: flex; gap: 36px; list-style: none; }
-    .nav-links a {
-      color: var(--light);
-      text-decoration: none;
-      font-size: 0.8rem;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      transition: color 0.2s;
-    }
-    .nav-links a:hover { color: var(--accent); }
-    .nav-cta {
-      background: var(--accent);
-      color: var(--black) !important;
-      padding: 10px 24px;
-      font-weight: 700 !important;
-      letter-spacing: 0.08em !important;
-      transition: background 0.2s, transform 0.2s !important;
-    }
-    .nav-cta:hover { background: var(--accent2) !important; transform: translateY(-1px); }
-    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
-    .hamburger span { width: 24px; height: 2px; background: var(--white); transition: all 0.3s; }
-
-    /* ── HERO ── */
-    #hero {
-      position: relative;
-      height: 100vh;
-      min-height: 700px;
-      display: flex; align-items: center; justify-content: center;
-      overflow: hidden;
-      background: var(--black);
-    }
-    .hero-bg {
-      position: absolute; inset: 0;
-      background:
-        linear-gradient(135deg, rgba(232,160,32,0.06) 0%, transparent 50%),
-        linear-gradient(to bottom, transparent 60%, var(--black) 100%);
-      z-index: 1;
-    }
-    .hero-grid {
-      position: absolute; inset: 0;
-      background-image:
-        linear-gradient(rgba(232,160,32,0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(232,160,32,0.04) 1px, transparent 1px);
-      background-size: 60px 60px;
-      z-index: 0;
-      animation: gridDrift 20s linear infinite;
-    }
-    @keyframes gridDrift { from { transform: translateY(0); } to { transform: translateY(60px); } }
-    .hero-particles {
-      position: absolute; inset: 0; z-index: 0;
-      pointer-events: none;
-    }
-    .hero-content {
-      position: relative; z-index: 2;
-      text-align: center;
-      padding: 0 20px;
-      max-width: 1000px;
-    }
-    .hero-eyebrow {
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 24px;
-      opacity: 0;
-      animation: fadeUp 0.8s ease 1.6s forwards;
-    }
-    .hero-eyebrow::before, .hero-eyebrow::after {
-      content: '—';
-      margin: 0 12px;
-      opacity: 0.5;
-    }
-    .hero-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(4rem, 12vw, 12rem);
-      line-height: 0.9;
-      letter-spacing: 0.02em;
-      color: var(--white);
-      opacity: 0;
-      animation: fadeUp 0.8s ease 1.8s forwards;
-    }
-    .hero-title .accent { color: var(--accent); }
-    .hero-subtitle {
-      font-size: clamp(1rem, 2vw, 1.3rem);
-      font-weight: 300;
-      color: var(--light);
-      margin-top: 24px;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-      line-height: 1.7;
-      opacity: 0;
-      animation: fadeUp 0.8s ease 2s forwards;
-    }
-    .hero-actions {
-      margin-top: 48px;
-      display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
-      opacity: 0;
-      animation: fadeUp 0.8s ease 2.2s forwards;
-    }
-    .btn-primary {
-      background: var(--accent);
-      color: var(--black);
-      padding: 16px 40px;
-      font-weight: 700;
-      font-size: 0.85rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      text-decoration: none;
-      transition: all 0.3s;
-      position: relative;
-      overflow: hidden;
-    }
-    .btn-primary::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: var(--white);
-      transform: translateX(-100%);
-      transition: transform 0.3s ease;
-    }
-    .btn-primary:hover::before { transform: translateX(0); }
-    .btn-primary span { position: relative; z-index: 1; }
-    .btn-primary:hover { color: var(--black); transform: translateY(-2px); }
-    .btn-ghost {
-      background: transparent;
-      color: var(--white);
-      padding: 16px 40px;
-      font-weight: 600;
-      font-size: 0.85rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      text-decoration: none;
-      border: 1px solid rgba(255,255,255,0.2);
-      transition: all 0.3s;
-    }
-    .btn-ghost:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-      transform: translateY(-2px);
-    }
-    .hero-scroll {
-      position: absolute; bottom: 40px; left: 50%;
-      transform: translateX(-50%);
-      z-index: 2;
-      display: flex; flex-direction: column; align-items: center; gap: 8px;
-      opacity: 0;
-      animation: fadeUp 0.8s ease 2.6s forwards;
-    }
-    .hero-scroll span {
-      font-size: 0.65rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--grey);
-    }
-    .scroll-line {
-      width: 1px; height: 50px;
-      background: linear-gradient(to bottom, var(--accent), transparent);
-      animation: scrollPulse 2s ease-in-out infinite;
-    }
-    @keyframes scrollPulse {
-      0%, 100% { transform: scaleY(1); opacity: 1; }
-      50% { transform: scaleY(0.6); opacity: 0.4; }
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ── STATS BAR ── */
-    .stats-bar {
-      background: var(--accent);
-      padding: 20px 60px;
-      display: flex; justify-content: space-around; align-items: center;
-      flex-wrap: wrap; gap: 20px;
-    }
-    .stat-item { text-align: center; }
-    .stat-number {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 2.5rem;
-      color: var(--black);
-      letter-spacing: 0.05em;
-      line-height: 1;
-    }
-    .stat-label {
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: rgba(0,0,0,0.6);
-      margin-top: 4px;
-    }
-
-    /* ── SECTION SHARED ── */
-    section { padding: 120px 60px; }
-    .section-label {
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 16px;
-    }
-    .section-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(2.5rem, 6vw, 6rem);
-      line-height: 1;
-      letter-spacing: 0.02em;
-    }
-    .section-sub {
-      font-size: 1rem;
-      color: var(--light);
-      line-height: 1.8;
-      max-width: 560px;
-      margin-top: 16px;
-    }
-
-    /* ── ABOUT ── */
-    #about {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 80px;
-      align-items: center;
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-    .about-visual {
-      position: relative;
-    }
-    .about-img-box {
-      width: 100%;
-      aspect-ratio: 4/3;
-      background: var(--card);
-      border: 1px solid var(--border);
-      position: relative;
-      overflow: hidden;
-    }
-    .about-img-box::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(135deg, var(--accent) 0%, transparent 60%);
-      opacity: 0.08;
-    }
-    .about-img-placeholder {
-      width: 100%; height: 100%;
-      display: flex; align-items: center; justify-content: center;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .truck-icon {
-      font-size: 5rem;
-      filter: grayscale(0.3);
-    }
-    .about-badge {
-      position: absolute;
-      bottom: -20px; right: -20px;
-      background: var(--accent);
-      color: var(--black);
-      padding: 24px;
-      text-align: center;
-    }
-    .about-badge .big { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; line-height: 1; }
-    .about-badge .small { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; }
-    .about-text { padding-left: 20px; }
-    .about-list { margin-top: 32px; display: flex; flex-direction: column; gap: 16px; }
-    .about-list-item {
-      display: flex; align-items: flex-start; gap: 16px;
-      padding: 16px;
-      border-left: 2px solid var(--border);
-      transition: border-color 0.3s;
-    }
-    .about-list-item:hover { border-color: var(--accent); }
-    .about-list-item .dot {
-      width: 8px; height: 8px;
-      background: var(--accent);
-      border-radius: 50%;
-      margin-top: 6px;
-      flex-shrink: 0;
-    }
-    .about-list-item h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; }
-    .about-list-item p { font-size: 0.82rem; color: var(--grey); line-height: 1.6; }
-
-    /* ── SERVICES ── */
-    #services { background: var(--dark); }
-    .services-inner { max-width: 1400px; margin: 0 auto; }
-    .services-header {
-      display: flex; justify-content: space-between; align-items: flex-end;
-      margin-bottom: 64px;
-      flex-wrap: wrap; gap: 24px;
-    }
-    .services-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2px;
-    }
-    .service-card {
-      background: var(--card);
-      padding: 48px 40px;
-      position: relative;
-      overflow: hidden;
-      cursor: default;
-      transition: transform 0.3s ease;
-    }
-    .service-card::before {
-      content: '';
-      position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
-      background: var(--accent);
-      transform: scaleX(0);
-      transition: transform 0.4s ease;
-    }
-    .service-card:hover::before { transform: scaleX(1); }
-    .service-card:hover { transform: translateY(-4px); }
-    .service-card::after {
-      content: '';
-      position: absolute; top: 0; right: 0;
-      width: 120px; height: 120px;
-      background: radial-gradient(circle, rgba(232,160,32,0.08) 0%, transparent 70%);
-      border-radius: 50%;
-      transform: translate(30px, -30px);
-    }
-    .service-num {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 5rem;
-      color: var(--border);
-      line-height: 1;
-      position: absolute;
-      top: 20px; right: 24px;
-      transition: color 0.3s;
-    }
-    .service-card:hover .service-num { color: rgba(232,160,32,0.15); }
-    .service-icon { font-size: 2.5rem; margin-bottom: 20px; }
-    .service-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.8rem;
-      letter-spacing: 0.05em;
-      margin-bottom: 12px;
-    }
-    .service-desc { font-size: 0.85rem; color: var(--grey); line-height: 1.7; }
-    .service-tags {
-      display: flex; flex-wrap: wrap; gap: 8px;
-      margin-top: 24px;
-    }
-    .service-tag {
-      font-size: 0.65rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--accent);
-      border: 1px solid rgba(232,160,32,0.3);
-      padding: 4px 10px;
-    }
-
-    /* ── MARQUEE ── */
-    .marquee-section {
-      padding: 32px 0;
-      background: var(--accent);
-      overflow: hidden;
-    }
-    .marquee-track {
-      display: flex;
-      gap: 60px;
-      animation: marquee 20s linear infinite;
-      width: max-content;
-    }
-    .marquee-item {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.4rem;
-      letter-spacing: 0.1em;
-      color: var(--black);
-      white-space: nowrap;
-      display: flex; align-items: center; gap: 20px;
-    }
-    .marquee-item::before { content: '●'; font-size: 0.5rem; }
-    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-
-    /* ── INDUSTRIES ── */
-    #industries { max-width: 1400px; margin: 0 auto; }
-    .industries-inner { max-width: 1400px; margin: 0 auto; }
-    .industries-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin-top: 64px;
-    }
-    .industry-card {
-      padding: 32px 24px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      transition: all 0.3s;
-      position: relative;
-      overflow: hidden;
-    }
-    .industry-card:hover {
-      border-color: var(--accent);
-      transform: translateY(-4px);
-    }
-    .industry-card::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(232,160,32,0.05) 0%, transparent 60%);
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-    .industry-card:hover::before { opacity: 1; }
-    .industry-icon { font-size: 2rem; margin-bottom: 16px; }
-    .industry-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 8px; }
-    .industry-desc { font-size: 0.8rem; color: var(--grey); line-height: 1.6; }
-
-    /* ── PROCESS ── */
-    #process { background: var(--dark); }
-    .process-inner { max-width: 1400px; margin: 0 auto; }
-    .process-steps {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 0;
-      margin-top: 80px;
-      position: relative;
-    }
-    .process-steps::before {
-      content: '';
-      position: absolute;
-      top: 40px; left: 10%; right: 10%;
-      height: 1px;
-      background: linear-gradient(to right, transparent, var(--accent), var(--accent), var(--accent), transparent);
-      z-index: 0;
-    }
-    .process-step {
-      text-align: center;
-      padding: 0 20px;
-      position: relative;
-      z-index: 1;
-    }
-    .step-num {
-      width: 80px; height: 80px;
-      background: var(--black);
-      border: 2px solid var(--accent);
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 24px;
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.8rem;
-      color: var(--accent);
-      transition: all 0.3s;
-    }
-    .process-step:hover .step-num {
-      background: var(--accent);
-      color: var(--black);
-    }
-    .step-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 8px; }
-    .step-desc { font-size: 0.78rem; color: var(--grey); line-height: 1.6; }
-
-    /* ── CONTACT ── */
-    #contact { background: var(--black); }
-    .contact-inner {
-      max-width: 1400px; margin: 0 auto;
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 80px; align-items: start;
-    }
-    .contact-info h2 {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(2.5rem, 5vw, 5rem);
-      line-height: 1;
-      margin-bottom: 24px;
-    }
-    .contact-info p { color: var(--light); line-height: 1.8; margin-bottom: 40px; font-size: 0.95rem; }
-    .contact-detail {
-      display: flex; align-items: center; gap: 16px;
-      margin-bottom: 20px;
-    }
-    .contact-detail .icon {
-      width: 44px; height: 44px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.1rem;
-      flex-shrink: 0;
-    }
-    .contact-detail .info strong { display: block; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey); }
-    .contact-detail .info span { font-size: 0.95rem; color: var(--white); }
-    .contact-form { display: flex; flex-direction: column; gap: 16px; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .form-group { display: flex; flex-direction: column; gap: 8px; }
-    .form-group label {
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--grey);
-    }
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      background: var(--card);
-      border: 1px solid var(--border);
-      color: var(--white);
-      padding: 14px 16px;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.9rem;
-      outline: none;
-      transition: border-color 0.2s;
-      resize: none;
-    }
-    .form-group input::placeholder,
-    .form-group textarea::placeholder { color: var(--grey); }
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus { border-color: var(--accent); }
-    .form-group select option { background: var(--card); }
-    .form-submit {
-      background: var(--accent);
-      color: var(--black);
-      border: none;
-      padding: 16px 40px;
-      font-weight: 700;
-      font-size: 0.85rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-family: 'Inter', sans-serif;
-      margin-top: 8px;
-    }
-    .form-submit:hover { background: var(--accent2); transform: translateY(-2px); }
-
-    /* ── FOOTER ── */
-    footer {
-      background: #050505;
-      border-top: 1px solid var(--border);
-      padding: 60px 60px 30px;
-    }
-    .footer-inner {
-      max-width: 1400px; margin: 0 auto;
-    }
-    .footer-top {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr;
-      gap: 60px;
-      padding-bottom: 48px;
-      border-bottom: 1px solid var(--border);
-    }
-    .footer-brand .logo {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 2rem;
-      letter-spacing: 0.1em;
-      margin-bottom: 16px;
-    }
-    .footer-brand .logo span { color: var(--accent); }
-    .footer-brand p { font-size: 0.82rem; color: var(--grey); line-height: 1.7; max-width: 280px; }
-    .footer-col h4 {
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--grey);
-      margin-bottom: 20px;
-    }
-    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-    .footer-col ul a {
-      color: var(--light);
-      text-decoration: none;
-      font-size: 0.85rem;
-      transition: color 0.2s;
-    }
-    .footer-col ul a:hover { color: var(--accent); }
-    .footer-bottom {
-      display: flex; justify-content: space-between; align-items: center;
-      padding-top: 24px;
-      flex-wrap: wrap; gap: 16px;
-    }
-    .footer-bottom p { font-size: 0.75rem; color: var(--grey); }
-    .footer-bottom .wdg-credit {
-      font-size: 0.75rem;
-      color: var(--grey);
-    }
-    .footer-bottom .wdg-credit span { color: var(--accent); font-weight: 600; }
-
-    /* ── SCROLL ANIMATIONS ── */
-    .reveal {
-      opacity: 0;
-      transform: translateY(40px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
-    .reveal.revealed {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .reveal-left {
-      opacity: 0;
-      transform: translateX(-40px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
-    .reveal-left.revealed {
-      opacity: 1;
-      transform: translateX(0);
-    }
-    .reveal-right {
-      opacity: 0;
-      transform: translateX(40px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
-    .reveal-right.revealed {
-      opacity: 1;
-      transform: translateX(0);
-    }
-    .delay-1 { transition-delay: 0.1s !important; }
-    .delay-2 { transition-delay: 0.2s !important; }
-    .delay-3 { transition-delay: 0.3s !important; }
-    .delay-4 { transition-delay: 0.4s !important; }
-    .delay-5 { transition-delay: 0.5s !important; }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 1024px) {
-      nav { padding: 20px 30px; }
-      nav.scrolled { padding: 14px 30px; }
-      section { padding: 80px 30px; }
-      #about { grid-template-columns: 1fr; gap: 48px; }
-      .about-text { padding-left: 0; }
-      .services-grid { grid-template-columns: 1fr 1fr; }
-      .industries-grid { grid-template-columns: repeat(2, 1fr); }
-      .process-steps { grid-template-columns: 1fr; gap: 48px; }
-      .process-steps::before { display: none; }
-      .contact-inner { grid-template-columns: 1fr; gap: 48px; }
-      .footer-top { grid-template-columns: 1fr 1fr; }
-    }
-    @media (max-width: 768px) {
-      .nav-links { display: none; }
-      .hamburger { display: flex; }
-      .hero-title { font-size: clamp(3rem, 15vw, 6rem); }
-      .services-grid { grid-template-columns: 1fr; }
-      .industries-grid { grid-template-columns: 1fr 1fr; }
-      .stats-bar { padding: 20px; }
-      .form-row { grid-template-columns: 1fr; }
-      .footer-top { grid-template-columns: 1fr; }
-    }
-
-    /* ── CURSOR ── */
-    .cursor {
-      width: 8px; height: 8px;
-      background: var(--accent);
-      border-radius: 50%;
-      position: fixed;
-      pointer-events: none;
-      z-index: 9998;
-      transition: transform 0.1s ease;
-    }
-    .cursor-follower {
-      width: 36px; height: 36px;
-      border: 1px solid rgba(232,160,32,0.4);
-      border-radius: 50%;
-      position: fixed;
-      pointer-events: none;
-      z-index: 9997;
-      transition: all 0.15s ease;
-    }
-
-    /* ── CANVAS PARTICLES ── */
-    #particles-canvas {
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--o:#E55C00;--o2:#FF7433;--bg:#090909;--bg2:#0f0f0f;--card:#111;--line:#1c1c1c;--w:#fff;--mid:#888;--soft:#bbb}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--w);font-family:'Inter',sans-serif;overflow-x:hidden;cursor:none}
+    #cur{position:fixed;width:8px;height:8px;background:var(--o);border-radius:50%;pointer-events:none;z-index:99999;transform:translate(-50%,-50%)}
+    #cur2{position:fixed;width:32px;height:32px;border:1px solid rgba(229,92,0,.4);border-radius:50%;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);transition:all .1s ease}
+    ::-webkit-scrollbar{width:2px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--o)}
+    #loader{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0}
+    .ldr-pct{font-family:'Bebas Neue',sans-serif;font-size:clamp(7rem,22vw,20rem);line-height:1;color:var(--w);letter-spacing:-.02em}
+    .ldr-pct span{color:var(--o)}
+    .ldr-bw{width:min(360px,80vw);height:1px;background:var(--line);margin-top:20px;overflow:hidden}
+    .ldr-bf{height:100%;width:0;background:var(--o);animation:lbf 1.8s cubic-bezier(.4,0,.2,1) forwards}
+    @keyframes lbf{to{width:100%}}
+    .ldr-sub{font-size:.6rem;letter-spacing:.4em;text-transform:uppercase;color:var(--mid);margin-top:14px;opacity:0;animation:lsub .8s ease .5s forwards}
+    @keyframes lsub{to{opacity:1}}
+    nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:26px 60px;display:flex;align-items:center;justify-content:space-between;transition:all .4s}
+    nav.pinned{padding:14px 60px;background:rgba(9,9,9,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--line)}
+    .logo{font-family:'Bebas Neue',sans-serif;font-size:1.45rem;letter-spacing:.12em;text-decoration:none;color:var(--w)}
+    .logo em{color:var(--o);font-style:normal}
+    .nav-ul{display:flex;gap:34px;list-style:none}
+    .nav-ul a{font-size:.68rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--mid);text-decoration:none;transition:color .2s}
+    .nav-ul a:hover{color:var(--w)}
+    .nav-cta{background:var(--o)!important;color:var(--bg)!important;padding:10px 24px;font-weight:700!important;transition:background .2s!important}
+    .nav-cta:hover{background:var(--o2)!important}
+    .brgr{display:none;flex-direction:column;gap:5px;cursor:none}
+    .brgr span{width:22px;height:1.5px;background:var(--w)}
+    #hero{position:relative;height:100vh;min-height:680px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;padding:0 60px 80px}
+    .h-bg{position:absolute;inset:0;background:url('https://media.base44.com/images/public/6a0c1534017166f536b1ac32/5abe4598b_generated_image.png') center 38%/cover no-repeat;will-change:transform}
+    .h-ov{position:absolute;inset:0;background:linear-gradient(160deg,rgba(9,9,9,.4) 0%,rgba(9,9,9,.05) 28%,rgba(9,9,9,.72) 62%,rgba(9,9,9,1) 100%)}
+    .h-tick{position:absolute;top:0;left:0;right:0;height:2px;background:var(--line);overflow:hidden}
+    .h-tick-f{height:100%;background:var(--o);width:0;animation:htf 16s linear forwards}
+    @keyframes htf{to{width:100%}}
+    .h-tag{position:relative;z-index:2;font-size:.65rem;font-weight:600;letter-spacing:.4em;text-transform:uppercase;color:var(--o);display:flex;align-items:center;gap:12px;opacity:0;transform:translateY(20px)}
+    .h-tag::before{content:'';display:block;width:28px;height:1px;background:var(--o)}
+    .h-title{position:relative;z-index:2;font-family:'Bebas Neue',sans-serif;font-size:clamp(5rem,16vw,18rem);line-height:.87;letter-spacing:.01em;text-transform:uppercase;opacity:0;transform:translateY(40px)}
+    .h-title .lo{color:var(--o);display:block}
+    .h-title .lw{display:block}
+    .h-row{position:relative;z-index:2;display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;opacity:0;transform:translateY(20px);margin-top:26px}
+    .h-desc{font-size:.9rem;font-weight:300;color:var(--soft);line-height:1.85;max-width:480px}
+    .h-btns{display:flex;gap:10px}
+    .btn-o{display:inline-block;background:var(--o);color:var(--bg);font-size:.72rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;padding:14px 32px;text-decoration:none;transition:all .25s}
+    .btn-o:hover{background:var(--o2);transform:translateY(-2px)}
+    .btn-l{display:inline-block;background:transparent;color:var(--w);font-size:.72rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;padding:13px 32px;text-decoration:none;border:1px solid rgba(255,255,255,.18);transition:all .25s}
+    .btn-l:hover{border-color:var(--o);color:var(--o);transform:translateY(-2px)}
+    .h-scroll{position:absolute;bottom:36px;right:60px;z-index:2;display:flex;flex-direction:column;align-items:center;gap:8px}
+    .h-scroll-t{font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:var(--mid);writing-mode:vertical-rl}
+    .h-scroll-l{width:1px;height:44px;background:linear-gradient(to bottom,var(--o),transparent);animation:sp 2s ease-in-out infinite}
+    @keyframes sp{0%,100%{opacity:1}50%{opacity:.25}}
+    .mq{background:var(--o);overflow:hidden;height:52px;display:flex;align-items:center}
+    .mq-t{display:flex;gap:44px;animation:mq 24s linear infinite;white-space:nowrap;align-items:center}
+    @keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+    .mq-i{font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.28em;text-transform:uppercase;color:rgba(0,0,0,.75);flex-shrink:0;display:flex;align-items:center;gap:18px}
+    .mq-d{width:4px;height:4px;background:rgba(0,0,0,.35);border-radius:50%}
+    .nums{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line)}
+    .num-c{padding:50px 40px;border-right:1px solid var(--line);position:relative;overflow:hidden}
+    .num-c:last-child{border-right:none}
+    .num-c::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--o);transition:width .5s ease}
+    .num-c:hover::after{width:100%}
+    .num-n{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,4.5vw,5rem);color:var(--o);line-height:1;letter-spacing:-.01em}
+    .num-l{font-size:.68rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);margin-top:8px}
+    #about{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line)}
+    .a-img{position:relative;overflow:hidden;aspect-ratio:1/1}
+    .a-img img{width:100%;height:100%;object-fit:cover;transform:scale(1.06);transition:transform 1.2s ease;will-change:transform}
+    .a-img:hover img{transform:scale(1)}
+    .a-img::after{content:'EST. 1968';position:absolute;bottom:28px;right:28px;z-index:2;font-family:'Bebas Neue',sans-serif;font-size:.9rem;letter-spacing:.22em;color:var(--o)}
+    .a-txt{padding:80px 60px;border-left:1px solid var(--line);display:flex;flex-direction:column;justify-content:center}
+    .eyebrow{font-size:.63rem;font-weight:700;letter-spacing:.38em;text-transform:uppercase;color:var(--o);display:flex;align-items:center;gap:10px;margin-bottom:18px}
+    .eyebrow::before{content:'';display:block;width:20px;height:1px;background:var(--o)}
+    .sec-t{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,5vw,6rem);line-height:.9;letter-spacing:.01em;text-transform:uppercase}
+    .a-txt p{font-size:.88rem;color:var(--soft);line-height:1.9;margin-top:22px}
+    .a-txt p+p{margin-top:12px}
+    .px-band{position:relative;height:80vh;min-height:500px;display:flex;align-items:center;overflow:hidden}
+    .px-img{position:absolute;inset:-20%;background-size:cover;background-position:center;background-attachment:fixed}
+    .px-ov{position:absolute;inset:0}
+    .px-body{position:relative;z-index:2;padding:0 60px;max-width:700px}
+    .px-body p{font-size:.88rem;color:var(--soft);line-height:1.9;margin-top:18px;max-width:450px}
+    #services{border-top:1px solid var(--line)}
+    .svc-hdr{padding:80px 60px 0;display:flex;align-items:flex-end;justify-content:space-between;gap:32px;flex-wrap:wrap}
+    .svc-hdr p{max-width:360px;font-size:.84rem;color:var(--mid);line-height:1.85}
+    .svc-row{display:grid;grid-template-columns:80px 1fr 200px;align-items:center;gap:40px;padding:34px 60px;border-bottom:1px solid var(--line);transition:background .25s;cursor:none;position:relative;overflow:hidden}
+    .svc-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:0;background:var(--o);transition:width .35s cubic-bezier(.4,0,.2,1)}
+    .svc-row:hover::before{width:3px}
+    .svc-row:hover{background:rgba(255,255,255,.02)}
+    .svc-num{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--line);letter-spacing:.1em;transition:color .3s}
+    .svc-row:hover .svc-num{color:var(--o)}
+    .svc-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.5rem,3vw,2.8rem);letter-spacing:.04em;text-transform:uppercase;transition:color .3s}
+    .svc-row:hover .svc-name{color:var(--o)}
+    .svc-tag{font-size:.66rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--mid);text-align:right}
+    #fleet{border-top:1px solid var(--line);padding-bottom:80px}
+    .fleet-hdr{padding:80px 60px 52px;display:flex;align-items:flex-end;justify-content:space-between;gap:32px;flex-wrap:wrap}
+    .fleet-hdr p{max-width:360px;font-size:.84rem;color:var(--mid);line-height:1.85}
+    .fleet-track{display:flex;gap:2px;animation:fr 30s linear infinite;width:max-content}
+    .fleet-track:hover{animation-play-state:paused}
+    @keyframes fr{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+    .fleet-slide{width:440px;height:290px;object-fit:cover;flex-shrink:0;filter:brightness(.75) saturate(.85);transition:filter .4s}
+    .fleet-slide:hover{filter:brightness(1) saturate(1.05)}
+    #sectors{border-top:1px solid var(--line);padding:80px 60px}
+    .sec-grid{display:grid;grid-template-columns:repeat(3,1fr);margin-top:48px;border-top:1px solid var(--line);border-left:1px solid var(--line)}
+    .sec-cell{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:26px 22px;display:flex;align-items:center;gap:14px;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);transition:all .25s;cursor:none}
+    .sec-cell::before{content:'';display:block;width:5px;height:5px;background:var(--line);border-radius:50%;flex-shrink:0;transition:background .25s}
+    .sec-cell:hover{color:var(--w);background:rgba(229,92,0,.04)}
+    .sec-cell:hover::before{background:var(--o)}
+    #process{border-top:1px solid var(--line);padding:80px 60px}
+    .proc-grid{display:grid;grid-template-columns:repeat(4,1fr);margin-top:56px;border-top:1px solid var(--line)}
+    .proc-item{padding:40px 32px;border-right:1px solid var(--line)}
+    .proc-item:last-child{border-right:none}
+    .proc-n{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;color:var(--line);line-height:1;margin-bottom:20px;transition:color .3s}
+    .proc-item:hover .proc-n{color:rgba(229,92,0,.18)}
+    .proc-t{font-family:'Bebas Neue',sans-serif;font-size:1.25rem;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+    .proc-d{font-size:.82rem;color:var(--mid);line-height:1.85}
+    #contact{border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr}
+    .c-left{padding:80px 60px;border-right:1px solid var(--line)}
+    .c-left p{font-size:.86rem;color:var(--soft);line-height:1.9;margin-top:18px;max-width:400px}
+    .c-rows{margin-top:38px}
+    .c-row{display:flex;gap:20px;padding:18px 0;border-bottom:1px solid var(--line)}
+    .c-row:first-child{border-top:1px solid var(--line)}
+    .c-lbl{font-size:.6rem;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--o);width:72px;flex-shrink:0;padding-top:2px}
+    .c-val{font-size:.84rem;color:var(--soft);line-height:1.65}
+    .c-val a{color:var(--soft);text-decoration:none;transition:color .2s}
+    .c-val a:hover{color:var(--o)}
+    .c-right{padding:80px 60px}
+    .cform{display:flex;flex-direction:column;gap:11px}
+    .cf-row{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+    .cf-f{display:flex;flex-direction:column;gap:5px}
+    .cf-f label{font-size:.6rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--mid)}
+    .cf-f input,.cf-f textarea,.cf-f select{background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--w);padding:12px 14px;font-size:.83rem;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;resize:none}
+    .cf-f input:focus,.cf-f textarea:focus,.cf-f select:focus{border-color:var(--o)}
+    .cf-f select option{background:#111}
+    .cf-sub{background:var(--o);color:var(--bg);font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding:14px 34px;border:none;cursor:none;transition:all .25s;align-self:flex-start;margin-top:4px}
+    .cf-sub:hover{background:var(--o2);transform:translateY(-2px)}
+    footer{border-top:1px solid var(--line);background:var(--bg2);padding:52px 60px 36px}
+    .ft{max-width:1600px;margin:0 auto}
+    .ft-top{display:flex;justify-content:space-between;align-items:flex-start;gap:32px;flex-wrap:wrap;padding-bottom:36px;border-bottom:1px solid var(--line)}
+    .ft-logo{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.14em}
+    .ft-logo em{color:var(--o);font-style:normal}
+    .ft-sub{font-size:.65rem;color:var(--mid);margin-top:6px;letter-spacing:.08em}
+    .ft-nav{display:flex;gap:26px;flex-wrap:wrap}
+    .ft-nav a{font-size:.65rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--mid);text-decoration:none;transition:color .2s}
+    .ft-nav a:hover{color:var(--w)}
+    .ft-btm{display:flex;justify-content:space-between;align-items:center;padding-top:22px;flex-wrap:wrap;gap:10px}
+    .ft-copy,.ft-credit{font-size:.6rem;color:var(--line);letter-spacing:.08em}
+    .ft-credit a{color:var(--o);text-decoration:none}
+    .rv{opacity:0;transform:translateY(30px);transition:opacity .9s ease,transform .9s ease}
+    .rv.on{opacity:1;transform:translateY(0)}
+    .rl{opacity:0;transform:translateX(-30px);transition:opacity .9s ease,transform .9s ease}
+    .rl.on{opacity:1;transform:translateX(0)}
+    .d2{transition-delay:.14s}.d3{transition-delay:.28s}.d4{transition-delay:.42s}
+    @media(max-width:900px){
+      nav,nav.pinned{padding:14px 20px}
+      .nav-ul{display:none}
+      .brgr{display:flex}
+      #hero{padding:0 20px 70px}
+      .nums{grid-template-columns:1fr 1fr}
+      .num-c{border-right:none;border-bottom:1px solid var(--line)}
+      #about{grid-template-columns:1fr}
+      .a-img{aspect-ratio:16/9}
+      .a-txt{padding:48px 24px;border-left:none;border-top:1px solid var(--line)}
+      .px-body{padding:0 20px}
+      .svc-hdr{padding:60px 20px 0}
+      .svc-row{grid-template-columns:56px 1fr;padding:26px 20px;gap:14px}
+      .svc-tag{display:none}
+      .fleet-hdr{padding:56px 20px 40px}
+      #sectors,#process{padding:60px 20px}
+      .sec-grid{grid-template-columns:1fr 1fr}
+      .proc-grid{grid-template-columns:1fr 1fr}
+      .proc-item{border-bottom:1px solid var(--line)}
+      #contact{grid-template-columns:1fr}
+      .c-left,.c-right{padding:56px 20px}
+      .c-left{border-right:none;border-bottom:1px solid var(--line)}
+      .cf-row{grid-template-columns:1fr}
+      footer{padding:40px 20px 28px}
+      .h-scroll{right:20px}
     }
   </style>
 </head>
 <body>
+<div id="cur"></div><div id="cur2"></div>
 
-  <!-- CURSOR -->
-  <div class="cursor" id="cursor"></div>
-  <div class="cursor-follower" id="cursorFollower"></div>
+<!-- LOADER -->
+<div id="loader">
+  <div class="ldr-pct" id="ldrN">0<span>%</span></div>
+  <div class="ldr-bw"><div class="ldr-bf"></div></div>
+  <div class="ldr-sub">Charles Russell Transport Group</div>
+</div>
 
-  <!-- LOADER -->
-  <div id="loader">
-    <div class="loader-logo">
-      <span>CHARLES</span>&nbsp;<span>RUSSELL</span>&nbsp;<span>TRANSPORT</span>
-    </div>
-    <div class="loader-bar"></div>
-  </div>
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="logo">Charles <em>Russell</em></a>
+  <ul class="nav-ul">
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#sectors">Sectors</a></li>
+    <li><a href="#process">Process</a></li>
+    <li><a href="#contact" class="nav-cta">Get a Quote</a></li>
+  </ul>
+  <div class="brgr" onclick="mobNav()"><span></span><span></span><span></span></div>
+</nav>
 
-  <!-- NAV -->
-  <nav id="navbar">
-    <a href="#" class="nav-logo">CR<span>T</span></a>
-    <ul class="nav-links">
-      <li><a href="#about">About</a></li>
-      <li><a href="#services">Services</a></li>
-      <li><a href="#industries">Industries</a></li>
-      <li><a href="#process">Process</a></li>
-      <li><a href="#contact" class="nav-cta">Get a Quote</a></li>
-    </ul>
-    <div class="hamburger" onclick="toggleMenu()">
-      <span></span><span></span><span></span>
-    </div>
-  </nav>
-
-  <!-- HERO -->
-  <section id="hero">
-    <div class="hero-grid"></div>
-    <canvas id="particles-canvas"></canvas>
-    <div class="hero-bg"></div>
-    <div class="hero-content">
-      <p class="hero-eyebrow">Est. 1968 · Gloucester, UK · Operating Internationally</p>
-      <h1 class="hero-title">MOVING<br><span class="accent">THE</span><br>IMPOSSIBLE</h1>
-      <p class="hero-subtitle">Specialists in heavy lifting, precision handling and transport of machinery, hi-tech equipment and notable works of art across the UK and Europe.</p>
-      <div class="hero-actions">
-        <a href="#contact" class="btn-primary"><span>Request a Quote</span></a>
-        <a href="#services" class="btn-ghost">Our Services</a>
-      </div>
-    </div>
-    <div class="hero-scroll">
-      <div class="scroll-line"></div>
-      <span>Scroll</span>
-    </div>
-  </section>
-
-  <!-- STATS BAR -->
-  <div class="stats-bar">
-    <div class="stat-item reveal delay-1">
-      <div class="stat-number" data-count="55">0</div>
-      <div class="stat-label">Years Experience</div>
-    </div>
-    <div class="stat-item reveal delay-2">
-      <div class="stat-number" data-count="500">0</div>
-      <div class="stat-label">Projects Completed</div>
-    </div>
-    <div class="stat-item reveal delay-3">
-      <div class="stat-number" data-count="60">0</div>
-      <div class="stat-label">Tonnes Capacity</div>
-    </div>
-    <div class="stat-item reveal delay-4">
-      <div class="stat-number" data-count="30">0</div>
-      <div class="stat-label">Crane Lift Capacity (T)</div>
-    </div>
-    <div class="stat-item reveal delay-5">
-      <div class="stat-number" data-count="27">0</div>
-      <div class="stat-label">Max Trailer Length (M)</div>
+<!-- HERO -->
+<section id="hero">
+  <div class="h-bg" id="hBg"></div>
+  <div class="h-ov"></div>
+  <div class="h-tick"><div class="h-tick-f"></div></div>
+  <div class="h-tag" id="hTag">Cheltenham &middot; Gloucestershire &middot; Est. 1968</div>
+  <h1 class="h-title" id="hTitle">
+    Heavy
+    <span class="lo">Haulage.</span>
+    <span class="lw">Handled.</span>
+  </h1>
+  <div class="h-row" id="hRow">
+    <p class="h-desc">Specialists in the transport, lifting and handling of machinery, precision equipment and notable works of art. Operating throughout the UK and internationally since 1968.</p>
+    <div class="h-btns">
+      <a href="#contact" class="btn-o">Request a Quote</a>
+      <a href="#services" class="btn-l">Our Services</a>
     </div>
   </div>
+  <div class="h-scroll">
+    <span class="h-scroll-t">Scroll</span>
+    <div class="h-scroll-l"></div>
+  </div>
+</section>
 
-  <!-- ABOUT -->
-  <section>
-    <div id="about">
-      <div class="about-visual reveal-left">
-        <div class="about-img-box">
-          <div class="about-img-placeholder">
-            <div style="font-size:6rem;">🚛</div>
-            <p style="color:var(--grey);font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;">Fleet Photography</p>
-          </div>
-        </div>
-        <div class="about-badge">
-          <div class="big">55+</div>
-          <div class="small">Years of<br>Excellence</div>
-        </div>
-      </div>
-      <div class="about-text reveal-right">
-        <p class="section-label">Our Story</p>
-        <h2 class="section-title">BUILT ON<br>PRECISION &amp;<br>TRUST</h2>
-        <p class="section-sub">Founded in 1968 by Charles Russell as a single-vehicle operation, we have grown into one of the UK's most trusted specialists in heavy transport and lifting — serving industries from aerospace to fine art.</p>
-        <div class="about-list">
-          <div class="about-list-item">
-            <div class="dot"></div>
-            <div>
-              <h4>UK & European Coverage</h4>
-              <p>Operating from our Gloucester base, we move cargo throughout the UK and across mainland Europe with full compliance and coordination.</p>
-            </div>
-          </div>
-          <div class="about-list-item">
-            <div class="dot"></div>
-            <div>
-              <h4>SHEQ Compliant</h4>
-              <p>Every project includes detailed risk assessments, method statements and lift plans prepared by our experienced operations team.</p>
-            </div>
-          </div>
-          <div class="about-list-item">
-            <div class="dot"></div>
-            <div>
-              <h4>Dedicated Project Management</h4>
-              <p>A designated project manager conducts a site visit for every job, ensuring your requirements are fully understood from day one.</p>
-            </div>
-          </div>
-        </div>
-      </div>
+<!-- MARQUEE -->
+<div class="mq">
+  <div class="mq-t">
+    <div class="mq-i"><div class="mq-d"></div>Heavy Haulage</div>
+    <div class="mq-i"><div class="mq-d"></div>Crane Lifts to 30 Tons</div>
+    <div class="mq-i"><div class="mq-d"></div>Machinery Installation</div>
+    <div class="mq-i"><div class="mq-d"></div>UK &amp; European Logistics</div>
+    <div class="mq-i"><div class="mq-d"></div>Semi-Low Ramp 60 Tons</div>
+    <div class="mq-i"><div class="mq-d"></div>Art &amp; Sculpture Transport</div>
+    <div class="mq-i"><div class="mq-d"></div>Bonded Warehousing</div>
+    <div class="mq-i"><div class="mq-d"></div>Export Packing &amp; Shipping</div>
+    <div class="mq-i"><div class="mq-d"></div>Extendable Low Loaders 27m</div>
+    <div class="mq-i"><div class="mq-d"></div>Special Projects Division</div>
+    <div class="mq-i"><div class="mq-d"></div>Heavy Haulage</div>
+    <div class="mq-i"><div class="mq-d"></div>Crane Lifts to 30 Tons</div>
+    <div class="mq-i"><div class="mq-d"></div>Machinery Installation</div>
+    <div class="mq-i"><div class="mq-d"></div>UK &amp; European Logistics</div>
+    <div class="mq-i"><div class="mq-d"></div>Semi-Low Ramp 60 Tons</div>
+    <div class="mq-i"><div class="mq-d"></div>Art &amp; Sculpture Transport</div>
+    <div class="mq-i"><div class="mq-d"></div>Bonded Warehousing</div>
+    <div class="mq-i"><div class="mq-d"></div>Export Packing &amp; Shipping</div>
+    <div class="mq-i"><div class="mq-d"></div>Extendable Low Loaders 27m</div>
+    <div class="mq-i"><div class="mq-d"></div>Special Projects Division</div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="nums">
+  <div class="num-c rv"><div class="num-n">1968</div><div class="num-l">Year Founded</div></div>
+  <div class="num-c rv d2"><div class="num-n">60T</div><div class="num-l">Max Load Capacity</div></div>
+  <div class="num-c rv d3"><div class="num-n">27m</div><div class="num-l">Longest Trailer</div></div>
+  <div class="num-c rv d4"><div class="num-n">Global</div><div class="num-l">Special Project Reach</div></div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="a-img rl">
+    <img src="https://media.base44.com/images/public/6a0c1534017166f536b1ac32/4a5a8fd81_generated_image.png" alt="Charles Russell Transport Fleet" />
+  </div>
+  <div class="a-txt">
+    <div class="eyebrow rv">About the Group</div>
+    <h2 class="sec-t rv">The Charles<br>Russell Group</h2>
+    <p class="rv">The Charles Russell Transport Group has been setting the standard in transportation, lifting, and handling since 1968. Based at Walton Hill Farm in Gloucestershire, we operate throughout the UK and internationally &mdash; built on a principle of meticulous execution, every time.</p>
+    <p class="rv">Every enquiry is handled by our experienced operations team &mdash; all with many years of on-site knowledge. Whether it's a single machine move or a complete facility relocation, our approach is thorough, our safety record exemplary, and our standards non-negotiable.</p>
+    <a href="#contact" class="btn-o rv" style="margin-top:34px;display:inline-block">Start an Enquiry</a>
+  </div>
+</section>
+
+<!-- PARALLAX 1 -->
+<div class="px-band">
+  <div class="px-img" style="background-image:url('https://media.base44.com/images/public/6a0c1534017166f536b1ac32/10ac1eaa0_generated_image.png')"></div>
+  <div class="px-ov" style="background:linear-gradient(to right,rgba(9,9,9,.93) 36%,rgba(9,9,9,.12) 100%)"></div>
+  <div class="px-body">
+    <div class="eyebrow rv">Transport Division</div>
+    <h2 class="sec-t rv" style="font-size:clamp(3rem,7vw,8rem)">No Load<br>Too Large.</h2>
+    <p class="rv">Straight &amp; step frame Euroliners to 3.3m wide. Extendable semi-low trailers to 27m. Semi-low ramp trailers for plant up to 60 tons. Lorry and trailer-mounted cranes lifting up to 30 tons.</p>
+    <a href="#services" class="btn-o rv" style="margin-top:26px;display:inline-block">View All Services</a>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="svc-hdr">
+    <div>
+      <div class="eyebrow rv">What We Do</div>
+      <h2 class="sec-t rv" style="font-size:clamp(3rem,6vw,7rem)">Our Services</h2>
     </div>
-  </section>
+    <p class="rv">Six specialist divisions, one meticulous standard. From a single machine move to global art installations &mdash; handled with the same obsessive attention to detail.</p>
+  </div>
+  <div>
+    <div class="svc-row rv"><div class="svc-num">01</div><div class="svc-name">Heavy Transport</div><div class="svc-tag">UK &amp; Europe &middot; Up to 60T</div></div>
+    <div class="svc-row rv"><div class="svc-num">02</div><div class="svc-name">Crane &amp; Lifting</div><div class="svc-tag">HIAB &middot; Mobile &middot; Up to 30T</div></div>
+    <div class="svc-row rv"><div class="svc-num">03</div><div class="svc-name">Machinery Installation</div><div class="svc-tag">End-to-End &middot; OEM Support</div></div>
+    <div class="svc-row rv"><div class="svc-num">04</div><div class="svc-name">Warehousing &amp; Export</div><div class="svc-tag">HMC Bonded &middot; Worldwide</div></div>
+    <div class="svc-row rv"><div class="svc-num">05</div><div class="svc-name">Special Projects &mdash; Art</div><div class="svc-tag">Global &middot; Museum Grade</div></div>
+    <div class="svc-row rv"><div class="svc-num">06</div><div class="svc-name">European Logistics</div><div class="svc-tag">Continental &middot; Abnormal Loads</div></div>
+  </div>
+</section>
 
-  <!-- SERVICES -->
-  <section id="services">
-    <div class="services-inner">
-      <div class="services-header">
-        <div class="reveal">
-          <p class="section-label">What We Do</p>
-          <h2 class="section-title">OUR<br>CAPABILITIES</h2>
-        </div>
-        <p class="section-sub reveal" style="text-align:right;">From single machine relocations to complete facility moves — we have the equipment, expertise and team to handle any project.</p>
-      </div>
-      <div class="services-grid">
-        <div class="service-card reveal delay-1">
-          <div class="service-num">01</div>
-          <div class="service-icon">🚛</div>
-          <h3 class="service-title">Heavy Transport</h3>
-          <p class="service-desc">A modern fleet of specialist HGVs and trailers capable of carrying all cargo types throughout the UK and Europe. Crane vehicles handling loads up to 30 tonnes.</p>
-          <div class="service-tags">
-            <span class="service-tag">Curtainsiders</span>
-            <span class="service-tag">Low Loaders</span>
-            <span class="service-tag">30T Crane</span>
-          </div>
-        </div>
-        <div class="service-card reveal delay-2">
-          <div class="service-num">02</div>
-          <div class="service-icon">🏗️</div>
-          <h3 class="service-title">Lifting & Handling</h3>
-          <p class="service-desc">Expert lifting of valuable machinery, plant and hi-tech equipment. Fully qualified teams with lifting appointed persons, riggers and specialist operators.</p>
-          <div class="service-tags">
-            <span class="service-tag">Mobile Cranes</span>
-            <span class="service-tag">Gantry Systems</span>
-            <span class="service-tag">Hydraulic Jacks</span>
-          </div>
-        </div>
-        <div class="service-card reveal delay-3">
-          <div class="service-num">03</div>
-          <div class="service-icon">🏭</div>
-          <h3 class="service-title">Facility Relocation</h3>
-          <p class="service-desc">Complete factory and facility relocations managed end-to-end. We handle dismantling, transport, reassembly and alignment with OEM engineers on site.</p>
-          <div class="service-tags">
-            <span class="service-tag">Factory Moves</span>
-            <span class="service-tag">Machinery Install</span>
-            <span class="service-tag">OEM Support</span>
-          </div>
-        </div>
-        <div class="service-card reveal delay-1">
-          <div class="service-num">04</div>
-          <div class="service-icon">🎨</div>
-          <h3 class="service-title">Art & Sculpture</h3>
-          <p class="service-desc">Trusted by collectors, galleries and institutions for the safe handling of large sculptures and notable works of art. Meticulous care at every stage.</p>
-          <div class="service-tags">
-            <span class="service-tag">Large Sculpture</span>
-            <span class="service-tag">Gallery Work</span>
-            <span class="service-tag">White Glove</span>
-          </div>
-        </div>
-        <div class="service-card reveal delay-2">
-          <div class="service-num">05</div>
-          <div class="service-icon">📦</div>
-          <h3 class="service-title">Warehousing</h3>
-          <p class="service-desc">Secure warehousing and export packing solutions to complement our transport and lifting services. Flexible short and long-term storage available.</p>
-          <div class="service-tags">
-            <span class="service-tag">Short-term</span>
-            <span class="service-tag">Export Packing</span>
-            <span class="service-tag">Secure</span>
-          </div>
-        </div>
-        <div class="service-card reveal delay-3">
-          <div class="service-num">06</div>
-          <div class="service-icon">⚙️</div>
-          <h3 class="service-title">Special Projects</h3>
-          <p class="service-desc">Technical and heavy contract lifts requiring bespoke engineering solutions. From single precision moves to internationally coordinated special operations.</p>
-          <div class="service-tags">
-            <span class="service-tag">Contract Lifts</span>
-            <span class="service-tag">International</span>
-            <span class="service-tag">Bespoke</span>
-          </div>
-        </div>
-      </div>
+<!-- FLEET -->
+<section id="fleet">
+  <div class="fleet-hdr">
+    <div>
+      <div class="eyebrow rv">The Fleet</div>
+      <h2 class="sec-t rv" style="font-size:clamp(3rem,6vw,7rem)">Immaculate.<br>Every Mile.</h2>
     </div>
-  </section>
-
-  <!-- MARQUEE -->
-  <div class="marquee-section">
-    <div class="marquee-track" id="marqueeTrack">
-      <span class="marquee-item">Heavy Transport</span>
-      <span class="marquee-item">Lifting & Handling</span>
-      <span class="marquee-item">Facility Relocation</span>
-      <span class="marquee-item">Art & Sculpture</span>
-      <span class="marquee-item">Warehousing</span>
-      <span class="marquee-item">Special Projects</span>
-      <span class="marquee-item">UK & Europe</span>
-      <span class="marquee-item">Est. 1968</span>
-      <span class="marquee-item">SHEQ Compliant</span>
-      <span class="marquee-item">Heavy Transport</span>
-      <span class="marquee-item">Lifting & Handling</span>
-      <span class="marquee-item">Facility Relocation</span>
-      <span class="marquee-item">Art & Sculpture</span>
-      <span class="marquee-item">Warehousing</span>
-      <span class="marquee-item">Special Projects</span>
-      <span class="marquee-item">UK & Europe</span>
-      <span class="marquee-item">Est. 1968</span>
-      <span class="marquee-item">SHEQ Compliant</span>
+    <p class="rv">A modern specialist fleet, meticulously maintained. Every driver carries a personal equipment inventory &mdash; lifting gear, straps, chains, sheets &mdash; assigned to them alone. That's the Russell standard.</p>
+  </div>
+  <div style="overflow:hidden">
+    <div class="fleet-track">
+      <img class="fleet-slide" src="https://media.base44.com/images/public/6a0c1534017166f536b1ac32/5abe4598b_generated_image.png" alt="Fleet" />
+      <img class="fleet-slide" src="https://media.base44.com/images/public/6a0c1534017166f536b1ac32/10ac1eaa0_generated_image.png" alt="Specialist load" />
+      <img class="fleet-slide" src="https://media.base44.com/images/public/6a0c1534017166f536b1ac32/d099827d9_generated_image.png" alt="Crane truck" />
+      <img class="fleet-slide" src="https://media.base44.com/images/public/6a0c1534017166f536b1ac32/4a5a8fd81_generated_image.png" alt="Depot" />
+      <img class="fleet-slide" src="https://media.base44.com/images/public/6a0c1534017166f536b1ac32/5abe4598b_generated_image.png" alt="Fleet" />
+      <img class="fleet-slide" src="https://media.base44.com/images/public/6a0c1534017166f536b1ac32/10ac1eaa0_generated_image.png" alt="Specialist load" />
+      <img class="fleet-slide" src="https://media.base44.com/images/public/6a0c1534017166f536b1ac32/d099827d9_generated_image.png" alt="Crane truck" />
+      <img class="fleet-slide" src="https://media.base44.com/images/public/6a0c1534017166f536b1ac32/4a5a8fd81_generated_image.png" alt="Depot" />
     </div>
   </div>
+</section>
 
-  <!-- INDUSTRIES -->
-  <section>
-    <div class="industries-inner" id="industries">
-      <div class="reveal" style="text-align:center;margin-bottom:16px;">
-        <p class="section-label">Sectors We Serve</p>
-        <h2 class="section-title">INDUSTRIES</h2>
+<!-- PARALLAX 2 -->
+<div class="px-band">
+  <div class="px-img" style="background-image:url('https://media.base44.com/images/public/6a0c1534017166f536b1ac32/d099827d9_generated_image.png')"></div>
+  <div class="px-ov" style="background:linear-gradient(to right,rgba(9,9,9,.93) 36%,rgba(9,9,9,.1) 100%)"></div>
+  <div class="px-body">
+    <div class="eyebrow rv">Lifting &amp; Handling</div>
+    <h2 class="sec-t rv" style="font-size:clamp(3rem,7vw,8rem)">Precision<br>Every Time.</h2>
+    <p class="rv">Lifting Appointed Persons, Supervisors, Riggers, Mechanical Plant Operators, and Specialist HGV Drivers &mdash; all fully qualified, all trained to the highest standards, all current on H&amp;S legislation.</p>
+  </div>
+</div>
+
+<!-- SECTORS -->
+<section id="sectors">
+  <div class="eyebrow rv">Who We Serve</div>
+  <h2 class="sec-t rv" style="font-size:clamp(3rem,6vw,7rem)">Industry<br>Sectors</h2>
+  <div class="sec-grid">
+    <div class="sec-cell rv">Hi-Tech &amp; Precision Engineering</div>
+    <div class="sec-cell rv d2">Aerospace</div>
+    <div class="sec-cell rv d3">Pharmaceutical &amp; Medical</div>
+    <div class="sec-cell rv">Electrical, Mechanical &amp; HVAC</div>
+    <div class="sec-cell rv d2">Food &amp; Beverage</div>
+    <div class="sec-cell rv d3">Electronics &amp; Plastics Mfg</div>
+    <div class="sec-cell rv">Fine Art &amp; Sculpture</div>
+    <div class="sec-cell rv d2">Motorsport</div>
+    <div class="sec-cell rv d3">Heavy Industry &amp; Plant</div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="process">
+  <div class="eyebrow rv">How We Work</div>
+  <h2 class="sec-t rv" style="font-size:clamp(3rem,6vw,7rem)">Our Process</h2>
+  <div class="proc-grid">
+    <div class="proc-item rv"><div class="proc-n">01</div><div class="proc-t">Site Visit</div><div class="proc-d">A designated project manager visits your site to assess requirements &mdash; nothing assumed, nothing guessed.</div></div>
+    <div class="proc-item rv d2"><div class="proc-n">02</div><div class="proc-t">Detailed Quote</div><div class="proc-d">Thorough, itemised quotation. SHEQ-compliant risk assessments, method statements and lift plans specific to your project.</div></div>
+    <div class="proc-item rv d3"><div class="proc-n">03</div><div class="proc-t">Execution</div><div class="proc-d">Fully qualified on-site team, full equipment, constant operations support and regular client communication throughout.</div></div>
+    <div class="proc-item rv d4"><div class="proc-n">04</div><div class="proc-t">Completion</div><div class="proc-d">On time. On budget. Every truck, trailer and piece of equipment returned in perfect condition. That's the Russell standard.</div></div>
+  </div>
+</section>
+
+<!-- PARALLAX 3 -->
+<div class="px-band">
+  <div class="px-img" style="background-image:url('https://media.base44.com/images/public/6a0c1534017166f536b1ac32/5abe4598b_generated_image.png')"></div>
+  <div class="px-ov" style="background:linear-gradient(to right,rgba(9,9,9,.9) 34%,rgba(9,9,9,.08) 100%)"></div>
+  <div class="px-body">
+    <div class="eyebrow rv">Get in Touch</div>
+    <h2 class="sec-t rv" style="font-size:clamp(3rem,7vw,8rem)">Tell Us About<br>Your Load.</h2>
+    <p class="rv">Whether it's a routine UK run, a precision machinery relocation, or a complex international art installation &mdash; our operations team wants to hear about it.</p>
+    <a href="#contact" class="btn-o rv" style="margin-top:26px;display:inline-block">Request a Quote</a>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="c-left">
+    <div class="eyebrow rv">Contact</div>
+    <h2 class="sec-t rv" style="font-size:clamp(3rem,5vw,6rem)">Let's Talk<br>Logistics.</h2>
+    <p class="rv">Based in Gloucestershire, operating across the UK and internationally. Ready to handle enquiries of any scale.</p>
+    <div class="c-rows rv">
+      <div class="c-row"><div class="c-lbl">Address</div><div class="c-val">Walton Hill Farm, Tewkesbury Road<br>Coombe Hill, Gloucester, GL19 4BN</div></div>
+      <div class="c-row"><div class="c-lbl">Phone</div><div class="c-val"><a href="tel:+441242680378">+44 (0)1242 680378</a></div></div>
+      <div class="c-row"><div class="c-lbl">Email</div><div class="c-val"><a href="mailto:ben.russell@russell-transport.com">ben.russell@russell-transport.com</a></div></div>
+      <div class="c-row"><div class="c-lbl">Coverage</div><div class="c-val">UK &amp; Mainland Europe &middot; Global Special Projects</div></div>
+    </div>
+  </div>
+  <div class="c-right rv">
+    <div class="eyebrow">Send an Enquiry</div>
+    <form class="cform" style="margin-top:26px" onsubmit="subForm(event)">
+      <div class="cf-row">
+        <div class="cf-f"><label>First Name</label><input type="text" placeholder="John" required /></div>
+        <div class="cf-f"><label>Last Name</label><input type="text" placeholder="Smith" required /></div>
       </div>
-      <div class="industries-grid">
-        <div class="industry-card reveal delay-1">
-          <div class="industry-icon">✈️</div>
-          <div class="industry-name">Aerospace & Precision</div>
-          <div class="industry-desc">Hi-tech, precision and aerospace engineering equipment moves handled with exact care.</div>
-        </div>
-        <div class="industry-card reveal delay-2">
-          <div class="industry-icon">⚡</div>
-          <div class="industry-name">Electrical & Mechanical</div>
-          <div class="industry-desc">HVAC, electrical and mechanical plant installations and relocations across the UK.</div>
-        </div>
-        <div class="industry-card reveal delay-3">
-          <div class="industry-icon">🍽️</div>
-          <div class="industry-name">Food & Beverage</div>
-          <div class="industry-desc">Complete food production facility moves, line by line, on time and within budget.</div>
-        </div>
-        <div class="industry-card reveal delay-4">
-          <div class="industry-icon">💊</div>
-          <div class="industry-name">Pharmaceutical</div>
-          <div class="industry-desc">Sensitive pharmaceutical and medical equipment transported to the highest standards.</div>
-        </div>
-        <div class="industry-card reveal delay-1">
-          <div class="industry-icon">💻</div>
-          <div class="industry-name">Electronics & Plastics</div>
-          <div class="industry-desc">Hi-tech electronic and plastics manufacturing equipment moved globally.</div>
-        </div>
-        <div class="industry-card reveal delay-2">
-          <div class="industry-icon">🎨</div>
-          <div class="industry-name">Arts & Culture</div>
-          <div class="industry-desc">Notable sculptures and works of art transported with white glove precision.</div>
-        </div>
-        <div class="industry-card reveal delay-3">
-          <div class="industry-icon">🏗️</div>
-          <div class="industry-name">Construction & Civil</div>
-          <div class="industry-desc">Plant, tracked and wheeled equipment transported via semi low and extendable trailers.</div>
-        </div>
-        <div class="industry-card reveal delay-4">
-          <div class="industry-icon">🌍</div>
-          <div class="industry-name">International Projects</div>
-          <div class="industry-desc">Cross-border European operations with full customs compliance and documentation.</div>
-        </div>
+      <div class="cf-f"><label>Company</label><input type="text" placeholder="Your Company Ltd" /></div>
+      <div class="cf-row">
+        <div class="cf-f"><label>Email</label><input type="email" placeholder="john@company.com" required /></div>
+        <div class="cf-f"><label>Phone</label><input type="tel" placeholder="+44 7700 000000" /></div>
+      </div>
+      <div class="cf-f">
+        <label>Service Required</label>
+        <select>
+          <option>Heavy Transport</option><option>Crane &amp; Lifting</option><option>Machinery Installation</option>
+          <option>Warehousing &amp; Export Packing</option><option>Special Projects &mdash; Art Transport</option>
+          <option>European Logistics</option><option>Complete Facility Relocation</option><option>Other</option>
+        </select>
+      </div>
+      <div class="cf-f"><label>Project Details</label><textarea rows="5" placeholder="Describe your load, origin, destination, timescale and any special requirements..."></textarea></div>
+      <button type="submit" class="cf-sub">Send Enquiry &rarr;</button>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft">
+    <div class="ft-top">
+      <div>
+        <div class="ft-logo">Charles <em>Russell</em> Transport Group</div>
+        <div class="ft-sub">Heavy Lifting &middot; Handling &middot; Transport &middot; Est. 1968 &middot; Gloucester, England</div>
+      </div>
+      <div class="ft-nav">
+        <a href="#about">About</a><a href="#services">Services</a><a href="#fleet">Fleet</a>
+        <a href="#sectors">Sectors</a><a href="#process">Process</a><a href="#contact">Contact</a>
       </div>
     </div>
-  </section>
-
-  <!-- PROCESS -->
-  <section id="process">
-    <div class="process-inner">
-      <div class="reveal" style="text-align:center;">
-        <p class="section-label">How We Work</p>
-        <h2 class="section-title">OUR PROCESS</h2>
-        <p class="section-sub" style="margin:16px auto 0;text-align:center;">Every project follows our proven 5-step protocol — ensuring your cargo arrives safely, on time, every time.</p>
-      </div>
-      <div class="process-steps">
-        <div class="process-step reveal delay-1">
-          <div class="step-num">01</div>
-          <h4 class="step-title">Initial Enquiry</h4>
-          <p class="step-desc">Contact our operations team with your project details — we respond fast.</p>
-        </div>
-        <div class="process-step reveal delay-2">
-          <div class="step-num">02</div>
-          <h4 class="step-title">Site Assessment</h4>
-          <p class="step-desc">A designated project manager visits your site to fully understand requirements.</p>
-        </div>
-        <div class="process-step reveal delay-3">
-          <div class="step-num">03</div>
-          <h4 class="step-title">Detailed Quote</h4>
-          <p class="step-desc">Comprehensive, itemised quotation with full SHEQ risk assessment and method statement.</p>
-        </div>
-        <div class="process-step reveal delay-4">
-          <div class="step-num">04</div>
-          <h4 class="step-title">Execution</h4>
-          <p class="step-desc">Our qualified on-site team executes the project safely, on schedule and within budget.</p>
-        </div>
-        <div class="process-step reveal delay-5">
-          <div class="step-num">05</div>
-          <h4 class="step-title">Project Sign-off</h4>
-          <p class="step-desc">Full completion report and follow-up to ensure your total satisfaction.</p>
-        </div>
-      </div>
+    <div class="ft-btm">
+      <span class="ft-copy">&copy; 2025 Charles Russell Transport Group Ltd &middot; All Rights Reserved</span>
+      <span class="ft-credit">Website concept by <a href="#">WDG Videography</a></span>
     </div>
-  </section>
+  </div>
+</footer>
 
-  <!-- CONTACT -->
-  <section id="contact">
-    <div class="contact-inner">
-      <div class="contact-info reveal-left">
-        <p class="section-label">Get In Touch</p>
-        <h2>LET'S MOVE<br><span style="color:var(--accent)">YOUR PROJECT</span><br>FORWARD</h2>
-        <p>Tell us about your project and our team will get back to you with a detailed quote — usually within 24 hours.</p>
-        <div class="contact-detail">
-          <div class="icon">📞</div>
-          <div class="info">
-            <strong>Phone</strong>
-            <span>+44 (0)1242 680378</span>
-          </div>
-        </div>
-        <div class="contact-detail">
-          <div class="icon">📧</div>
-          <div class="info">
-            <strong>Email</strong>
-            <span>ben.russell@russell-transport.com</span>
-          </div>
-        </div>
-        <div class="contact-detail">
-          <div class="icon">📍</div>
-          <div class="info">
-            <strong>Address</strong>
-            <span>Walton Hill Farm, Tewkesbury Road, Coombe Hill, Gloucester GL19 4BN</span>
-          </div>
-        </div>
-      </div>
-      <div class="reveal-right">
-        <form class="contact-form" onsubmit="handleSubmit(event)">
-          <div class="form-row">
-            <div class="form-group">
-              <label>First Name</label>
-              <input type="text" placeholder="John" />
-            </div>
-            <div class="form-group">
-              <label>Last Name</label>
-              <input type="text" placeholder="Smith" />
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Company</label>
-            <input type="text" placeholder="Your Company Ltd" />
-          </div>
-          <div class="form-group">
-            <label>Email</label>
-            <input type="email" placeholder="john@company.com" />
-          </div>
-          <div class="form-group">
-            <label>Service Required</label>
-            <select>
-              <option>Heavy Transport</option>
-              <option>Lifting & Handling</option>
-              <option>Facility Relocation</option>
-              <option>Art & Sculpture</option>
-              <option>Warehousing</option>
-              <option>Special Projects</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Project Details</label>
-            <textarea rows="4" placeholder="Tell us about your project, cargo weight, dimensions, locations and timeline..."></textarea>
-          </div>
-          <button type="submit" class="form-submit">Send Enquiry →</button>
-        </form>
-      </div>
-    </div>
-  </section>
+<script>
+  gsap.registerPlugin(ScrollTrigger);
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-inner">
-      <div class="footer-top">
-        <div class="footer-brand">
-          <div class="logo">CHARLES RUSSELL <span>TRANSPORT</span></div>
-          <p>Specialists in heavy lifting, handling and transport of machinery, precision equipment and works of art. Based in Gloucester, operating across the UK and Europe since 1968.</p>
-        </div>
-        <div class="footer-col">
-          <h4>Services</h4>
-          <ul>
-            <li><a href="#services">Heavy Transport</a></li>
-            <li><a href="#services">Lifting & Handling</a></li>
-            <li><a href="#services">Facility Relocation</a></li>
-            <li><a href="#services">Art & Sculpture</a></li>
-            <li><a href="#services">Warehousing</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Company</h4>
-          <ul>
-            <li><a href="#about">About Us</a></li>
-            <li><a href="#industries">Industries</a></li>
-            <li><a href="#process">Our Process</a></li>
-            <li><a href="#contact">Careers</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Contact</h4>
-          <ul>
-            <li><a href="tel:+441242680378">+44 (0)1242 680378</a></li>
-            <li><a href="mailto:ben.russell@russell-transport.com">Email Us</a></li>
-            <li><a href="#contact">Get a Quote</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <p>© 2024 Charles Russell Transport Group Ltd. All rights reserved.</p>
-        <p class="wdg-credit">Website concept by <span>WDG</span></p>
-      </div>
-    </div>
-  </footer>
+  // LOADER
+  let n=0;
+  const lN=document.getElementById('ldrN');
+  const ti=setInterval(()=>{n+=Math.floor(Math.random()*10)+3;if(n>=100){n=100;clearInterval(ti);}lN.innerHTML=n+'<span>%</span>';},55);
+  window.addEventListener('load',()=>{
+    setTimeout(()=>{
+      gsap.to('#loader',{opacity:0,duration:.7,delay:.2,onComplete:()=>{document.getElementById('loader').style.display='none';}});
+      gsap.to('#hTag',{opacity:1,y:0,duration:.7,delay:.5,ease:'power3.out'});
+      gsap.to('#hTitle',{opacity:1,y:0,duration:.9,delay:.75,ease:'power3.out'});
+      gsap.to('#hRow',{opacity:1,y:0,duration:.7,delay:1,ease:'power3.out'});
+    },1900);
+  });
 
-  <script>
-    // ── LOADER ──
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        document.getElementById('loader').classList.add('hidden');
-      }, 1800);
-    });
+  // CURSOR
+  const c1=document.getElementById('cur'),c2=document.getElementById('cur2');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;c1.style.left=mx+'px';c1.style.top=my+'px';});
+  (function loop(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;c2.style.left=rx+'px';c2.style.top=ry+'px';requestAnimationFrame(loop);})();
+  document.querySelectorAll('a,button,.svc-row,.sec-cell,.num-c').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{c2.style.transform='translate(-50%,-50%) scale(2.2)';c2.style.borderColor='rgba(229,92,0,.7)';});
+    el.addEventListener('mouseleave',()=>{c2.style.transform='translate(-50%,-50%) scale(1)';c2.style.borderColor='rgba(229,92,0,.4)';});
+  });
 
-    // ── NAV SCROLL ──
-    const navbar = document.getElementById('navbar');
-    window.addEventListener('scroll', () => {
-      navbar.classList.toggle('scrolled', window.scrollY > 60);
-    });
+  // NAV
+  window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('pinned',scrollY>60));
 
-    // ── CUSTOM CURSOR ──
-    const cursor = document.getElementById('cursor');
-    const follower = document.getElementById('cursorFollower');
-    let mouseX = 0, mouseY = 0, followerX = 0, followerY = 0;
-    document.addEventListener('mousemove', e => {
-      mouseX = e.clientX; mouseY = e.clientY;
-      cursor.style.left = mouseX - 4 + 'px';
-      cursor.style.top = mouseY - 4 + 'px';
-    });
-    function animateFollower() {
-      followerX += (mouseX - followerX) * 0.12;
-      followerY += (mouseY - followerY) * 0.12;
-      follower.style.left = followerX - 18 + 'px';
-      follower.style.top = followerY - 18 + 'px';
-      requestAnimationFrame(animateFollower);
-    }
-    animateFollower();
-    document.querySelectorAll('a, button, .service-card, .industry-card').forEach(el => {
-      el.addEventListener('mouseenter', () => {
-        cursor.style.transform = 'scale(2.5)';
-        follower.style.transform = 'scale(1.5)';
-        follower.style.borderColor = 'rgba(232,160,32,0.8)';
-      });
-      el.addEventListener('mouseleave', () => {
-        cursor.style.transform = 'scale(1)';
-        follower.style.transform = 'scale(1)';
-        follower.style.borderColor = 'rgba(232,160,32,0.4)';
-      });
-    });
+  // HERO PARALLAX
+  gsap.to('#hBg',{yPercent:22,ease:'none',scrollTrigger:{trigger:'#hero',start:'top top',end:'bottom top',scrub:true}});
 
-    // ── PARTICLES ──
-    const canvas = document.getElementById('particles-canvas');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-    class Particle {
-      constructor() { this.reset(); }
-      reset() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 1.5 + 0.5;
-        this.speedX = (Math.random() - 0.5) * 0.4;
-        this.speedY = -Math.random() * 0.6 - 0.2;
-        this.opacity = Math.random() * 0.4 + 0.1;
-      }
-      update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        if (this.y < -10) this.reset();
-      }
-      draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(232, 160, 32, ${this.opacity})`;
-        ctx.fill();
-      }
-    }
-    for (let i = 0; i < 80; i++) particles.push(new Particle());
-    function animateParticles() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach(p => { p.update(); p.draw(); });
-      requestAnimationFrame(animateParticles);
-    }
-    animateParticles();
+  // SERVICE ROW GSAP hover
+  document.querySelectorAll('.svc-row').forEach(r=>{
+    r.addEventListener('mouseenter',()=>gsap.to(r,{paddingTop:42,paddingBottom:42,duration:.3,ease:'power2.out'}));
+    r.addEventListener('mouseleave',()=>gsap.to(r,{paddingTop:34,paddingBottom:34,duration:.3,ease:'power2.out'}));
+  });
 
-    // ── SCROLL REVEAL ──
-    const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('revealed');
-        }
-      });
-    }, { threshold: 0.15 });
-    revealEls.forEach(el => observer.observe(el));
+  // SCROLL REVEAL
+  const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on');}),{threshold:.08});
+  document.querySelectorAll('.rv,.rl').forEach(el=>obs.observe(el));
 
-    // ── COUNT UP ──
-    const countEls = document.querySelectorAll('[data-count]');
-    const countObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const el = entry.target;
-          const target = parseInt(el.dataset.count);
-          let current = 0;
-          const increment = target / 60;
-          const timer = setInterval(() => {
-            current += increment;
-            if (current >= target) { current = target; clearInterval(timer); }
-            el.textContent = Math.floor(current) + (el.dataset.suffix || '');
-          }, 16);
-          countObserver.unobserve(el);
-        }
-      });
-    }, { threshold: 0.5 });
-    countEls.forEach(el => countObserver.observe(el));
+  // FORM
+  function subForm(e){e.preventDefault();const b=e.target.querySelector('.cf-sub');b.textContent='Enquiry Sent \u2713';b.style.background='#1a5c2e';}
 
-    // ── FORM SUBMIT ──
-    function handleSubmit(e) {
-      e.preventDefault();
-      const btn = e.target.querySelector('.form-submit');
-      btn.textContent = '✓ Enquiry Sent!';
-      btn.style.background = '#2ecc71';
-      setTimeout(() => {
-        btn.textContent = 'Send Enquiry →';
-        btn.style.background = '';
-        e.target.reset();
-      }, 3000);
-    }
-
-    // ── HAMBURGER ──
-    function toggleMenu() {
-      const links = document.querySelector('.nav-links');
-      links.style.display = links.style.display === 'flex' ? 'none' : 'flex';
-      links.style.flexDirection = 'column';
-      links.style.position = 'absolute';
-      links.style.top = '70px';
-      links.style.right = '30px';
-      links.style.background = 'rgba(10,10,10,0.98)';
-      links.style.padding = '20px 30px';
-      links.style.border = '1px solid #222';
-    }
-
-    // ── PARALLAX HERO TEXT ──
-    window.addEventListener('scroll', () => {
-      const heroContent = document.querySelector('.hero-content');
-      if (heroContent) {
-        const scrolled = window.scrollY;
-        heroContent.style.transform = `translateY(${scrolled * 0.3}px)`;
-        heroContent.style.opacity = 1 - scrolled / 600;
-      }
-    });
-  </script>
+  // MOBILE NAV
+  function mobNav(){
+    const ul=document.querySelector('.nav-ul');
+    const open=ul.style.display==='flex';
+    ul.style.cssText=open?'':'display:flex;flex-direction:column;position:fixed;top:56px;left:0;right:0;background:rgba(9,9,9,.98);padding:22px;gap:18px;border-bottom:1px solid #1c1c1c;z-index:999;';
+  }
+</script>
 </body>
 </html>
