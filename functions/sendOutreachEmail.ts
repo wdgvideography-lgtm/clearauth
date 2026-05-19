@@ -11,7 +11,6 @@ Deno.serve(async (req) => {
       return Response.json({ error: "lead_id is required" }, { status: 400 });
     }
 
-    // Get the lead
     const lead = await base44.asServiceRole.entities.Lead.get(lead_id);
     if (!lead) {
       return Response.json({ error: "Lead not found" }, { status: 404 });
@@ -21,12 +20,10 @@ Deno.serve(async (req) => {
       return Response.json({ error: "Lead has no email address" }, { status: 400 });
     }
 
-    // Get Gmail access token
     const { accessToken } = await base44.asServiceRole.connectors.getConnection("gmail");
 
-    // Determine which step to send
     const sentEmails = await base44.asServiceRole.entities.OutreachEmail.filter({ lead_id });
-    const nextStep = (sentEmails?.length || 0) + 1;
+    const nextStep = (sentEmails?.length ?? 0) + 1;
 
     if (nextStep > 3) {
       return Response.json({ message: "Sequence complete for this lead" }, { status: 200 });
@@ -38,22 +35,73 @@ Deno.serve(async (req) => {
 
     const sequences: Record<number, { subject: string; body: string }> = {
       1: {
-        subject: `Your website deserves better, ${businessName}`,
-        body: `Hi ${contactName},\n\nI came across ${businessName} and I have to say — what you're doing is impressive. But I noticed your website isn't quite doing your business justice.\n\nAt WDG, we help local businesses like yours get a complete digital upgrade — from a modern, high-converting website to professional videography and full social media management.\n\nWe've helped businesses in ${location} go from invisible online to fully booked.\n\nWould you be open to a quick 15-minute call this week to see if we'd be a good fit?\n\nBest,\nWDG Videography & Marketing\nassistant.wdg@gmail.com`,
+        subject: `We want to run ${businessName}'s entire marketing`,
+        body: `Hi ${contactName},
+
+I came across ${businessName} and honestly — the work you're doing deserves a much bigger audience.
+
+My name's Will from WDG. We're a full-service marketing agency that takes over the entire marketing operation for local businesses like yours. Not just a website. Not just a few social posts. Everything.
+
+Here's what that looks like in practice:
+
+— A completely rebuilt, modern website designed to convert visitors into customers
+— Full social media management across Instagram, Facebook, TikTok and more — daily content, community engagement, growth strategy
+— Professional videography — brand films, product showcases, behind-the-scenes content
+— YouTube brand documentaries — long-form films that tell your story and rank on search for years
+— Ongoing strategy and reporting so you always know what's working
+
+The businesses we work with don't think about their marketing anymore. That's our job.
+
+I'd love to show you what a full marketing takeover could look like for ${businessName} specifically. Would you be open to a 20-minute call this week?
+
+Best,
+Will
+WDG Videography & Marketing
+assistant.wdg@gmail.com`,
       },
       2: {
-        subject: `Re: Your website deserves better, ${businessName}`,
-        body: `Hi ${contactName},\n\nJust wanted to bump this up in case it got buried!\n\nA lot of the businesses we work with came to us with a website that was costing them customers without them even knowing it. We redesign, reshoot, and manage everything so you don't have to.\n\nHappy to show you a few examples of what we've done for similar businesses in ${location}.\n\nWorth a quick chat?\n\nBest,\nWDG Videography & Marketing\nassistant.wdg@gmail.com`,
+        subject: `Re: Running ${businessName}'s marketing`,
+        body: `Hi ${contactName},
+
+Just following up in case my last message got buried.
+
+To give you a clearer picture of what we do — we recently worked with a local business similar to ${businessName}. Within 90 days they had a new website live, a consistent social media presence building real followers, and a brand documentary on YouTube that's still bringing them in new customers today.
+
+That's what we mean when we say full-service. We don't hand you a website and disappear. We sit alongside your business and manage every part of how the world sees you online.
+
+If you've ever thought "we really need to sort out our marketing" — that's exactly the conversation we'd love to have.
+
+Fancy a quick call this week? I can walk you through what we'd do specifically for ${businessName}.
+
+Best,
+Will
+WDG Videography & Marketing
+assistant.wdg@gmail.com`,
       },
       3: {
-        subject: `Last note from WDG`,
-        body: `Hi ${contactName},\n\nI'll keep this short — I know you're busy.\n\nWe specialize in helping local businesses get a website and online presence that actually works. If now isn't the right time, no worries at all. But if you ever want to explore what a full digital upgrade could look like for ${businessName}, we'd love to chat.\n\nFeel free to reply anytime.\n\nAll the best,\nWDG Videography & Marketing\nassistant.wdg@gmail.com`,
+        subject: `Last one from WDG — full marketing takeover for ${businessName}`,
+        body: `Hi ${contactName},
+
+I'll make this my last message — I don't want to clog up your inbox.
+
+But I did want to leave you with this:
+
+Most businesses in ${location} are invisible online. They have a patchy social media presence, a website that hasn't been touched in years, and no video content at all. Their competitors are quietly taking their customers.
+
+We fix all of that — website, social media, photography, videography, YouTube documentaries — completely managed by us so you can focus on running your business.
+
+If that's ever something ${businessName} wants to explore, just reply to this email and we'll pick it up from there. No pressure, no pitch call until you're ready.
+
+Wishing you a great week.
+
+Will
+WDG Videography & Marketing
+assistant.wdg@gmail.com`,
       },
     };
 
     const email = sequences[nextStep];
 
-    // Build RFC 2822 MIME message
     const mimeMessage = [
       `From: WDG Videography <assistant.wdg@gmail.com>`,
       `To: ${lead.email}`,
@@ -86,7 +134,6 @@ Deno.serve(async (req) => {
       return Response.json({ error: err }, { status: 500 });
     }
 
-    // Log the sent email
     await base44.asServiceRole.entities.OutreachEmail.create({
       lead_id,
       subject: email.subject,
@@ -96,12 +143,10 @@ Deno.serve(async (req) => {
       sent_at: new Date().toISOString(),
     });
 
-    // Update lead status and follow-up date
-    const daysUntilNextFollowup = nextStep === 1 ? 4 : 6;
     await base44.asServiceRole.entities.Lead.update(lead_id, {
       status: "Contacted",
       last_contacted: new Date().toISOString().split("T")[0],
-      next_followup: new Date(Date.now() + daysUntilNextFollowup * 86400000).toISOString().split("T")[0],
+      next_followup: new Date(Date.now() + (nextStep === 1 ? 4 : 6) * 86400000).toISOString().split("T")[0],
     });
 
     return Response.json({ success: true, step: nextStep, sent_to: lead.email });

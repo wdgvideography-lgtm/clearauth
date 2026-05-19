@@ -1,25 +1,35 @@
 # WDG Videography — Cold Outreach Email Sequences
 
 ## Sender: assistant.wdg@gmail.com
+## Positioning: Full-service marketing management partner
 
 ---
 
 ## Step 1 — Initial Outreach (Day 1)
 
-**Subject:** Your website deserves better, [Business Name]
+**Subject:** We want to run [Business Name]'s entire marketing
 
 **Body:**
 Hi [Contact Name],
 
-I came across [Business Name] and I have to say — what you're doing is impressive. But I noticed your website isn't quite doing your business justice.
+I came across [Business Name] and honestly — the work you're doing deserves a much bigger audience.
 
-At WDG, we help local businesses like yours get a complete digital upgrade — from a modern, high-converting website to professional videography and full social media management.
+My name's [Your Name] from WDG. We're a full-service marketing agency that takes over the entire marketing operation for local businesses like yours. Not just a website. Not just a few social posts. Everything.
 
-We've helped businesses in [Location] go from invisible online to fully booked.
+Here's what that looks like in practice:
 
-Would you be open to a quick 15-minute call this week to see if we'd be a good fit?
+— A completely rebuilt, modern website designed to convert visitors into customers
+— Full social media management across Instagram, Facebook, TikTok and more — daily content, community engagement, growth strategy
+— Professional videography — brand films, product showcases, behind-the-scenes content
+— YouTube brand documentaries — long-form films that tell your story and rank on search for years
+— Ongoing strategy and reporting so you always know what's working
+
+The businesses we work with don't think about their marketing anymore. That's our job.
+
+I'd love to show you what a full marketing takeover could look like for [Business Name] specifically. Would you be open to a 20-minute call this week?
 
 Best,
+[Your Name]
 WDG Videography & Marketing
 assistant.wdg@gmail.com
 
@@ -27,37 +37,47 @@ assistant.wdg@gmail.com
 
 ## Step 2 — Follow Up (Day 4)
 
-**Subject:** Re: Your website deserves better, [Business Name]
+**Subject:** Re: Running [Business Name]'s marketing
 
 **Body:**
 Hi [Contact Name],
 
-Just wanted to bump this up in case it got buried!
+Just following up in case my last message got buried.
 
-A lot of the businesses we work with came to us with a website that was costing them customers without them even knowing it. We redesign, reshoot, and manage everything so you don't have to.
+To give you a clearer picture of what we do — we recently worked with a local business similar to [Business Name]. Within 90 days they had a new website live, a consistent social media presence building real followers, and a brand documentary on YouTube that's still bringing them in new customers today.
 
-Happy to show you a few examples of what we've done for similar businesses in [Location].
+That's what we mean when we say full-service. We don't hand you a website and disappear. We sit alongside your business and manage every part of how the world sees you online.
 
-Worth a quick chat?
+If you've ever thought "we really need to sort out our marketing" — that's exactly the conversation we'd love to have.
+
+Fancy a quick call this week? I can walk you through what we'd do specifically for [Business Name].
 
 Best,
+[Your Name]
 WDG Videography & Marketing
+assistant.wdg@gmail.com
 
 ---
 
 ## Step 3 — Final Follow Up (Day 10)
 
-**Subject:** Last note from WDG
+**Subject:** Last one from WDG — full marketing takeover for [Business Name]
 
 **Body:**
 Hi [Contact Name],
 
-I'll keep this short — I know you're busy.
+I'll make this my last message — I don't want to clog up your inbox.
 
-We specialize in helping local businesses get a website and online presence that actually works. If now isn't the right time, no worries at all. But if you ever want to explore what a full digital upgrade could look like for [Business Name], we'd love to chat.
+But I did want to leave you with this:
 
-Feel free to reply anytime.
+Most businesses in [Location] are invisible online. They have a patchy social media presence, a website that hasn't been touched in years, and no video content at all. Their competitors are quietly taking their customers.
 
-All the best,
+We fix all of that — website, social media, photography, videography, YouTube documentaries — completely managed by us so you can focus on running your business.
+
+If that's ever something [Business Name] wants to explore, just reply to this email and we'll pick it up from there. No pressure, no pitch call until you're ready.
+
+Wishing you a great week.
+
+[Your Name]
 WDG Videography & Marketing
 assistant.wdg@gmail.com
