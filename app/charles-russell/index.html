@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Charles Russell Transport Group</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --orange: #E85B04;
+      --orange2: #FF7A2F;
+      --dark: #0D0D0D;
+      --darker: #080808;
+      --card: #141414;
+      --border: #1f1f1f;
+      --white: #FFFFFF;
+      --grey: #888;
+      --light: #CCCCCC;
+      --green: #2A5C3F;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--darker);
+      color: var(--white);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* CUSTOM CURSOR */
+    .cursor {
+      position: fixed;
+      width: 12px; height: 12px;
+      background: var(--orange);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99999;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s, height 0.2s, opacity 0.2s;
+    }
+    .cursor-follower {
+      position: fixed;
+      width: 36px; height: 36px;
+      border: 1px solid rgba(232, 91, 4, 0.5);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99998;
+      transform: translate(-50%, -50%);
+      transition: all 0.12s ease;
+    }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: var(--darker); }
+    ::-webkit-scrollbar-thumb { background: var(--orange); }
+
+    /* LOADER */
+    #loader {
+      position: fixed; inset: 0;
+      background: var(--darker);
+      z-index: 99990;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 32px;
+    }
+    #loader.out {
+      animation: loaderOut 0.8s ease forwards;
+    }
+    @keyframes loaderOut {
+      to { opacity: 0; visibility: hidden; }
+    }
+    .loader-line {
+      width: 1px; height: 80px;
+      background: var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .loader-line::after {
+      content: '';
+      position: absolute; top: -100%; left: 0;
+      width: 100%; height: 100%;
+      background: var(--orange);
+      animation: lineDown 1.2s ease 0.3s forwards;
+    }
+    @keyframes lineDown { to { top: 100%; } }
+    .loader-text {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(1.8rem, 5vw, 3.5rem);
+      font-weight: 900;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--white);
+      overflow: hidden;
+    }
+    .loader-text span {
+      display: inline-block;
+      animation: charUp 0.6s ease forwards;
+      opacity: 0;
+      transform: translateY(100%);
+    }
+    .loader-text span:nth-child(1){animation-delay:0.4s}
+    .loader-text span:nth-child(2){animation-delay:0.5s}
+    .loader-text span:nth-child(3){animation-delay:0.6s}
+    .loader-text span:nth-child(4){animation-delay:0.7s}
+    .loader-text span:nth-child(5){animation-delay:0.8s}
+    .loader-text span:nth-child(6){animation-delay:0.9s}
+    .loader-text span:nth-child(7){animation-delay:1.0s}
+    @keyframes charUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .loader-sub {
+      font-size: 0.7rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--orange);
+      opacity: 0;
+      animation: fadeIn 0.6s ease 1.4s forwards;
+    }
+    @keyframes fadeIn { to { opacity: 1; } }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 28px 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: all 0.4s ease;
+    }
+    nav.scrolled {
+      padding: 16px 60px;
+      background: rgba(8,8,8,0.97);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 900;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--white);
+    }
+    .nav-logo em { color: var(--orange); font-style: normal; }
+    .nav-links { display: flex; gap: 40px; list-style: none; }
+    .nav-links a {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--grey);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-cta {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--dark) !important;
+      background: var(--orange);
+      padding: 11px 28px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .nav-cta:hover { background: var(--orange2); transform: translateY(-1px); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: none; }
+    .hamburger span { width: 26px; height: 2px; background: var(--white); }
+
+    /* HERO */
+    #hero {
+      position: relative;
+      height: 100vh;
+      min-height: 700px;
+      overflow: hidden;
+      display: flex; align-items: flex-end;
+      padding-bottom: 120px;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background-image: url('https://media.base44.com/images/public/6a0c1534017166f536b1ac32/5abe4598b_generated_image.png');
+      background-size: cover;
+      background-position: center 40%;
+      transform: scale(1.08);
+      animation: heroZoom 12s ease forwards;
+    }
+    @keyframes heroZoom {
+      to { transform: scale(1.0); }
+    }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(8,8,8,0.3) 0%,
+        rgba(8,8,8,0.1) 30%,
+        rgba(8,8,8,0.7) 70%,
+        rgba(8,8,8,1) 100%
+      );
+    }
+    .hero-ticker {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--border);
+    }
+    .hero-ticker-fill {
+      height: 100%;
+      background: var(--orange);
+      animation: tickerFill 12s linear forwards;
+    }
+    @keyframes tickerFill { to { width: 100%; } }
+    .hero-content {
+      position: relative; z-index: 2;
+      padding: 0 60px;
+      max-width: 1400px;
+      width: 100%;
+    }
+    .hero-eyebrow {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: slideRight 0.7s ease 2s forwards;
+    }
+    @keyframes slideRight {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .hero-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(5rem, 14vw, 15rem);
+      font-weight: 900;
+      line-height: 0.88;
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+      color: var(--white);
+      opacity: 0;
+      animation: slideRight 0.7s ease 2.2s forwards;
+    }
+    .hero-title .block { display: block; }
+    .hero-title .orange { color: var(--orange); }
+    .hero-bottom {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-top: 32px;
+      flex-wrap: wrap;
+      gap: 24px;
+      opacity: 0;
+      animation: slideRight 0.7s ease 2.5s forwards;
+    }
+    .hero-desc {
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--light);
+      line-height: 1.8;
+      max-width: 480px;
+    }
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+    .btn-primary {
+      display: inline-block;
+      background: var(--orange);
+      color: var(--darker);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 16px 36px;
+      transition: all 0.25s;
+    }
+    .btn-primary:hover { background: var(--orange2); transform: translateY(-2px); }
+    .btn-ghost {
+      display: inline-block;
+      background: transparent;
+      color: var(--white);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 15px 36px;
+      border: 1px solid rgba(255,255,255,0.25);
+      transition: all 0.25s;
+    }
+    .btn-ghost:hover { border-color: var(--orange); color: var(--orange); transform: translateY(-2px); }
+
+    /* TRUCK SCROLL STRIP */
+    .truck-strip {
+      background: var(--orange);
+      padding: 0;
+      overflow: hidden;
+      position: relative;
+      height: 64px;
+      display: flex; align-items: center;
+    }
+    .truck-track {
+      display: flex;
+      gap: 60px;
+      animation: truckScroll 18s linear infinite;
+      white-space: nowrap;
+      align-items: center;
+    }
+    @keyframes truckScroll {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    .truck-item {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--darker);
+      display: flex; align-items: center; gap: 20px;
+      flex-shrink: 0;
+    }
+    .truck-dot { width: 6px; height: 6px; background: rgba(0,0,0,0.3); border-radius: 50%; }
+
+    /* STATS */
+    .stats-section {
+      padding: 80px 60px;
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+      background: var(--border);
+    }
+    .stat-box {
+      background: var(--card);
+      padding: 48px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-box::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0%; height: 2px;
+      background: var(--orange);
+      transition: width 0.6s ease;
+    }
+    .stat-box:hover::before { width: 100%; }
+    .stat-num {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(3rem, 5vw, 5rem);
+      font-weight: 900;
+      color: var(--orange);
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+    .stat-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-top: 10px;
+    }
+
+    /* PARALLAX SECTIONS */
+    .parallax-section {
+      position: relative;
+      height: 80vh;
+      min-height: 550px;
+      overflow: hidden;
+      display: flex; align-items: center;
+    }
+    .parallax-bg {
+      position: absolute; inset: -20%;
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+    .parallax-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to right, rgba(8,8,8,0.95) 40%, rgba(8,8,8,0.3) 100%);
+    }
+    .parallax-content {
+      position: relative; z-index: 2;
+      padding: 0 60px;
+      max-width: 680px;
+    }
+
+    /* SERVICES */
+    #services {
+      padding: 120px 60px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .section-eyebrow {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 16px;
+    }
+    .section-heading {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(3rem, 6vw, 7rem);
+      font-weight: 900;
+      line-height: 0.92;
+      text-transform: uppercase;
+      letter-spacing: -0.01em;
+    }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background: var(--border);
+      margin-top: 60px;
+    }
+    .service-card {
+      background: var(--card);
+      padding: 48px 40px;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s;
+    }
+    .service-card:hover { background: #1a1a1a; }
+    .service-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 0%;
+      background: var(--orange);
+      transition: height 0.4s ease;
+    }
+    .service-card:hover::after { height: 100%; }
+    .service-num {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 4rem;
+      font-weight: 900;
+      color: var(--border);
+      line-height: 1;
+      margin-bottom: 24px;
+      transition: color 0.3s;
+    }
+    .service-card:hover .service-num { color: rgba(232,91,4,0.15); }
+    .service-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .service-desc {
+      font-size: 0.88rem;
+      color: var(--grey);
+      line-height: 1.8;
+    }
+
+    /* FLEET SHOWCASE */
+    #fleet {
+      padding: 120px 0;
+      overflow: hidden;
+    }
+    .fleet-header {
+      padding: 0 60px;
+      margin-bottom: 60px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      max-width: 1400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .fleet-scroll {
+      display: flex;
+      gap: 3px;
+      animation: fleetScroll 30s linear infinite;
+      width: max-content;
+    }
+    .fleet-scroll:hover { animation-play-state: paused; }
+    @keyframes fleetScroll {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    .fleet-img {
+      width: 480px;
+      height: 320px;
+      object-fit: cover;
+      flex-shrink: 0;
+      filter: brightness(0.85);
+      transition: filter 0.4s;
+    }
+    .fleet-img:hover { filter: brightness(1.0); }
+
+    /* PARALLAX 2 */
+    #parallax2 .parallax-bg {
+      background-image: url('https://media.base44.com/images/public/6a0c1534017166f536b1ac32/d099827d9_generated_image.png');
+    }
+    #parallax2 .parallax-overlay {
+      background: linear-gradient(to right, rgba(8,8,8,0.95) 40%, rgba(8,8,8,0.2) 100%);
+    }
+
+    /* WHY */
+    #why {
+      padding: 120px 60px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .why-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 100px;
+      align-items: center;
+      margin-top: 60px;
+    }
+    .why-img {
+      position: relative;
+      aspect-ratio: 4/3;
+      overflow: hidden;
+    }
+    .why-img img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+    .why-img:hover img { transform: scale(1.04); }
+    .why-img::before {
+      content: '';
+      position: absolute;
+      top: -12px; left: -12px;
+      width: 80px; height: 80px;
+      border-top: 3px solid var(--orange);
+      border-left: 3px solid var(--orange);
+      z-index: 2;
+    }
+    .why-img::after {
+      content: '';
+      position: absolute;
+      bottom: -12px; right: -12px;
+      width: 80px; height: 80px;
+      border-bottom: 3px solid var(--orange);
+      border-right: 3px solid var(--orange);
+      z-index: 2;
+    }
+    .why-points { display: flex; flex-direction: column; gap: 32px; }
+    .why-point {
+      display: flex; gap: 24px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--border);
+    }
+    .why-point:last-child { border-bottom: none; }
+    .why-point-num {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: var(--orange);
+      flex-shrink: 0;
+      width: 32px;
+      margin-top: 2px;
+    }
+    .why-point-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .why-point-desc {
+      font-size: 0.88rem;
+      color: var(--grey);
+      line-height: 1.8;
+    }
+
+    /* PARALLAX 3 */
+    #parallax3 .parallax-bg {
+      background-image: url('https://media.base44.com/images/public/6a0c1534017166f536b1ac32/4a5a8fd81_generated_image.png');
+    }
+
+    /* CONTACT */
+    #contact {
+      padding: 120px 60px;
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 100px;
+      align-items: start;
+    }
+    .contact-info { }
+    .contact-detail {
+      display: flex; gap: 20px;
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .contact-detail:first-of-type { border-top: 1px solid var(--border); margin-top: 40px; }
+    .contact-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--orange);
+      width: 80px;
+      flex-shrink: 0;
+      padding-top: 2px;
+    }
+    .contact-val {
+      font-size: 0.92rem;
+      color: var(--light);
+      line-height: 1.6;
+    }
+    .contact-form { display: flex; flex-direction: column; gap: 16px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-field {
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .form-field label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--grey);
+    }
+    .form-field input,
+    .form-field textarea,
+    .form-field select {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--white);
+      padding: 14px 18px;
+      font-size: 0.88rem;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color 0.2s;
+      resize: none;
+    }
+    .form-field input:focus,
+    .form-field textarea:focus,
+    .form-field select:focus {
+      border-color: var(--orange);
+    }
+    .form-field select option { background: var(--card); }
+    .form-submit {
+      background: var(--orange);
+      color: var(--darker);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 18px 40px;
+      border: none;
+      cursor: none;
+      transition: all 0.25s;
+      align-self: flex-start;
+    }
+    .form-submit:hover { background: var(--orange2); transform: translateY(-2px); }
+
+    /* FOOTER */
+    footer {
+      background: var(--card);
+      border-top: 1px solid var(--border);
+      padding: 60px;
+    }
+    .footer-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+    .footer-logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 900;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--white);
+    }
+    .footer-logo em { color: var(--orange); font-style: normal; }
+    .footer-links { display: flex; gap: 32px; flex-wrap: wrap; }
+    .footer-links a {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--grey);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--white); }
+    .footer-credit {
+      font-size: 0.65rem;
+      color: var(--border);
+      letter-spacing: 0.1em;
+      width: 100%;
+      padding-top: 32px;
+      margin-top: 32px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .footer-credit a {
+      color: var(--orange);
+      text-decoration: none;
+    }
+
+    /* REVEAL ANIMATIONS */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-40px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .reveal-left.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* MOBILE */
+    @media (max-width: 900px) {
+      nav { padding: 20px 24px; }
+      nav.scrolled { padding: 14px 24px; }
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .hero-content { padding: 0 24px; }
+      .hero-title { font-size: clamp(3.5rem, 16vw, 8rem); }
+      .stats-section { grid-template-columns: 1fr 1fr; padding: 0; margin: 0; }
+      #services { padding: 80px 24px; }
+      .services-grid { grid-template-columns: 1fr; }
+      .fleet-header { padding: 0 24px; flex-direction: column; align-items: flex-start; gap: 24px; }
+      #why { padding: 80px 24px; }
+      .why-grid { grid-template-columns: 1fr; gap: 48px; }
+      #contact { padding: 80px 24px; grid-template-columns: 1fr; gap: 48px; }
+      .form-row { grid-template-columns: 1fr; }
+      footer { padding: 40px 24px; }
+      .parallax-content { padding: 0 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CURSOR -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-follower" id="cursorFollower"></div>
+
+  <!-- LOADER -->
+  <div id="loader">
+    <div class="loader-line"></div>
+    <div class="loader-text">
+      <span>R</span><span>U</span><span>S</span><span>S</span><span>E</span><span>L</span><span>L</span>
+    </div>
+    <div class="loader-sub">Est. Gloucestershire · Since 1969</div>
+  </div>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="#" class="nav-logo">Charles <em>Russell</em></a>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#fleet">Fleet</a></li>
+      <li><a href="#why">About</a></li>
+      <li><a href="#contact" class="nav-cta">Get a Quote</a></li>
+    </ul>
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-ticker"><div class="hero-ticker-fill" style="width:0%"></div></div>
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">Gloucestershire · United Kingdom · Est. 1969</div>
+      <h1 class="hero-title">
+        <span class="block">Heavy</span>
+        <span class="block orange">Haul.</span>
+        <span class="block">Done Right.</span>
+      </h1>
+      <div class="hero-bottom">
+        <p class="hero-desc">Specialists in heavy transport, complex lifting, and precision machinery installation. UK and mainland Europe — handled with meticulous care.</p>
+        <div class="hero-actions">
+          <a href="#contact" class="btn-primary">Request a Quote</a>
+          <a href="#services" class="btn-ghost">Our Services</a>
+        </div>
+      </div>
+    </div>
+    <div style="position:absolute;bottom:40px;left:60px;z-index:2;display:flex;flex-direction:column;align-items:center;gap:8px;opacity:0;animation:slideRight 0.7s ease 3s forwards">
+      <span style="font-size:0.6rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--grey)">Scroll</span>
+      <div style="width:1px;height:50px;background:linear-gradient(to bottom,var(--orange),transparent);animation:scrollPulse 2s ease-in-out infinite"></div>
+    </div>
+  </section>
+
+  <!-- TRUCK SCROLL STRIP -->
+  <div class="truck-strip">
+    <div class="truck-track">
+      <div class="truck-item"><div class="truck-dot"></div>Heavy Haulage</div>
+      <div class="truck-item"><div class="truck-dot"></div>Crane Lifts</div>
+      <div class="truck-item"><div class="truck-dot"></div>Machinery Installation</div>
+      <div class="truck-item"><div class="truck-dot"></div>European Logistics</div>
+      <div class="truck-item"><div class="truck-dot"></div>Oversized Loads</div>
+      <div class="truck-item"><div class="truck-dot"></div>STGO Haulage</div>
+      <div class="truck-item"><div class="truck-dot"></div>Scania Fleet</div>
+      <div class="truck-item"><div class="truck-dot"></div>Art & Sculpture Transport</div>
+      <!-- Duplicate for infinite scroll -->
+      <div class="truck-item"><div class="truck-dot"></div>Heavy Haulage</div>
+      <div class="truck-item"><div class="truck-dot"></div>Crane Lifts</div>
+      <div class="truck-item"><div class="truck-dot"></div>Machinery Installation</div>
+      <div class="truck-item"><div class="truck-dot"></div>European Logistics</div>
+      <div class="truck-item"><div class="truck-dot"></div>Oversized Loads</div>
+      <div class="truck-item"><div class="truck-dot"></div>STGO Haulage</div>
+      <div class="truck-item"><div class="truck-dot"></div>Scania Fleet</div>
+      <div class="truck-item"><div class="truck-dot"></div>Art & Sculpture Transport</div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div style="background:var(--darker);padding:0 60px">
+    <div class="stats-section reveal">
+      <div class="stat-box">
+        <div class="stat-num">50+</div>
+        <div class="stat-label">Years Operating</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">78T</div>
+        <div class="stat-label">Max Lift Capacity</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">EU</div>
+        <div class="stat-label">Wide Coverage</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">24/7</div>
+        <div class="stat-label">Operations</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PARALLAX 1 -->
+  <div class="parallax-section" style="margin-top:4px">
+    <div class="parallax-bg" style="background-image:url('https://media.base44.com/images/public/6a0c1534017166f536b1ac32/10ac1eaa0_generated_image.png')"></div>
+    <div class="parallax-overlay"></div>
+    <div class="parallax-content reveal-left">
+      <div class="section-eyebrow">Specialist Transport</div>
+      <h2 class="section-heading">No Load<br>Too Large.</h2>
+      <p style="margin-top:20px;font-size:0.95rem;color:var(--light);line-height:1.8;max-width:460px">From precision CNC machinery to high-value art installations — we move what others won't. Our STGO-certified fleet operates up to 78 tonnes with the infrastructure to match.</p>
+      <a href="#contact" class="btn-primary" style="margin-top:32px;display:inline-block">Discuss Your Load</a>
+    </div>
+  </div>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="section-eyebrow reveal">What We Do</div>
+    <h2 class="section-heading reveal">Our<br>Services</h2>
+    <div class="services-grid">
+      <div class="service-card reveal">
+        <div class="service-num">01</div>
+        <div class="service-title">Heavy Haulage</div>
+        <div class="service-desc">UK and European heavy transport up to 78 tonnes under STGO regulations. Oversized, wide loads, and abnormal indivisible loads handled with precision by our dedicated fleet of Scania tractor units and specialist trailers.</div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-num">02</div>
+        <div class="service-title">Crane & Lifting</div>
+        <div class="service-desc">Rear-mounted Fassi hydraulic cranes on purpose-built rigid chassis. Lifting capacities from 2 to 60 tonnes. We plan, engineer, and execute complex lifts with a multi-skilled workforce experienced across aerospace, motorsport, and precision engineering sectors.</div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-num">03</div>
+        <div class="service-title">Machinery Installation</div>
+        <div class="service-desc">End-to-end machinery relocation — from dismantling at origin to installation and commissioning on-site. Specialist forklifts, skates, and rollers. Our vans carry a full array of specialist equipment for every job, every time.</div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-num">04</div>
+        <div class="service-title">European Logistics</div>
+        <div class="service-desc">Regular routes across UK and mainland Europe. Low-height tractor units matched with Mega Euroliner trailers maximise internal loadspace within continental limits. Every truck carries convoi exceptionnel boards as standard.</div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-num">05</div>
+        <div class="service-title">Warehousing & Storage</div>
+        <div class="service-desc">Purpose-built warehouse facilities with overhead cranes and multiple access points. Ultra-reinforced concrete rated for point loads imposed by our 55-tonne Versa-Lift forklifts. Covered storage for all trailers and sensitive equipment.</div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-num">06</div>
+        <div class="service-title">Art & Specialist Cargo</div>
+        <div class="service-desc">Trusted by museums, galleries, and high-profile collectors. We've safely transported sculptures, fine art installations, and irreplaceable pieces across Europe. Immaculate presentation and obsessive attention to load security — every time.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FLEET SHOWCASE -->
+  <section id="fleet" style="padding:120px 0">
+    <div class="fleet-header">
+      <div>
+        <div class="section-eyebrow reveal">The Fleet</div>
+        <h2 class="section-heading reveal">Immaculate.<br>Every Mile.</h2>
+      </div>
+      <p class="reveal" style="max-width:400px;font-size:0.9rem;color:var(--grey);line-height:1.8">Almost exclusively Scania for decades. Every truck, trailer and lift truck painted in company livery. Every driver has his own dedicated equipment stock. That's the Russell standard.</p>
+    </div>
+    <div style="overflow:hidden">
+      <div class="fleet-scroll">
+        <img class="fleet-img" src="https://media.base44.com/images/public/6a0c1534017166f536b1ac32/5abe4598b_generated_image.png" alt="Fleet">
+        <img class="fleet-img" src="https://media.base44.com/images/public/6a0c1534017166f536b1ac32/10ac1eaa0_generated_image.png" alt="Oversized Load">
+        <img class="fleet-img" src="https://media.base44.com/images/public/6a0c1534017166f536b1ac32/d099827d9_generated_image.png" alt="Crane Truck">
+        <img class="fleet-img" src="https://media.base44.com/images/public/6a0c1534017166f536b1ac32/4a5a8fd81_generated_image.png" alt="Depot">
+        <img class="fleet-img" src="https://media.base44.com/images/public/6a0c1534017166f536b1ac32/5abe4598b_generated_image.png" alt="Fleet">
+        <img class="fleet-img" src="https://media.base44.com/images/public/6a0c1534017166f536b1ac32/10ac1eaa0_generated_image.png" alt="Oversized Load">
+        <img class="fleet-img" src="https://media.base44.com/images/public/6a0c1534017166f536b1ac32/d099827d9_generated_image.png" alt="Crane Truck">
+        <img class="fleet-img" src="https://media.base44.com/images/public/6a0c1534017166f536b1ac32/4a5a8fd81_generated_image.png" alt="Depot">
+      </div>
+    </div>
+  </section>
+
+  <!-- PARALLAX 2 -->
+  <div class="parallax-section" id="parallax2">
+    <div class="parallax-bg"></div>
+    <div class="parallax-overlay"></div>
+    <div class="parallax-content reveal-left">
+      <div class="section-eyebrow">Our Standard</div>
+      <h2 class="section-heading">Meticulous<br>By Nature.</h2>
+      <p style="margin-top:20px;font-size:0.95rem;color:var(--light);line-height:1.8;max-width:460px">"The company arrives on-site with an array of superbly presented trucks, cranes and heavy forklifts — every vehicle in company livery, every team member in branded workwear. It's difficult not to be impressed." — Commercial Motor</p>
+    </div>
+  </div>
+
+  <!-- WHY -->
+  <section id="why">
+    <div class="section-eyebrow reveal">Why Russell</div>
+    <h2 class="section-heading reveal">The Difference<br>Is In The Detail.</h2>
+    <div class="why-grid">
+      <div class="why-img reveal-left">
+        <img src="https://media.base44.com/images/public/6a0c1534017166f536b1ac32/4a5a8fd81_generated_image.png" alt="Russell Depot">
+      </div>
+      <div class="why-points">
+        <div class="why-point reveal">
+          <div class="why-point-num">01</div>
+          <div>
+            <div class="why-point-title">Dedicated Driver Equipment</div>
+            <div class="why-point-desc">Every driver has his own dedicated stock of lifting gear, straps, chains, sheets, and specialist tools. Assigned. Accounted for. Always ready.</div>
+          </div>
+        </div>
+        <div class="why-point reveal">
+          <div class="why-point-num">02</div>
+          <div>
+            <div class="why-point-title">Traditional Roping & Sheeting</div>
+            <div class="why-point-desc">Our drivers are among the finest practitioners of traditional load security in the country. Drum-tight, flap-free, fully protected — regardless of load shape or size.</div>
+          </div>
+        </div>
+        <div class="why-point reveal">
+          <div class="why-point-num">03</div>
+          <div>
+            <div class="why-point-title">Bespoke Engineering</div>
+            <div class="why-point-desc">We co-develop specialist trailer and crane configurations with manufacturers. When the job demands something that doesn't exist yet, we build it.</div>
+          </div>
+        </div>
+        <div class="why-point reveal">
+          <div class="why-point-num">04</div>
+          <div>
+            <div class="why-point-title">Trusted Across Industries</div>
+            <div class="why-point-desc">Aerospace, motorsport, precision engineering, fine art — sectors that demand the highest possible standards from their logistics partners. We deliver them.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PARALLAX 3 -->
+  <div class="parallax-section" id="parallax3">
+    <div class="parallax-bg"></div>
+    <div class="parallax-overlay" style="background:linear-gradient(to right,rgba(8,8,8,0.9) 30%,rgba(8,8,8,0.3) 100%)"></div>
+    <div class="parallax-content reveal-left">
+      <div class="section-eyebrow">Get In Touch</div>
+      <h2 class="section-heading">Ready to<br>Move?</h2>
+      <p style="margin-top:20px;font-size:0.95rem;color:var(--light);line-height:1.8;max-width:460px">Whether it's a routine European run or a complex multi-axle specialist project — we want to hear about it. Our team will assess your requirements and provide a tailored solution.</p>
+      <a href="#contact" class="btn-primary" style="margin-top:32px;display:inline-block">Start a Conversation</a>
+    </div>
+  </div>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="contact-info reveal-left">
+      <div class="section-eyebrow">Contact Us</div>
+      <h2 class="section-heading">Let's Talk<br>Logistics.</h2>
+      <p style="margin-top:20px;font-size:0.9rem;color:var(--grey);line-height:1.8">Based in Gloucestershire, operating across the UK and Europe. Our team are ready to handle enquiries of any scale.</p>
+      <div class="contact-detail">
+        <div class="contact-label">Base</div>
+        <div class="contact-val">Gloucestershire, England, UK</div>
+      </div>
+      <div class="contact-detail">
+        <div class="contact-label">Coverage</div>
+        <div class="contact-val">United Kingdom & Mainland Europe</div>
+      </div>
+      <div class="contact-detail">
+        <div class="contact-label">Specialist</div>
+        <div class="contact-val">Heavy Haulage · Crane Lifts · Machinery Installation · Abnormal Loads</div>
+      </div>
+      <div class="contact-detail">
+        <div class="contact-label">Fleet</div>
+        <div class="contact-val">Predominantly Scania — immaculately maintained</div>
+      </div>
+    </div>
+    <div class="reveal">
+      <form class="contact-form" onsubmit="handleSubmit(event)">
+        <div class="form-row">
+          <div class="form-field">
+            <label>First Name</label>
+            <input type="text" placeholder="John" required />
+          </div>
+          <div class="form-field">
+            <label>Last Name</label>
+            <input type="text" placeholder="Smith" required />
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Company</label>
+          <input type="text" placeholder="Company Name" />
+        </div>
+        <div class="form-field">
+          <label>Email</label>
+          <input type="email" placeholder="john@company.com" required />
+        </div>
+        <div class="form-field">
+          <label>Service Required</label>
+          <select>
+            <option>Heavy Haulage</option>
+            <option>Crane & Lifting</option>
+            <option>Machinery Installation</option>
+            <option>European Logistics</option>
+            <option>Warehousing & Storage</option>
+            <option>Art & Specialist Cargo</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Details</label>
+          <textarea rows="5" placeholder="Tell us about your load, origin, destination, and any special requirements..."></textarea>
+        </div>
+        <button type="submit" class="form-submit">Send Enquiry →</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">Charles <em>Russell</em> Transport</div>
+      <div class="footer-links">
+        <a href="#services">Services</a>
+        <a href="#fleet">Fleet</a>
+        <a href="#why">About</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <div class="footer-credit">
+        <span>© 2025 Charles Russell Transport Group Ltd · Gloucestershire · All Rights Reserved</span>
+        <span>Website concept by <a href="#">WDG Videography</a></span>
+      </div>
+    </div>
+  </footer>
+
+  <style>
+    @keyframes scrollPulse {
+      0%,100%{opacity:1;transform:scaleY(1)}50%{opacity:0.4;transform:scaleY(0.6)}
+    }
+  </style>
+
+  <script>
+    // LOADER
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('loader').classList.add('out');
+      }, 2200);
+    });
+
+    // CURSOR
+    const cursor = document.getElementById('cursor');
+    const follower = document.getElementById('cursorFollower');
+    let mx = 0, my = 0, fx = 0, fy = 0;
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.left = mx + 'px';
+      cursor.style.top = my + 'px';
+    });
+    function animateCursor() {
+      fx += (mx - fx) * 0.1;
+      fy += (my - fy) * 0.1;
+      follower.style.left = fx + 'px';
+      follower.style.top = fy + 'px';
+      requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
+
+    // NAV SCROLL
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 80);
+    });
+
+    // REVEAL ON SCROLL
+    const reveals = document.querySelectorAll('.reveal, .reveal-left');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => observer.observe(el));
+
+    // FORM
+    function handleSubmit(e) {
+      e.preventDefault();
+      const btn = e.target.querySelector('.form-submit');
+      btn.textContent = 'Enquiry Sent ✓';
+      btn.style.background = '#2A5C3F';
+    }
+
+    // MOBILE MENU
+    function toggleMenu() {
+      const links = document.querySelector('.nav-links');
+      links.style.display = links.style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    // COUNTER ANIMATION
+    function animateCounters() {
+      document.querySelectorAll('.stat-num').forEach(el => {
+        el.style.opacity = '1';
+      });
+    }
+    setTimeout(animateCounters, 2500);
+  </script>
+</body>
+</html>
