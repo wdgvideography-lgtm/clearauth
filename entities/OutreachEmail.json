@@ -1,0 +1,37 @@
+{
+  "type": "object",
+  "properties": {
+    "lead_id": {
+      "type": "string"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "body": {
+      "type": "string"
+    },
+    "sequence_step": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Scheduled",
+        "Sent",
+        "Opened",
+        "Replied",
+        "Bounced"
+      ]
+    },
+    "sent_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "scheduled_for": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [],
+  "name": "OutreachEmail"
+}

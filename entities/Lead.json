@@ -1,0 +1,83 @@
+{
+  "type": "object",
+  "properties": {
+    "business_name": {
+      "type": "string"
+    },
+    "contact_name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "website": {
+      "type": "string"
+    },
+    "industry": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "website_score": {
+      "type": "string",
+      "enum": [
+        "Very Outdated",
+        "Outdated",
+        "Needs Minor Updates",
+        "Good"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "New",
+        "Contacted",
+        "Followed Up",
+        "In Conversation",
+        "Proposal Sent",
+        "Closed Won",
+        "Closed Lost"
+      ]
+    },
+    "services_interested": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Website Redesign",
+          "Videography",
+          "Promotional Video",
+          "Social Media Management",
+          "Full Package"
+        ]
+      }
+    },
+    "last_contacted": {
+      "type": "string",
+      "format": "date"
+    },
+    "next_followup": {
+      "type": "string",
+      "format": "date"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "outreach_channel": {
+      "type": "string",
+      "enum": [
+        "Email",
+        "LinkedIn",
+        "Instagram",
+        "Referral",
+        "Other"
+      ]
+    }
+  },
+  "required": [],
+  "name": "Lead"
+}
