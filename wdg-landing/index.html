@@ -8,8 +8,98 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js">
+// HERO VIDEO ROTATION
+var _hCur=0,_hTimer=null,_hDur=8000;
+function goVid(idx){
+  var vids=document.querySelectorAll('#heroVidBg video');
+  var dots=document.querySelectorAll('.h-dot');
+  vids[_hCur].classList.remove('hv-active');
+  dots[_hCur].classList.remove('active');
+  _hCur=idx;
+  vids[_hCur].classList.add('hv-active');
+  dots[_hCur].classList.add('active');
+  _resetProg();
+  clearTimeout(_hTimer);
+  _hTimer=setTimeout(_nextVid,_hDur);
+}
+function _nextVid(){goVid((_hCur+1)%5);}
+function _resetProg(){
+  var f=document.getElementById('hProgF');
+  if(!f)return;
+  f.style.transition='none';f.style.width='0';
+  requestAnimationFrame(function(){requestAnimationFrame(function(){f.style.transition='width '+_hDur+'ms linear';f.style.width='100%';});});
+}
+// Start rotation after loader
+var _origInit=typeof initHero==='function'?initHero:null;
+function _startHero(){_resetProg();_hTimer=setTimeout(_nextVid,_hDur);}
+document.addEventListener('DOMContentLoaded',function(){setTimeout(_startHero,2000);});
+
+// LIGHTBOX
+function openLb(src){
+  var lb=document.getElementById('lightbox');
+  var v=document.getElementById('lbVideo');
+  v.src=src;v.play();
+  lb.style.display='flex';
+  document.body.style.overflow='hidden';
+}
+function closeLb(){
+  var lb=document.getElementById('lightbox');
+  var v=document.getElementById('lbVideo');
+  v.pause();v.src='';
+  lb.style.display='none';
+  document.body.style.overflow='';
+}
+document.getElementById('lightbox').addEventListener('click',function(e){if(e.target===this)closeLb();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLb();});
+
+</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js">
+// HERO VIDEO ROTATION
+var _hCur=0,_hTimer=null,_hDur=8000;
+function goVid(idx){
+  var vids=document.querySelectorAll('#heroVidBg video');
+  var dots=document.querySelectorAll('.h-dot');
+  vids[_hCur].classList.remove('hv-active');
+  dots[_hCur].classList.remove('active');
+  _hCur=idx;
+  vids[_hCur].classList.add('hv-active');
+  dots[_hCur].classList.add('active');
+  _resetProg();
+  clearTimeout(_hTimer);
+  _hTimer=setTimeout(_nextVid,_hDur);
+}
+function _nextVid(){goVid((_hCur+1)%5);}
+function _resetProg(){
+  var f=document.getElementById('hProgF');
+  if(!f)return;
+  f.style.transition='none';f.style.width='0';
+  requestAnimationFrame(function(){requestAnimationFrame(function(){f.style.transition='width '+_hDur+'ms linear';f.style.width='100%';});});
+}
+// Start rotation after loader
+var _origInit=typeof initHero==='function'?initHero:null;
+function _startHero(){_resetProg();_hTimer=setTimeout(_nextVid,_hDur);}
+document.addEventListener('DOMContentLoaded',function(){setTimeout(_startHero,2000);});
+
+// LIGHTBOX
+function openLb(src){
+  var lb=document.getElementById('lightbox');
+  var v=document.getElementById('lbVideo');
+  v.src=src;v.play();
+  lb.style.display='flex';
+  document.body.style.overflow='hidden';
+}
+function closeLb(){
+  var lb=document.getElementById('lightbox');
+  var v=document.getElementById('lbVideo');
+  v.pause();v.src='';
+  lb.style.display='none';
+  document.body.style.overflow='';
+}
+document.getElementById('lightbox').addEventListener('click',function(e){if(e.target===this)closeLb();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLb();});
+
+</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{
@@ -53,12 +143,16 @@
 
     /* HERO */
     #hero{position:relative;height:100vh;min-height:680px;display:flex;flex-direction:column;justify-content:flex-end;padding:0 60px 88px;overflow:hidden}
-    .h-bg{position:absolute;inset:0}
-    .h-bg img{width:100%;height:100%;object-fit:cover;object-position:center 28%;will-change:transform}
+    .h-vid-bg{position:absolute;inset:0;z-index:0}
+    .h-vid-bg video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.2s ease}
+    .h-vid-bg video.hv-active{opacity:1}
+    .h-dots{position:absolute;bottom:44px;left:60px;z-index:5;display:flex;gap:8px}
+    .h-dot{width:24px;height:2px;background:rgba(255,255,255,.22);border:none;padding:0;cursor:pointer;transition:background .3s,width .3s}
+    .h-dot.active{background:#E8A020;width:36px}
     .h-ov{position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,13,13,.5) 0%,rgba(13,13,13,.0) 22%,rgba(13,13,13,.62) 52%,rgba(13,13,13,.99) 100%),linear-gradient(90deg,rgba(13,13,13,.7) 0%,transparent 60%)}
     .h-grain{position:absolute;inset:0;opacity:.032;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px}
     .h-prog{position:absolute;top:0;left:0;right:0;height:1.5px;background:var(--line);z-index:3}
-    .h-prog-f{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));animation:prog 16s linear forwards}
+    .h-prog-f{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));width:0;transition:width linear}
     @keyframes prog{to{width:100%}}
     .h-loc{position:relative;z-index:2;font-size:.58rem;font-weight:600;letter-spacing:.5em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:12px;margin-bottom:20px;opacity:0}
     .h-loc::before,.h-loc::after{content:'';display:block;height:1px;width:22px;background:var(--gold)}
@@ -290,6 +384,14 @@
     .wa-ring{position:absolute;inset:-5px;border-radius:50%;border:2px solid rgba(37,211,102,.35);animation:wap 2.5s ease-in-out infinite}
     @keyframes wap{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.25);opacity:0}}
 
+
+    /* PORTFOLIO */
+    .pv{position:relative;aspect-ratio:9/16;overflow:hidden;background:#0a0a0a;cursor:pointer}
+    .pv:hover video{transform:scale(1.05)}
+    .pv-lbl{position:absolute;bottom:18px;left:18px;font-size:.6rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);opacity:0;transition:opacity .4s}
+    .pv:hover .pv-lbl{opacity:1}
+    @media(max-width:1024px){#portfolio{padding:80px 22px!important} #portfolio>div:first-child{margin:0 auto 40px!important} #portfolio>div:last-child{grid-template-columns:1fr 1fr!important}}
+    @media(max-width:580px){#portfolio>div:last-child{grid-template-columns:1fr!important}}
     /* REVEAL */
     .rv{opacity:0;transform:translateY(22px);transition:opacity .95s ease,transform .95s ease}
     .rv.on{opacity:1;transform:none}
@@ -436,8 +538,8 @@
 <!-- WORK / CLIENTS -->
 <section id="work">
   <div class="wi rl">
-    <div class="wi-wrap">
-      <img src="https://media.base44.com/images/public/6a0c1534017166f536b1ac32/8173ad935_generated_image.png" alt="WDG On Set"/>
+    <div class="wi-wrap" style="aspect-ratio:9/16;overflow:hidden">
+      <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;"><source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/9ccda9da2_b4daf6e81_video_843068428364743.mp4" type="video/mp4"/></video>
     </div>
     <div class="wi-lbl"><div class="wi-lbl-t">Real Clients. Real Impact.</div><div class="wi-lbl-s">Teddington's · Longhorn · Club One · Austin &amp; Earl</div></div>
   </div>
@@ -452,13 +554,55 @@
       <div class="cl-item rv d4"><div class="cl-dot"></div><div class="cl-name">Austin &amp; Earl Transport</div><div class="cl-type">Website Design</div></div>
       <div class="cl-item rv d5"><div class="cl-dot"></div><div class="cl-name">+ Many More Across the UK</div><div class="cl-type">Full Management</div></div>
     </div>
-    <a href="https://www.wdgvideography.com" class="btn-gold rv" style="margin-top:34px;display:inline-flex;align-items:center;gap:10px" target="_blank"><span>View Full Portfolio</span><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 6.5h11M6.5 1l5.5 5.5-5.5 5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    <a href="#portfolio" class="btn-gold rv" style="margin-top:34px;display:inline-flex;align-items:center;gap:10px"><span>Watch Our Work</span><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 6.5h11M6.5 1l5.5 5.5-5.5 5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
   </div>
 </section>
 
+<!-- PORTFOLIO SHOWREEL -->
+<section id="portfolio" style="padding:110px 60px;background:var(--bg2);border-top:1px solid var(--line)">
+  <div style="max-width:1500px;margin:0 auto 60px">
+    <div class="ey rv">Our Work</div>
+    <h2 class="st rv">The Proof Is<br><em>In the Footage.</em></h2>
+    <p class="bt rv" style="margin-top:14px;max-width:600px">Every frame below is real client work — shot, edited and delivered by WDG. This is what your business could look like.</p>
+  </div>
+  <div style="max-width:1500px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:2px">
+    <div class="pv rv" onclick="openLb('https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/42560c906_786e2c8a4_video_863129336157622.mp4')">
+      <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;transition:transform .6s ease"><source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/42560c906_786e2c8a4_video_863129336157622.mp4" type="video/mp4"/></video>
+      <div class="pv-lbl">Client Production</div>
+    </div>
+    <div class="pv rv d1" onclick="openLb('https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/db169c7e6_68ebb28ef_video_1310483361190446.mp4')">
+      <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;transition:transform .6s ease"><source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/db169c7e6_68ebb28ef_video_1310483361190446.mp4" type="video/mp4"/></video>
+      <div class="pv-lbl">Brand Film</div>
+    </div>
+    <div class="pv rv d2" onclick="openLb('https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/9ccda9da2_b4daf6e81_video_843068428364743.mp4')">
+      <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;transition:transform .6s ease"><source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/9ccda9da2_b4daf6e81_video_843068428364743.mp4" type="video/mp4"/></video>
+      <div class="pv-lbl">Cinematic Production</div>
+    </div>
+    <div class="pv rv d1" onclick="openLb('https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/34a842b0c_09baec3cb_video_1487018029783740.mp4')">
+      <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;transition:transform .6s ease"><source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/34a842b0c_09baec3cb_video_1487018029783740.mp4" type="video/mp4"/></video>
+      <div class="pv-lbl">Social Content</div>
+    </div>
+    <div class="pv rv d2" onclick="openLb('https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/46bef4ed1_3aa09d39f_video_26883404297979847.mp4')">
+      <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;transition:transform .6s ease"><source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/46bef4ed1_3aa09d39f_video_26883404297979847.mp4" type="video/mp4"/></video>
+      <div class="pv-lbl">Brand Story</div>
+    </div>
+    <div class="pv rv d3" style="background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:40px;cursor:default">
+      <div style="font-family:var(--serif);font-size:clamp(2rem,5vw,4rem);font-weight:300;color:var(--gold);text-align:center;line-height:1.1">Your<br><em>Business<br>Here.</em></div>
+      <div style="font-size:.72rem;color:var(--g);text-align:center;line-height:1.7;max-width:200px">This could be your brand film, your product launch, your story.</div>
+      <a href="#form-sec" class="btn-gold" style="font-size:.6rem;padding:12px 22px"><span>Let's Talk</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.95);align-items:center;justify-content:center">
+  <button onclick="closeLb()" style="position:absolute;top:24px;right:30px;background:none;border:none;color:#fff;font-size:2.2rem;cursor:pointer;opacity:.7;line-height:1">✕</button>
+  <video id="lbVideo" controls style="max-width:90vw;max-height:90vh"></video>
+</div>
+
 <!-- PARALLAX 1 -->
 <div class="px">
-  <div class="px-img" style="background-image:url('https://media.base44.com/images/public/6a0c1534017166f536b1ac32/8173ad935_generated_image.png')"></div>
+  <div style="position:absolute;inset:0;overflow:hidden"><video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover"><source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/42560c906_786e2c8a4_video_863129336157622.mp4" type="video/mp4"/></video></div>
   <div class="px-ov" style="background:linear-gradient(to right,rgba(13,13,13,.97) 36%,rgba(13,13,13,.08) 100%)"></div>
   <div class="px-body">
     <div class="ey rv">The Truth</div>
@@ -620,7 +764,7 @@
 
 <!-- PARALLAX 2 -->
 <div class="px">
-  <div class="px-img" style="background-image:url('https://media.base44.com/images/public/6a0c1534017166f536b1ac32/b2cfb30c7_generated_image.png')"></div>
+  <div style="position:absolute;inset:0;overflow:hidden"><video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover"><source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/34a842b0c_09baec3cb_video_1487018029783740.mp4" type="video/mp4"/></video></div>
   <div class="px-ov" style="background:linear-gradient(to right,rgba(13,13,13,.97) 34%,rgba(13,13,13,.08) 100%)"></div>
   <div class="px-body">
     <div class="ey rv">One Partner</div>
@@ -829,6 +973,51 @@
     const ul=document.querySelector('.nav-links');
     ul.style.cssText=mOpen?'display:flex;flex-direction:column;position:fixed;top:54px;left:0;right:0;background:rgba(13,13,13,.99);padding:24px;gap:18px;border-bottom:1px solid #1F1F1F;z-index:999;':'';
   }
+
+// HERO VIDEO ROTATION
+var _hCur=0,_hTimer=null,_hDur=8000;
+function goVid(idx){
+  var vids=document.querySelectorAll('#heroVidBg video');
+  var dots=document.querySelectorAll('.h-dot');
+  vids[_hCur].classList.remove('hv-active');
+  dots[_hCur].classList.remove('active');
+  _hCur=idx;
+  vids[_hCur].classList.add('hv-active');
+  dots[_hCur].classList.add('active');
+  _resetProg();
+  clearTimeout(_hTimer);
+  _hTimer=setTimeout(_nextVid,_hDur);
+}
+function _nextVid(){goVid((_hCur+1)%5);}
+function _resetProg(){
+  var f=document.getElementById('hProgF');
+  if(!f)return;
+  f.style.transition='none';f.style.width='0';
+  requestAnimationFrame(function(){requestAnimationFrame(function(){f.style.transition='width '+_hDur+'ms linear';f.style.width='100%';});});
+}
+// Start rotation after loader
+var _origInit=typeof initHero==='function'?initHero:null;
+function _startHero(){_resetProg();_hTimer=setTimeout(_nextVid,_hDur);}
+document.addEventListener('DOMContentLoaded',function(){setTimeout(_startHero,2000);});
+
+// LIGHTBOX
+function openLb(src){
+  var lb=document.getElementById('lightbox');
+  var v=document.getElementById('lbVideo');
+  v.src=src;v.play();
+  lb.style.display='flex';
+  document.body.style.overflow='hidden';
+}
+function closeLb(){
+  var lb=document.getElementById('lightbox');
+  var v=document.getElementById('lbVideo');
+  v.pause();v.src='';
+  lb.style.display='none';
+  document.body.style.overflow='';
+}
+document.getElementById('lightbox').addEventListener('click',function(e){if(e.target===this)closeLb();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLb();});
+
 </script>
 </body>
 </html>
