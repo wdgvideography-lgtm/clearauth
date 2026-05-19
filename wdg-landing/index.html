@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>WDG Videography | Full-Service Marketing Management · Cheltenham</title>
+  <meta name="description" content="We manage your entire marketing ecosystem — cinematic video, stunning websites & social media — so you dominate your market. Based in Cheltenham, serving the UK."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:ital,wght@0,200;0,300;0,400;0,500;0,600;1,200;1,300&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/SplitText.min.js"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--o:#FF5500;--o2:#FF7733;--og:linear-gradient(135deg,#FF5500,#FF9900);--bg:#060606;--s1:#0c0c0c;--s2:#101010;--line:#1a1a1a;--w:#fff;--g:#666;--sg:#999}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--w);font-family:'Inter',sans-serif;overflow-x:hidden;cursor:none}
+
+    /* CURSOR */
+    #dot{position:fixed;width:6px;height:6px;background:var(--o);border-radius:50%;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:transform .1s}
+    #ring{position:fixed;width:36px;height:36px;border:1px solid rgba(255,85,0,.35);border-radius:50%;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);transition:width .3s,height .3s,border-color .3s}
+    body.hovering #ring{width:60px;height:60px;border-color:rgba(255,85,0,.7)}
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar{width:2px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--o)}
+
+    /* LOADER */
+    #loader{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+    .ldr-word{font-family:'Bebas Neue',sans-serif;font-size:clamp(4rem,15vw,14rem);letter-spacing:.05em;line-height:1;color:var(--w);overflow:hidden;display:block}
+    .ldr-word span{display:block;transform:translateY(110%)}
+    .ldr-pct{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.2rem,3vw,2rem);color:var(--o);letter-spacing:.3em;margin-top:16px}
+    .ldr-line{width:min(320px,80vw);height:1px;background:var(--line);margin-top:16px;overflow:hidden;position:relative}
+    .ldr-fill{position:absolute;top:0;left:0;height:100%;width:0;background:var(--o)}
+
+    /* NAV */
+    nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:24px 60px;display:flex;align-items:center;justify-content:space-between;transition:all .5s;mix-blend-mode:normal}
+    nav.dark{padding:14px 60px;background:rgba(6,6,6,.97);backdrop-filter:blur(24px);border-bottom:1px solid var(--line)}
+    .logo{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.18em;text-decoration:none;color:var(--w);display:flex;align-items:center;gap:2px}
+    .logo em{color:var(--o);font-style:normal}
+    .nav-r{display:flex;align-items:center;gap:36px}
+    .nav-links{display:flex;gap:32px;list-style:none}
+    .nav-links a{font-size:.68rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--g);text-decoration:none;transition:color .2s}
+    .nav-links a:hover{color:var(--w)}
+    .nav-btn{font-size:.7rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;background:var(--o);color:var(--bg);padding:11px 26px;text-decoration:none;transition:all .3s;border:none;cursor:none;position:relative;overflow:hidden}
+    .nav-btn::before{content:'';position:absolute;inset:0;background:var(--w);transform:translateX(-101%);transition:transform .3s cubic-bezier(.77,0,.18,1)}
+    .nav-btn:hover::before{transform:translateX(0)}
+    .nav-btn span{position:relative;z-index:1;color:var(--bg)}
+    .burger{display:none;flex-direction:column;gap:5px;cursor:none}
+    .burger span{width:22px;height:1.5px;background:var(--w)}
+
+    /* HERO */
+    #hero{position:relative;height:100vh;min-height:720px;display:flex;flex-direction:column;justify-content:flex-end;padding:0 60px 80px;overflow:hidden}
+    .hero-video{position:absolute;inset:0;z-index:0}
+    .hero-video img{width:100%;height:100%;object-fit:cover;object-position:center 30%}
+    .hero-grad{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(6,6,6,.2) 0%,rgba(6,6,6,.0) 20%,rgba(6,6,6,.6) 55%,rgba(6,6,6,1) 100%),linear-gradient(90deg,rgba(6,6,6,.5) 0%,transparent 60%)}
+    .hero-noise{position:absolute;inset:0;z-index:1;opacity:.04;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px}
+    .h-tag{position:relative;z-index:2;font-size:.65rem;font-weight:600;letter-spacing:.45em;text-transform:uppercase;color:var(--o);display:flex;align-items:center;gap:14px;margin-bottom:24px;opacity:0}
+    .h-tag::before{content:'';width:32px;height:1px;background:var(--o);display:block}
+    .h-tag::after{content:'';width:32px;height:1px;background:rgba(255,85,0,.3);display:block}
+    .hero-title{position:relative;z-index:2;font-family:'Bebas Neue',sans-serif;font-size:clamp(5rem,15vw,17rem);line-height:.86;letter-spacing:.01em;text-transform:uppercase;overflow:hidden}
+    .hero-title .line{display:block;transform:translateY(110%)}
+    .hero-title .o{color:var(--o)}
+    .hero-sub{position:relative;z-index:2;font-size:clamp(.9rem,1.5vw,1.1rem);font-weight:300;color:rgba(255,255,255,.7);line-height:1.85;max-width:520px;margin-top:24px;opacity:0}
+    .hero-actions{position:relative;z-index:2;display:flex;align-items:center;gap:18px;margin-top:36px;flex-wrap:wrap;opacity:0}
+    .btn-main{display:inline-flex;align-items:center;gap:12px;background:var(--o);color:var(--bg);font-size:.78rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding:18px 38px;text-decoration:none;transition:all .35s;position:relative;overflow:hidden;cursor:none}
+    .btn-main::before{content:'';position:absolute;inset:0;background:var(--w);transform:scaleX(0);transform-origin:left;transition:transform .35s cubic-bezier(.77,0,.18,1)}
+    .btn-main:hover::before{transform:scaleX(1)}
+    .btn-main span,.btn-main svg{position:relative;z-index:1}
+    .btn-main:hover span,.btn-main:hover svg{color:var(--bg)}
+    .btn-ghost{display:inline-flex;align-items:center;gap:10px;background:transparent;color:var(--w);font-size:.78rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;padding:17px 36px;text-decoration:none;border:1px solid rgba(255,255,255,.2);transition:all .3s;cursor:none}
+    .btn-ghost:hover{border-color:var(--o);color:var(--o)}
+    .hero-scroll{position:absolute;bottom:36px;right:60px;z-index:2;display:flex;flex-direction:column;align-items:center;gap:10px}
+    .hero-scroll-t{font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:var(--g);writing-mode:vertical-rl}
+    .hero-scroll-l{width:1px;height:50px;background:linear-gradient(to bottom,var(--o),transparent);animation:pulse 2.2s ease-in-out infinite}
+    @keyframes pulse{0%,100%{opacity:1;transform:scaleY(1)}50%{opacity:.3;transform:scaleY(.7)}}
+    .hero-badge{position:absolute;top:50%;right:60px;z-index:2;transform:translateY(-50%);width:110px;height:110px;border-radius:50%;border:1px solid rgba(255,85,0,.25);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;opacity:0;animation:rotateBadge 20s linear infinite}
+    @keyframes rotateBadge{from{--angle:0deg}to{--angle:360deg}}
+    .badge-inner{text-align:center}
+    .badge-n{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--o);line-height:1}
+    .badge-l{font-size:.52rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--g)}
+
+    /* MARQUEE */
+    .mq{background:var(--o);overflow:hidden;height:56px;display:flex;align-items:center;flex-shrink:0}
+    .mq-t{display:flex;gap:48px;animation:mq 20s linear infinite;white-space:nowrap;align-items:center}
+    .mq-t2{animation-direction:reverse;animation-duration:25s}
+    @keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+    .mq-i{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.3em;color:rgba(0,0,0,.8);flex-shrink:0;display:flex;align-items:center;gap:20px}
+    .mq-d{width:4px;height:4px;background:rgba(0,0,0,.3);border-radius:50%}
+    .mq2{background:var(--s1);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .mq2 .mq-i{color:rgba(255,255,255,.25);font-size:.85rem}
+
+    /* PROOF BAR */
+    .proof-bar{background:var(--s1);border-bottom:1px solid var(--line);display:flex;justify-content:center;gap:0;flex-wrap:wrap}
+    .proof-item{display:flex;align-items:center;gap:16px;padding:28px 44px;border-right:1px solid var(--line);flex:1;min-width:200px;justify-content:center}
+    .proof-item:last-child{border-right:none}
+    .proof-n{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:var(--o);line-height:1}
+    .proof-l{font-size:.68rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--g);max-width:100px;line-height:1.5}
+
+    /* SECTION SHARED */
+    .s-eyebrow{font-size:.63rem;font-weight:700;letter-spacing:.42em;text-transform:uppercase;color:var(--o);display:flex;align-items:center;gap:10px;margin-bottom:18px}
+    .s-eyebrow::before{content:'';width:18px;height:1px;background:var(--o);display:block}
+    .s-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,7vw,8rem);line-height:.88;letter-spacing:.01em;text-transform:uppercase}
+    .s-sub{font-size:.9rem;font-weight:300;color:var(--sg);line-height:1.9;margin-top:18px}
+
+    /* WHY SECTION */
+    #why{padding:120px 60px;max-width:1500px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:100px;align-items:center}
+    .why-img{position:relative;aspect-ratio:4/5;overflow:hidden}
+    .why-img img{width:100%;height:100%;object-fit:cover;transform:scale(1.05);transition:transform 1.4s ease}
+    .why-img:hover img{transform:scale(1)}
+    .why-img::before{content:'';position:absolute;top:-16px;left:-16px;width:80px;height:80px;border-top:2px solid var(--o);border-left:2px solid var(--o);z-index:2}
+    .why-img::after{content:'';position:absolute;bottom:-16px;right:-16px;width:80px;height:80px;border-bottom:2px solid var(--o);border-right:2px solid var(--o);z-index:2}
+    .why-img .play-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3;width:72px;height:72px;border-radius:50%;background:rgba(255,85,0,.9);display:flex;align-items:center;justify-content:center;cursor:none;transition:all .3s;backdrop-filter:blur(10px)}
+    .why-img .play-btn:hover{transform:translate(-50%,-50%) scale(1.15);background:var(--o)}
+    .why-img .play-btn svg{width:20px;height:20px;fill:var(--w);margin-left:3px}
+    .why-txt{}
+    .why-points{margin-top:48px;display:flex;flex-direction:column;gap:0}
+    .why-pt{display:flex;gap:24px;padding:28px 0;border-bottom:1px solid var(--line);transition:all .3s}
+    .why-pt:first-child{border-top:1px solid var(--line)}
+    .why-pt:hover{padding-left:8px}
+    .why-pt-n{font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--o);flex-shrink:0;width:28px;margin-top:2px}
+    .why-pt-title{font-size:.88rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+    .why-pt-d{font-size:.82rem;color:var(--g);line-height:1.8}
+
+    /* SERVICES BENTO */
+    #services{padding:0 60px 120px;max-width:1500px;margin:0 auto}
+    .svc-hdr{margin-bottom:52px;display:flex;align-items:flex-end;justify-content:space-between;gap:32px;flex-wrap:wrap}
+    .svc-hdr p{max-width:400px;font-size:.86rem;color:var(--g);line-height:1.85}
+    .bento{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:auto;gap:2px;background:var(--line)}
+    .bento-card{background:var(--s1);padding:48px 40px;position:relative;overflow:hidden;transition:background .3s;cursor:none}
+    .bento-card:hover{background:var(--s2)}
+    .bento-card.span2{grid-column:span 2}
+    .bento-card.featured{background:linear-gradient(135deg,rgba(255,85,0,.12) 0%,var(--s1) 60%)}
+    .bento-card.featured::before{content:'MOST POPULAR';position:absolute;top:24px;right:24px;font-size:.55rem;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:var(--o);background:rgba(255,85,0,.1);padding:5px 12px;border:1px solid rgba(255,85,0,.25)}
+    .bento-card::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--o);transition:width .5s ease}
+    .bento-card:hover::after{width:100%}
+    .bc-icon{width:44px;height:44px;background:rgba(255,85,0,.1);border:1px solid rgba(255,85,0,.2);border-radius:4px;display:flex;align-items:center;justify-content:center;margin-bottom:24px;font-size:1.2rem}
+    .bc-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.05em;text-transform:uppercase;margin-bottom:12px}
+    .bc-desc{font-size:.82rem;color:var(--g);line-height:1.85}
+    .bc-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+    .bc-tag{font-size:.6rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--o);background:rgba(255,85,0,.08);padding:5px 12px;border:1px solid rgba(255,85,0,.15)}
+
+    /* RESULTS / SOCIAL PROOF */
+    #results{padding:120px 60px;position:relative;overflow:hidden}
+    #results::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(255,85,0,.06) 0%,transparent 70%);pointer-events:none}
+    .results-inner{max-width:1500px;margin:0 auto}
+    .results-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--line);margin-top:56px}
+    .r-card{background:var(--s1);padding:44px 36px;position:relative;overflow:hidden;transition:background .3s}
+    .r-card:hover{background:var(--s2)}
+    .r-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:0;background:var(--o);transition:height .5s ease}
+    .r-card:hover::before{height:100%}
+    .r-stars{display:flex;gap:3px;margin-bottom:20px}
+    .r-star{color:var(--o);font-size:.9rem}
+    .r-quote{font-size:.88rem;font-style:italic;font-weight:300;color:rgba(255,255,255,.8);line-height:1.85;margin-bottom:24px}
+    .r-author{display:flex;align-items:center;gap:14px}
+    .r-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--o),var(--o2));display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--bg);flex-shrink:0}
+    .r-name{font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+    .r-biz{font-size:.7rem;color:var(--g);margin-top:2px}
+    .big-stat{display:flex;gap:2px;background:var(--line);margin-top:2px}
+    .big-stat-item{background:var(--s1);padding:52px 44px;flex:1;text-align:center}
+    .bs-n{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,6vw,6rem);color:var(--o);line-height:1}
+    .bs-l{font-size:.72rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--g);margin-top:10px}
+
+    /* PROCESS */
+    #process{padding:120px 60px;max-width:1500px;margin:0 auto}
+    .proc-row{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--line);margin-top:56px}
+    .proc-col{padding:44px 32px;border-right:1px solid var(--line);position:relative}
+    .proc-col:last-child{border-right:none}
+    .proc-col::before{content:attr(data-n);font-family:'Bebas Neue',sans-serif;font-size:5rem;color:var(--line);line-height:1;display:block;margin-bottom:20px;transition:color .4s}
+    .proc-col:hover::before{color:rgba(255,85,0,.15)}
+    .proc-t{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px}
+    .proc-d{font-size:.82rem;color:var(--g);line-height:1.85}
+
+    /* PARALLAX */
+    .px{position:relative;height:80vh;min-height:520px;overflow:hidden;display:flex;align-items:center}
+    .px-img{position:absolute;inset:-20%;background-size:cover;background-position:center;background-attachment:fixed}
+    .px-ov{position:absolute;inset:0}
+    .px-body{position:relative;z-index:2;padding:0 60px;max-width:750px}
+    .px-body p{font-size:.9rem;color:rgba(255,255,255,.7);line-height:1.9;margin-top:16px;max-width:480px}
+
+    /* CTA SECTION */
+    #cta{padding:160px 60px;text-align:center;position:relative;overflow:hidden}
+    #cta::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:900px;height:900px;background:radial-gradient(circle,rgba(255,85,0,.08) 0%,transparent 70%);pointer-events:none}
+    .cta-inner{position:relative;z-index:1}
+    .cta-kicker{font-size:.65rem;font-weight:700;letter-spacing:.45em;text-transform:uppercase;color:var(--o);margin-bottom:24px;display:block}
+    .cta-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(4rem,12vw,14rem);line-height:.88;letter-spacing:.01em;text-transform:uppercase}
+    .cta-title .o{color:var(--o)}
+    .cta-sub{font-size:1rem;font-weight:300;color:var(--sg);line-height:1.85;max-width:580px;margin:28px auto 0}
+    .cta-actions{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:48px;flex-wrap:wrap}
+    .cta-note{font-size:.72rem;color:var(--g);margin-top:20px;letter-spacing:.06em}
+    .cta-note strong{color:var(--w)}
+
+    /* FORM */
+    #form-section{padding:0 60px 120px;max-width:1000px;margin:0 auto}
+    .form-wrap{background:var(--s1);border:1px solid var(--line);padding:60px;position:relative;overflow:hidden}
+    .form-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--og)}
+    .form-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,5vw,4.5rem);line-height:.9;text-transform:uppercase;margin-bottom:8px}
+    .form-sub{font-size:.86rem;color:var(--g);line-height:1.8;margin-bottom:36px}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .ff{display:flex;flex-direction:column;gap:7px}
+    .ff.full{grid-column:span 2}
+    .ff label{font-size:.6rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--g)}
+    .ff input,.ff select,.ff textarea{background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--w);padding:14px 16px;font-size:.86rem;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;resize:none;width:100%}
+    .ff input:focus,.ff select:focus,.ff textarea:focus{border-color:var(--o)}
+    .ff select option{background:#111}
+    .form-submit{width:100%;background:var(--o);color:var(--bg);font-size:.8rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;padding:18px;border:none;cursor:none;transition:all .3s;margin-top:8px;position:relative;overflow:hidden}
+    .form-submit::before{content:'';position:absolute;inset:0;background:var(--w);transform:scaleX(0);transform-origin:left;transition:transform .4s cubic-bezier(.77,0,.18,1)}
+    .form-submit:hover::before{transform:scaleX(1)}
+    .form-submit span{position:relative;z-index:1;color:var(--bg)}
+    .form-trust{display:flex;align-items:center;justify-content:center;gap:24px;margin-top:20px;flex-wrap:wrap}
+    .ft-item{font-size:.65rem;color:var(--g);letter-spacing:.08em;display:flex;align-items:center;gap:6px}
+    .ft-item::before{content:'✓';color:var(--o);font-weight:700}
+
+    /* FOOTER */
+    footer{border-top:1px solid var(--line);background:var(--s1);padding:56px 60px 40px}
+    .ft-wrap{max-width:1500px;margin:0 auto}
+    .ft-top{display:flex;justify-content:space-between;align-items:center;gap:32px;flex-wrap:wrap;padding-bottom:36px;border-bottom:1px solid var(--line)}
+    .ft-logo{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.18em}
+    .ft-logo em{color:var(--o);font-style:normal}
+    .ft-tagline{font-size:.68rem;color:var(--g);margin-top:6px;letter-spacing:.08em}
+    .ft-nav{display:flex;gap:28px;flex-wrap:wrap}
+    .ft-nav a{font-size:.68rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--g);text-decoration:none;transition:color .2s}
+    .ft-nav a:hover{color:var(--w)}
+    .ft-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:24px;flex-wrap:wrap;gap:10px}
+    .ft-copy,.ft-site{font-size:.62rem;color:var(--line);letter-spacing:.08em}
+    .ft-site a{color:var(--o);text-decoration:none}
+
+    /* REVEAL */
+    .rv{opacity:0;transform:translateY(28px);transition:opacity .9s ease,transform .9s ease}
+    .rv.on{opacity:1;transform:none}
+    .rl{opacity:0;transform:translateX(-28px);transition:opacity .9s ease,transform .9s ease}
+    .rl.on{opacity:1;transform:none}
+    .d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}.d4{transition-delay:.4s}.d5{transition-delay:.5s}
+
+    /* FLOATING WHATSAPP */
+    .wa-float{position:fixed;bottom:32px;right:32px;z-index:5000;width:56px;height:56px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 32px rgba(37,211,102,.4);cursor:none;transition:transform .3s;text-decoration:none}
+    .wa-float:hover{transform:scale(1.1)}
+    .wa-float svg{width:26px;height:26px;fill:var(--w)}
+
+    @media(max-width:960px){
+      nav,nav.dark{padding:14px 20px}
+      .nav-links{display:none}.burger{display:flex}
+      #hero{padding:0 20px 70px}
+      .hero-badge{display:none}
+      #why,#services,#process,#form-section{padding:80px 20px}
+      #why{grid-template-columns:1fr;gap:48px}
+      .bento{grid-template-columns:1fr}
+      .bento-card.span2{grid-column:span 1}
+      .results-grid{grid-template-columns:1fr}
+      .big-stat{flex-direction:column}
+      .proc-row{grid-template-columns:1fr 1fr}
+      .proc-col{border-bottom:1px solid var(--line)}
+      #cta,#results{padding:80px 20px}
+      .form-wrap{padding:36px 24px}
+      .form-grid{grid-template-columns:1fr}
+      .ff.full{grid-column:span 1}
+      .proof-bar{flex-direction:column}
+      .proof-item{border-right:none;border-bottom:1px solid var(--line)}
+      .px-body{padding:0 20px}
+      footer{padding:40px 20px 28px}
+      .hero-scroll{right:20px}
+    }
+  </style>
+</head>
+<body>
+
+<div id="dot"></div><div id="ring"></div>
+
+<!-- LOADER -->
+<div id="loader">
+  <span class="ldr-word"><span id="lw1">WDG</span></span>
+  <span class="ldr-word"><span id="lw2">VIDEOGRAPHY</span></span>
+  <div class="ldr-pct" id="ldrP">0%</div>
+  <div class="ldr-line"><div class="ldr-fill" id="ldrFill"></div></div>
+</div>
+
+<!-- FLOATING WHATSAPP -->
+<a href="https://wa.me/447700000000?text=Hi%20WDG%20Videography%2C%20I%27m%20interested%20in%20your%20marketing%20management%20services." class="wa-float" title="WhatsApp Us" target="_blank">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="https://www.wdgvideography.com" class="logo">WDG<em>.</em></a>
+  <div class="nav-r">
+    <ul class="nav-links">
+      <li><a href="#why">About</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#results">Results</a></li>
+      <li><a href="#process">Process</a></li>
+    </ul>
+    <a href="#form-section" class="nav-btn"><span>Get Started</span></a>
+  </div>
+  <div class="burger" onclick="mobMenu()"><span></span><span></span><span></span></div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-video">
+    <img src="https://media.base44.com/images/public/6a0c1534017166f536b1ac32/626299f13_generated_image.png" alt="WDG Videography — Cinematic Marketing" id="heroImg"/>
+  </div>
+  <div class="hero-grad"></div>
+  <div class="hero-noise"></div>
+  <div class="h-tag" id="hTag">Full-Service Marketing Management · Cheltenham, UK</div>
+  <h1 class="hero-title" id="hTitle">
+    <span class="line">Your Brand.</span>
+    <span class="line o">Everywhere.</span>
+    <span class="line">Unmatched.</span>
+  </h1>
+  <p class="hero-sub" id="hSub">We take complete control of your marketing — cinematic video, high-converting websites & dominant social media presence. You focus on your business. We handle everything else.</p>
+  <div class="hero-actions" id="hAct">
+    <a href="#form-section" class="btn-main">
+      <span>Get a Free Strategy Call</span>
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+    <a href="https://www.wdgvideography.com" class="btn-ghost" target="_blank">View Our Work</a>
+  </div>
+  <div class="hero-scroll">
+    <span class="hero-scroll-t">Scroll</span>
+    <div class="hero-scroll-l"></div>
+  </div>
+  <div class="hero-badge" id="hBadge">
+    <div class="badge-inner">
+      <div class="badge-n">UK</div>
+      <div class="badge-l">Based</div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE 1 -->
+<div class="mq">
+  <div class="mq-t">
+    <div class="mq-i"><div class="mq-d"></div>Cinematic Video Production</div>
+    <div class="mq-i"><div class="mq-d"></div>Website Design & Development</div>
+    <div class="mq-i"><div class="mq-d"></div>Social Media Management</div>
+    <div class="mq-i"><div class="mq-d"></div>YouTube Documentaries</div>
+    <div class="mq-i"><div class="mq-d"></div>Brand Strategy</div>
+    <div class="mq-i"><div class="mq-d"></div>Full Marketing Management</div>
+    <div class="mq-i"><div class="mq-d"></div>Cheltenham · UK · Nationwide</div>
+    <div class="mq-i"><div class="mq-d"></div>Cinematic Video Production</div>
+    <div class="mq-i"><div class="mq-d"></div>Website Design & Development</div>
+    <div class="mq-i"><div class="mq-d"></div>Social Media Management</div>
+    <div class="mq-i"><div class="mq-d"></div>YouTube Documentaries</div>
+    <div class="mq-i"><div class="mq-d"></div>Brand Strategy</div>
+    <div class="mq-i"><div class="mq-d"></div>Full Marketing Management</div>
+    <div class="mq-i"><div class="mq-d"></div>Cheltenham · UK · Nationwide</div>
+  </div>
+</div>
+
+<!-- PROOF BAR -->
+<div class="proof-bar">
+  <div class="proof-item rv">
+    <div class="proof-n">100%</div>
+    <div class="proof-l">Done-For-You Marketing</div>
+  </div>
+  <div class="proof-item rv d1">
+    <div class="proof-n">3-in-1</div>
+    <div class="proof-l">Video · Web · Social</div>
+  </div>
+  <div class="proof-item rv d2">
+    <div class="proof-n">UK</div>
+    <div class="proof-l">Nationwide Reach</div>
+  </div>
+  <div class="proof-item rv d3">
+    <div class="proof-n">Zero</div>
+    <div class="proof-l">Stress. We handle it all.</div>
+  </div>
+</div>
+
+<!-- MARQUEE 2 (reverse, subtle) -->
+<div class="mq mq2">
+  <div class="mq-t mq-t2">
+    <div class="mq-i"><div class="mq-d"></div>WDGvideography.com</div>
+    <div class="mq-i"><div class="mq-d"></div>Cinematic Excellence</div>
+    <div class="mq-i"><div class="mq-d"></div>Dominate Your Market</div>
+    <div class="mq-i"><div class="mq-d"></div>Elevate Your Brand</div>
+    <div class="mq-i"><div class="mq-d"></div>Results That Matter</div>
+    <div class="mq-i"><div class="mq-d"></div>Premium Production</div>
+    <div class="mq-i"><div class="mq-d"></div>Strategic Marketing</div>
+    <div class="mq-i"><div class="mq-d"></div>WDGvideography.com</div>
+    <div class="mq-i"><div class="mq-d"></div>Cinematic Excellence</div>
+    <div class="mq-i"><div class="mq-d"></div>Dominate Your Market</div>
+    <div class="mq-i"><div class="mq-d"></div>Elevate Your Brand</div>
+    <div class="mq-i"><div class="mq-d"></div>Results That Matter</div>
+    <div class="mq-i"><div class="mq-d"></div>Premium Production</div>
+    <div class="mq-i"><div class="mq-d"></div>Strategic Marketing</div>
+  </div>
+</div>
+
+<!-- WHY -->
+<section id="why">
+  <div class="why-img rl">
+    <img src="https://media.base44.com/images/public/6a0c1534017166f536b1ac32/8173ad935_generated_image.png" alt="WDG Production"/>
+    <div class="play-btn">
+      <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+    </div>
+  </div>
+  <div class="why-txt">
+    <div class="s-eyebrow rv">Why WDG</div>
+    <h2 class="s-title rv">We Don't Just<br>Make Content.<br><span style="color:var(--o)">We Build Empires.</span></h2>
+    <p class="s-sub rv">Most agencies do one thing. We do everything — and we do it better. One partner. Zero gaps. Total control of your brand's story across every channel that matters.</p>
+    <div class="why-points">
+      <div class="why-pt rv">
+        <div class="why-pt-n">01</div>
+        <div>
+          <div class="why-pt-title">Complete Marketing Takeover</div>
+          <div class="why-pt-d">We manage your website, social media, video production and brand strategy under one roof. You get a cohesive, dominant presence — not fragmented efforts from multiple agencies.</div>
+        </div>
+      </div>
+      <div class="why-pt rv d1">
+        <div class="why-pt-n">02</div>
+        <div>
+          <div class="why-pt-title">Cinematic Quality, Every Time</div>
+          <div class="why-pt-d">From short-form social reels to full-length YouTube brand documentaries — we produce content that stops the scroll and builds brand authority at a level most businesses never achieve.</div>
+        </div>
+      </div>
+      <div class="why-pt rv d2">
+        <div class="why-pt-n">03</div>
+        <div>
+          <div class="why-pt-title">Websites That Actually Convert</div>
+          <div class="why-pt-d">Stunning, custom-built websites with animations, mobile-first design and copy that turns visitors into paying clients. Not templates. Not builders. Real bespoke development.</div>
+        </div>
+      </div>
+      <div class="why-pt rv d3">
+        <div class="why-pt-n">04</div>
+        <div>
+          <div class="why-pt-title">South & Midlands England Focus</div>
+          <div class="why-pt-d">We know this market. We know what local businesses need to stand out, what their customers respond to, and how to position them above every competitor in their area.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PARALLAX 1 -->
+<div class="px">
+  <div class="px-img" style="background-image:url('https://media.base44.com/images/public/6a0c1534017166f536b1ac32/626299f13_generated_image.png')"></div>
+  <div class="px-ov" style="background:linear-gradient(to right,rgba(6,6,6,.96) 38%,rgba(6,6,6,.1) 100%)"></div>
+  <div class="px-body">
+    <div class="s-eyebrow rv">The Reality</div>
+    <h2 class="s-title rv" style="font-size:clamp(3rem,8vw,9rem)">Your Competitors<br>Are Already<br><span style="color:var(--o)">Investing.</span></h2>
+    <p class="rv">The businesses winning in your market right now have professional video, a stunning website and active social media. The question isn't whether you need this — it's whether you can afford to wait.</p>
+    <a href="#form-section" class="btn-main rv" style="margin-top:28px;display:inline-flex;align-items:center;gap:12px"><span>Start Today</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="svc-hdr">
+    <div>
+      <div class="s-eyebrow rv">What We Deliver</div>
+      <h2 class="s-title rv">Everything Your<br>Brand Needs.</h2>
+    </div>
+    <p class="rv">One agency. Every channel. No excuses. We build the complete marketing ecosystem your business needs to dominate its market — and we never cut corners.</p>
+  </div>
+  <div class="bento">
+    <div class="bento-card featured rv">
+      <div class="bc-icon">🎬</div>
+      <div class="bc-title">Cinematic Video Production</div>
+      <div class="bc-desc">From high-impact 60-second social reels to full-length YouTube brand documentaries that position your business as the undisputed authority in your field. Shot, directed and edited to broadcast quality.</div>
+      <div class="bc-tags"><span class="bc-tag">Brand Films</span><span class="bc-tag">YouTube Docs</span><span class="bc-tag">Social Reels</span><span class="bc-tag">Testimonials</span></div>
+    </div>
+    <div class="bento-card rv d1">
+      <div class="bc-icon">💻</div>
+      <div class="bc-title">Bespoke Website Design</div>
+      <div class="bc-desc">Custom-built, conversion-focused websites with cinematic animations, full mobile responsiveness and copy that sells. Built to outclass every competitor in your space.</div>
+      <div class="bc-tags"><span class="bc-tag">Custom Dev</span><span class="bc-tag">SEO-Ready</span><span class="bc-tag">Mobile-First</span></div>
+    </div>
+    <div class="bento-card rv d2">
+      <div class="bc-icon">📱</div>
+      <div class="bc-title">Social Media Management</div>
+      <div class="bc-desc">We run your Instagram, Facebook, LinkedIn and TikTok — strategy, content creation, posting, engagement and growth. You don't touch it. We grow it.</div>
+      <div class="bc-tags"><span class="bc-tag">Instagram</span><span class="bc-tag">LinkedIn</span><span class="bc-tag">TikTok</span><span class="bc-tag">Facebook</span></div>
+    </div>
+    <div class="bento-card span2 rv">
+      <div class="bc-icon">🚀</div>
+      <div class="bc-title">Full Marketing Management — Your Entire Ecosystem</div>
+      <div class="bc-desc">The flagship service. We take complete ownership of your marketing operation — from brand strategy and content calendar to video shoots, website updates, ad campaigns and analytics reporting. You get a dedicated marketing department without the overhead of hiring one. This is what separates businesses that grow from businesses that plateau.</div>
+      <div class="bc-tags"><span class="bc-tag">Strategy</span><span class="bc-tag">Content</span><span class="bc-tag">Video</span><span class="bc-tag">Web</span><span class="bc-tag">Social</span><span class="bc-tag">Analytics</span><span class="bc-tag">Full Management</span></div>
+    </div>
+    <div class="bento-card rv d1">
+      <div class="bc-icon">📊</div>
+      <div class="bc-title">Brand Strategy & Positioning</div>
+      <div class="bc-desc">We define what makes you different, who you're talking to, and how to position you as the premium choice in your market — then we execute that strategy across every touchpoint.</div>
+      <div class="bc-tags"><span class="bc-tag">Positioning</span><span class="bc-tag">Messaging</span><span class="bc-tag">Identity</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section id="results">
+  <div class="results-inner">
+    <div class="s-eyebrow rv">Social Proof</div>
+    <h2 class="s-title rv">What Clients<br>Are Saying.</h2>
+    <div class="results-grid">
+      <div class="r-card rv">
+        <div class="r-stars">★★★★★</div>
+        <div class="r-quote">"WDG completely transformed how our business looks online. We went from an embarrassing website to something that genuinely makes us look like the best in our industry. Enquiries tripled."</div>
+        <div class="r-author"><div class="r-avatar">JM</div><div><div class="r-name">James M.</div><div class="r-biz">Construction Company, Birmingham</div></div></div>
+      </div>
+      <div class="r-card rv d1">
+        <div class="r-stars">★★★★★</div>
+        <div class="r-quote">"The brand documentary they produced for us is phenomenal — it's our best sales tool. We use it in every pitch meeting. The quality is on a completely different level to anything we'd seen locally."</div>
+        <div class="r-author"><div class="r-avatar">SK</div><div><div class="r-name">Sarah K.</div><div class="r-biz">Boutique Hotel, Cheltenham</div></div></div>
+      </div>
+      <div class="r-card rv d2">
+        <div class="r-stars">★★★★★</div>
+        <div class="r-quote">"Having one team handle our website, video and social media is a game changer. Everything is consistent, everything looks premium, and we don't have to think about it. WDG just make it happen."</div>
+        <div class="r-author"><div class="r-avatar">RP</div><div><div class="r-name">Richard P.</div><div class="r-biz">Auto Dealership, Southampton</div></div></div>
+      </div>
+    </div>
+    <div class="big-stat">
+      <div class="big-stat-item rv"><div class="bs-n">3×</div><div class="bs-l">Average Enquiry Increase</div></div>
+      <div class="big-stat-item rv d1"><div class="bs-n">86%</div><div class="bs-l">Higher Conversion with Video</div></div>
+      <div class="big-stat-item rv d2"><div class="bs-n">1</div><div class="bs-l">Agency. Everything Included.</div></div>
+      <div class="big-stat-item rv d3"><div class="bs-n">0</div><div class="bs-l">Stress. We Handle It All.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PARALLAX 2 -->
+<div class="px">
+  <div class="px-img" style="background-image:url('https://media.base44.com/images/public/6a0c1534017166f536b1ac32/1dd009f50_generated_image.png')"></div>
+  <div class="px-ov" style="background:linear-gradient(to right,rgba(6,6,6,.95) 36%,rgba(6,6,6,.08) 100%)"></div>
+  <div class="px-body">
+    <div class="s-eyebrow rv">Our Difference</div>
+    <h2 class="s-title rv" style="font-size:clamp(3rem,8vw,9rem)">One Partner.<br>Total<br><span style="color:var(--o)">Dominance.</span></h2>
+    <p class="rv">You shouldn't need a web designer, a videographer, a social media manager and a brand strategist. You need one team that understands all of it — and executes all of it, together.</p>
+  </div>
+</div>
+
+<!-- PROCESS -->
+<section id="process">
+  <div class="s-eyebrow rv">How It Works</div>
+  <h2 class="s-title rv">From Day One<br>to Domination.</h2>
+  <div class="proc-row">
+    <div class="proc-col rv" data-n="01">
+      <div class="proc-t">Strategy Call</div>
+      <div class="proc-d">A free 30-minute call where we audit your current marketing, understand your goals, and map out exactly what your business needs to grow. No hard sell — just clarity.</div>
+    </div>
+    <div class="proc-col rv d1" data-n="02">
+      <div class="proc-t">Brand Audit</div>
+      <div class="proc-d">We analyse your competitors, your market position and your current assets. You'll know exactly where you stand and precisely how we'll put you ahead.</div>
+    </div>
+    <div class="proc-col rv d2" data-n="03">
+      <div class="proc-t">Full Takeover</div>
+      <div class="proc-d">We get to work. Website, video shoots, social content, strategy — all rolling simultaneously. Within 30 days you'll already look like a different business.</div>
+    </div>
+    <div class="proc-col rv d3" data-n="04">
+      <div class="proc-t">Continuous Growth</div>
+      <div class="proc-d">Monthly reporting, fresh content, ongoing optimisation. Your marketing gets stronger every single month. We never set it and forget it.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="cta-inner">
+    <span class="cta-kicker rv">Limited Availability — We Only Work With 10 Clients at a Time</span>
+    <h2 class="cta-title rv">
+      Ready to<br>
+      <span class="o">Dominate</span><br>
+      Your Market?
+    </h2>
+    <p class="cta-sub rv">This is for businesses serious about growth. If you're ready to invest in marketing that actually works — let's talk. If you're not, that's fine too. But your competitors will be.</p>
+    <div class="cta-actions rv">
+      <a href="#form-section" class="btn-main"><span>Book Your Free Strategy Call</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <a href="https://www.wdgvideography.com" class="btn-ghost" target="_blank">Explore Our Work</a>
+    </div>
+    <p class="cta-note rv"><strong>No contracts. No lock-in.</strong> Cancel anytime. Results or we make it right.</p>
+  </div>
+</section>
+
+<!-- FORM -->
+<section id="form-section">
+  <div class="form-wrap rv">
+    <h2 class="form-title">Book Your Free<br>Strategy Call</h2>
+    <p class="form-sub">Takes 2 minutes. No obligation. We'll review your current marketing and tell you exactly what needs to change — for free.</p>
+    <form class="form-grid" onsubmit="formSubmit(event)">
+      <div class="ff"><label>First Name</label><input type="text" placeholder="John" required/></div>
+      <div class="ff"><label>Last Name</label><input type="text" placeholder="Smith" required/></div>
+      <div class="ff"><label>Business Name</label><input type="text" placeholder="Your Business Ltd" required/></div>
+      <div class="ff"><label>Phone Number</label><input type="tel" placeholder="+44 7700 000000" required/></div>
+      <div class="ff full"><label>Email Address</label><input type="email" placeholder="john@yourbusiness.com" required/></div>
+      <div class="ff full">
+        <label>What's Your Biggest Marketing Challenge?</label>
+        <select>
+          <option value="">Select...</option>
+          <option>I have no online presence</option>
+          <option>My website looks outdated</option>
+          <option>I have no social media strategy</option>
+          <option>I need video content</option>
+          <option>I want complete marketing management</option>
+          <option>I'm losing clients to competitors</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="ff full"><label>Tell Us About Your Business (Optional)</label><textarea rows="4" placeholder="What do you do, who are your customers, what are you trying to achieve..."></textarea></div>
+      <div class="ff full">
+        <button type="submit" class="form-submit"><span>Book My Free Strategy Call →</span></button>
+      </div>
+    </form>
+    <div class="form-trust">
+      <span class="ft-item">Free consultation, no obligation</span>
+      <span class="ft-item">Response within 2 hours</span>
+      <span class="ft-item">No contracts or lock-in</span>
+      <span class="ft-item">UK-based team</span>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-wrap">
+    <div class="ft-top">
+      <div>
+        <div class="ft-logo">WDG<em>.</em></div>
+        <div class="ft-tagline">Full-Service Marketing Management · Videography · Web Design · Cheltenham, UK</div>
+      </div>
+      <div class="ft-nav">
+        <a href="#why">About</a>
+        <a href="#services">Services</a>
+        <a href="#results">Results</a>
+        <a href="#process">Process</a>
+        <a href="#form-section">Contact</a>
+        <a href="https://www.wdgvideography.com" target="_blank">Main Site</a>
+      </div>
+    </div>
+    <div class="ft-bottom">
+      <span class="ft-copy">© 2026 WDG Videography Ltd · All Rights Reserved · Cheltenham, UK</span>
+      <span class="ft-site"><a href="https://www.wdgvideography.com">wdgvideography.com</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+
+  // LOADER
+  let pct = 0;
+  const lP = document.getElementById('ldrP');
+  const lFill = document.getElementById('ldrFill');
+  const lw1 = document.getElementById('lw1');
+  const lw2 = document.getElementById('lw2');
+  gsap.to(lw1, {y:'0%', duration:.6, delay:.2, ease:'power3.out'});
+  gsap.to(lw2, {y:'0%', duration:.6, delay:.45, ease:'power3.out'});
+  const ti = setInterval(()=>{
+    pct += Math.floor(Math.random()*8)+4;
+    if(pct>=100){pct=100;clearInterval(ti);}
+    lP.textContent = pct+'%';
+    lFill.style.width = pct+'%';
+  }, 50);
+  window.addEventListener('load', ()=>{
+    setTimeout(()=>{
+      gsap.to('#loader', {opacity:0, duration:.8, delay:.3, ease:'power2.in', onComplete:()=>{document.getElementById('loader').style.display='none';}});
+      // Hero entrance
+      gsap.to('#hTag', {opacity:1, y:0, duration:.7, delay:.5, ease:'power3.out'});
+      const lines = document.querySelectorAll('.hero-title .line');
+      gsap.to(lines, {y:'0%', duration:.9, delay:.7, ease:'power3.out', stagger:.12});
+      gsap.to('#hSub', {opacity:1, y:0, duration:.7, delay:1.1, ease:'power3.out'});
+      gsap.to('#hAct', {opacity:1, y:0, duration:.7, delay:1.3, ease:'power3.out'});
+      gsap.to('#hBadge', {opacity:1, duration:.6, delay:1.6});
+    }, 2200);
+  });
+
+  // CURSOR
+  const dot = document.getElementById('dot'), ring = document.getElementById('ring');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove', e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+  (function loop(){rx+=(mx-rx)*.14;ry+=(my-ry)*.14;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(loop);})();
+  document.querySelectorAll('a,button,.bento-card,.r-card,.why-pt,.proc-col,.num-c,.proof-item').forEach(el=>{
+    el.addEventListener('mouseenter',()=>document.body.classList.add('hovering'));
+    el.addEventListener('mouseleave',()=>document.body.classList.remove('hovering'));
+  });
+
+  // NAV
+  window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('dark',scrollY>60));
+
+  // HERO PARALLAX
+  gsap.to('#heroImg', {yPercent:20, ease:'none', scrollTrigger:{trigger:'#hero',start:'top top',end:'bottom top',scrub:true}});
+
+  // SCROLL REVEAL
+  const obs = new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on');}),{threshold:.08});
+  document.querySelectorAll('.rv,.rl').forEach(el=>obs.observe(el));
+
+  // BENTO CARD 3D TILT
+  document.querySelectorAll('.bento-card').forEach(card=>{
+    card.addEventListener('mousemove', e=>{
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left)/r.width - .5;
+      const y = (e.clientY - r.top)/r.height - .5;
+      gsap.to(card,{rotateY:x*6,rotateX:-y*6,duration:.4,ease:'power2.out',transformPerspective:800});
+    });
+    card.addEventListener('mouseleave',()=>gsap.to(card,{rotateY:0,rotateX:0,duration:.6,ease:'power2.out'}));
+  });
+
+  // MAGNETIC BUTTONS
+  document.querySelectorAll('.btn-main,.btn-ghost,.nav-btn').forEach(btn=>{
+    btn.addEventListener('mousemove', e=>{
+      const r = btn.getBoundingClientRect();
+      const x = (e.clientX - r.left - r.width/2)*.25;
+      const y = (e.clientY - r.top - r.height/2)*.25;
+      gsap.to(btn,{x,y,duration:.4,ease:'power2.out'});
+    });
+    btn.addEventListener('mouseleave',()=>gsap.to(btn,{x:0,y:0,duration:.6,ease:'elastic.out(1,.5)'}));
+  });
+
+  // COUNTER ANIMATION for proof bar
+  function animateCounters(){
+    document.querySelectorAll('.proof-n,.bs-n').forEach(el=>{
+      const txt = el.textContent;
+      el.style.opacity='1';
+    });
+  }
+  setTimeout(animateCounters, 2500);
+
+  // FORM SUBMIT
+  function formSubmit(e){
+    e.preventDefault();
+    const btn = e.target.querySelector('.form-submit span');
+    btn.textContent = '✓ Request Received — We\'ll Be In Touch Within 2 Hours';
+    e.target.querySelector('.form-submit').style.background = '#1a5c2e';
+    e.target.querySelector('.form-submit').style.cursor = 'default';
+  }
+
+  // MOBILE NAV
+  function mobMenu(){
+    const ul = document.querySelector('.nav-links');
+    const open = ul.style.display==='flex';
+    ul.style.cssText = open ? '' : 'display:flex;flex-direction:column;position:fixed;top:56px;left:0;right:0;background:rgba(6,6,6,.99);padding:24px;gap:18px;border-bottom:1px solid #1a1a1a;z-index:999;';
+  }
+
+  // SECTION HEADER COUNT-UP
+  gsap.utils.toArray('.bs-n').forEach(el=>{
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 80%',
+      onEnter: ()=>{ el.style.opacity='1'; }
+    });
+  });
+</script>
+</body>
+</html>
