@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 420" width="500" height="420">
+  <rect width="500" height="420" fill="white"/>
+
+  <!-- V.C. text -->
+  <text x="250" y="130" 
+    font-family="Cormorant Garamond, Garamond, serif" 
+    font-size="110" 
+    font-weight="700"
+    fill="#2d4a3e" 
+    text-anchor="middle" 
+    letter-spacing="8">V.C.</text>
+
+  <!-- SINGLE horizontal gold line with sprig centered -->
+  <!-- Left line segment -->
+  <line x1="60" y1="158" x2="205" y2="158" stroke="#c9a96e" stroke-width="1.4"/>
+  <!-- Right line segment -->
+  <line x1="295" y1="158" x2="440" y2="158" stroke="#c9a96e" stroke-width="1.4"/>
+
+  <!-- Olive sprig centered on the line, leaves pointing DOWN -->
+  <!-- Main stem curved downward -->
+  <path d="M220 155 Q250 148 280 155" stroke="#c9a96e" stroke-width="1.3" fill="none"/>
+  <!-- Left leaves hanging down -->
+  <ellipse cx="228" cy="163" rx="7" ry="3" fill="none" stroke="#c9a96e" stroke-width="1" transform="rotate(35 228 163)"/>
+  <ellipse cx="238" cy="167" rx="7" ry="3" fill="none" stroke="#c9a96e" stroke-width="1" transform="rotate(20 238 167)"/>
+  <ellipse cx="250" cy="169" rx="6" ry="2.8" fill="none" stroke="#c9a96e" stroke-width="1"/>
+  <!-- Right leaves hanging down -->
+  <ellipse cx="272" cy="163" rx="7" ry="3" fill="none" stroke="#c9a96e" stroke-width="1" transform="rotate(-35 272 163)"/>
+  <ellipse cx="262" cy="167" rx="7" ry="3" fill="none" stroke="#c9a96e" stroke-width="1" transform="rotate(-20 262 167)"/>
+
+  <!-- ESTATE PLANNING text -->
+  <text x="250" y="200" 
+    font-family="Cormorant Garamond, Garamond, serif" 
+    font-size="22" 
+    fill="#2d4a3e" 
+    text-anchor="middle" 
+    letter-spacing="10"
+    font-weight="500">ESTATE PLANNING</text>
+
+  <!-- OAK TREE — centred at x=250, base at y=390 -->
+  <!-- Trunk -->
+  <path d="M250 390 L250 330" stroke="#c9a96e" stroke-width="3" stroke-linecap="round"/>
+  <!-- Root flare -->
+  <path d="M250 385 Q235 383 220 387" stroke="#c9a96e" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <path d="M250 385 Q265 383 280 387" stroke="#c9a96e" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <!-- Main branches -->
+  <path d="M250 345 Q225 332 200 318" stroke="#c9a96e" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <path d="M250 345 Q275 332 300 318" stroke="#c9a96e" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <path d="M250 338 Q250 318 250 300" stroke="#c9a96e" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+  <path d="M250 332 Q232 320 218 305" stroke="#c9a96e" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+  <path d="M250 332 Q268 320 282 305" stroke="#c9a96e" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+  <path d="M250 322 Q236 308 228 292" stroke="#c9a96e" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+  <path d="M250 322 Q264 308 272 292" stroke="#c9a96e" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+  <!-- Canopy clusters -->
+  <ellipse cx="250" cy="278" rx="28" ry="20" stroke="#c9a96e" stroke-width="1.3" fill="none"/>
+  <ellipse cx="222" cy="292" rx="24" ry="17" stroke="#c9a96e" stroke-width="1.2" fill="none"/>
+  <ellipse cx="278" cy="292" rx="24" ry="17" stroke="#c9a96e" stroke-width="1.2" fill="none"/>
+  <ellipse cx="200" cy="310" rx="22" ry="16" stroke="#c9a96e" stroke-width="1.1" fill="none"/>
+  <ellipse cx="300" cy="310" rx="22" ry="16" stroke="#c9a96e" stroke-width="1.1" fill="none"/>
+  <ellipse cx="232" cy="270" rx="20" ry="14" stroke="#c9a96e" stroke-width="1.1" fill="none"/>
+  <ellipse cx="268" cy="270" rx="20" ry="14" stroke="#c9a96e" stroke-width="1.1" fill="none"/>
+  <ellipse cx="210" cy="298" rx="18" ry="13" stroke="#c9a96e" stroke-width="1" fill="none"/>
+  <ellipse cx="290" cy="298" rx="18" ry="13" stroke="#c9a96e" stroke-width="1" fill="none"/>
+  <ellipse cx="250" cy="264" rx="18" ry="13" stroke="#c9a96e" stroke-width="1" fill="none"/>
+  <ellipse cx="188" cy="318" rx="16" ry="12" stroke="#c9a96e" stroke-width="1" fill="none"/>
+  <ellipse cx="312" cy="318" rx="16" ry="12" stroke="#c9a96e" stroke-width="1" fill="none"/>
+</svg>
