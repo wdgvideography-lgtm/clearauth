@@ -476,7 +476,20 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLb();})
 
 <!-- HERO -->
 <section id="hero">
-  <div class="h-bg"><img src="https://media.base44.com/images/public/6a0c1534017166f536b1ac32/626299f13_generated_image.png" alt="WDG Videography" id="hImg"/></div>
+  <div class="h-vid-bg" id="heroVidBg">
+    <video class="hv-active" autoplay muted loop playsinline id="hv0"><source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/42560c906_786e2c8a4_video_863129336157622.mp4" type="video/mp4"/></video>
+    <video autoplay muted loop playsinline id="hv1"><source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/db169c7e6_68ebb28ef_video_1310483361190446.mp4" type="video/mp4"/></video>
+    <video autoplay muted loop playsinline id="hv2"><source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/9ccda9da2_b4daf6e81_video_843068428364743.mp4" type="video/mp4"/></video>
+    <video autoplay muted loop playsinline id="hv3"><source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/34a842b0c_09baec3cb_video_1487018029783740.mp4" type="video/mp4"/></video>
+    <video autoplay muted loop playsinline id="hv4"><source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/46bef4ed1_3aa09d39f_video_26883404297979847.mp4" type="video/mp4"/></video>
+  </div>
+  <div class="h-dots">
+    <button class="h-dot active" onclick="goVid(0)"></button>
+    <button class="h-dot" onclick="goVid(1)"></button>
+    <button class="h-dot" onclick="goVid(2)"></button>
+    <button class="h-dot" onclick="goVid(3)"></button>
+    <button class="h-dot" onclick="goVid(4)"></button>
+  </div>
   <div class="h-ov"></div><div class="h-grain"></div>
   <div class="h-prog"><div class="h-prog-f"></div></div>
   <div class="h-loc" id="hLoc">Cheltenham · Gloucestershire · UK · Nationwide</div>
