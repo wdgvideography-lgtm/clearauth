@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>VC Estate Planning | Wills, LPAs, Trusts & Estate Protection</title>
+<meta name="description" content="Professional estate planning services tailored to your family — Wills, LPAs, Trusts, Estate Protection and Probate Guidance. Fully qualified & insured."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --green:#2d4a3e;
+  --green-dark:#1e3329;
+  --green-light:#3d6b5a;
+  --gold:#c9a96e;
+  --gold-light:#e8c98a;
+  --cream:#f5f0e8;
+  --cream-dark:#ede5d4;
+  --white:#fff;
+  --text:#2a2a2a;
+  --text-light:#5a5a5a;
+  --serif:'Cormorant Garamond',serif;
+  --sans:'Montserrat',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);color:var(--text);background:var(--cream);overflow-x:hidden}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:24px 60px;display:flex;align-items:center;justify-content:space-between;transition:all .4s}
+nav.scrolled{background:rgba(30,51,41,.97);backdrop-filter:blur(20px);padding:14px 60px;border-bottom:1px solid rgba(201,169,110,.15)}
+.nav-logo{text-decoration:none}
+.nav-logo-vc{font-family:var(--serif);font-size:1.6rem;font-weight:300;letter-spacing:.15em;color:var(--white)}
+.nav-logo-sub{font-family:var(--sans);font-size:.55rem;letter-spacing:.35em;color:var(--gold);text-transform:uppercase;margin-top:1px}
+.nav-links{display:flex;gap:36px;list-style:none}
+.nav-links a{font-family:var(--sans);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.75);text-decoration:none;transition:color .3s}
+.nav-links a:hover{color:var(--gold)}
+.nav-cta{font-family:var(--sans);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;padding:11px 24px;background:var(--gold);color:var(--green-dark);text-decoration:none;font-weight:600;transition:all .3s}
+.nav-cta:hover{background:var(--gold-light)}
+.burger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
+.burger span{display:block;width:22px;height:1.5px;background:var(--white);transition:all .3s}
+
+/* HERO */
+#hero{position:relative;height:100vh;min-height:600px;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1585843149061-a7eeecfa8b43?w=1800&q=80') center/cover no-repeat;transform:scale(1.05)}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(30,51,41,.72) 0%,rgba(20,38,28,.85) 100%)}
+.hero-content{position:relative;z-index:2;max-width:760px;padding:0 24px}
+.hero-vc{font-family:var(--serif);font-size:clamp(3.5rem,8vw,6rem);font-weight:300;letter-spacing:.2em;color:var(--white);line-height:1;opacity:0;transform:translateY(30px)}
+.hero-divider{display:flex;align-items:center;gap:14px;justify-content:center;margin:18px 0 14px;opacity:0}
+.hero-divider-line{width:60px;height:1px;background:var(--gold)}
+.hero-divider-gem{color:var(--gold);font-size:.85rem}
+.hero-ep{font-family:var(--sans);font-size:.65rem;letter-spacing:.42em;text-transform:uppercase;color:var(--gold);opacity:0}
+.hero-tagline{font-family:var(--serif);font-size:clamp(1.8rem,4vw,2.7rem);font-weight:300;color:var(--white);margin:28px 0 16px;line-height:1.35;opacity:0;transform:translateY(20px)}
+.hero-tagline em{font-style:italic;color:var(--gold-light)}
+.hero-sub{font-family:var(--sans);font-size:.75rem;color:rgba(255,255,255,.7);line-height:1.8;letter-spacing:.04em;max-width:540px;margin:0 auto 40px;opacity:0}
+.hero-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;opacity:0}
+.btn-gold{padding:14px 34px;background:var(--gold);color:var(--green-dark);font-family:var(--sans);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;font-weight:600;text-decoration:none;transition:all .3s;border:1px solid var(--gold)}
+.btn-gold:hover{background:var(--gold-light);border-color:var(--gold-light)}
+.btn-outline{padding:14px 34px;background:transparent;color:var(--white);font-family:var(--sans);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;font-weight:500;text-decoration:none;border:1px solid rgba(255,255,255,.5);transition:all .3s}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold)}
+.hero-scroll{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);z-index:2;opacity:0}
+.hero-scroll-line{width:1px;height:50px;background:linear-gradient(to bottom,var(--gold),transparent);margin:0 auto 8px;animation:scrollPulse 2s ease-in-out infinite}
+.hero-scroll-txt{font-family:var(--sans);font-size:.5rem;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.45)}
+@keyframes scrollPulse{0%,100%{opacity:.4;transform:scaleY(1)}50%{opacity:1;transform:scaleY(1.1)}}
+
+/* SECTION COMMON */
+section{padding:100px 60px}
+.sec-label{font-family:var(--sans);font-size:.55rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
+.sec-divider{display:flex;align-items:center;gap:14px;margin:12px 0 32px}
+.sec-divider-line{width:40px;height:1px;background:var(--gold)}
+.sec-divider-gem{color:var(--gold);font-size:.8rem}
+.sec-title{font-family:var(--serif);font-size:clamp(2rem,4vw,3rem);font-weight:300;line-height:1.25;color:var(--green-dark)}
+.sec-title em{font-style:italic;color:var(--green-light)}
+
+/* WELCOME */
+#welcome{background:var(--white)}
+.welcome-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.welcome-img{position:relative}
+.welcome-img img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block}
+.welcome-img-badge{position:absolute;bottom:-24px;right:-24px;background:var(--green);padding:28px 24px;text-align:center}
+.welcome-img-badge-num{font-family:var(--serif);font-size:2.2rem;color:var(--gold);display:block;line-height:1}
+.welcome-img-badge-txt{font-family:var(--sans);font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.7);margin-top:4px}
+.welcome-body p{font-family:var(--sans);font-size:.8rem;color:var(--text-light);line-height:1.9;margin-bottom:18px}
+.welcome-tags{display:flex;flex-wrap:wrap;gap:10px;margin:28px 0 36px}
+.welcome-tag{font-family:var(--sans);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;padding:7px 16px;border:1px solid var(--gold);color:var(--green-dark)}
+
+/* SERVICES */
+#services{background:var(--green-dark)}
+.services-inner{max-width:1100px;margin:0 auto}
+.services-head{margin-bottom:60px}
+.services-head .sec-title{color:var(--white)}
+.services-head .sec-label{color:var(--gold)}
+.services-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1px;background:rgba(201,169,110,.15)}
+.service-card{background:var(--green-dark);padding:44px 36px;transition:background .3s;cursor:default;position:relative;overflow:hidden}
+.service-card::before{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--gold);transition:width .5s ease}
+.service-card:hover{background:rgba(61,107,90,.25)}
+.service-card:hover::before{width:100%}
+.service-num{font-family:var(--serif);font-size:3rem;color:rgba(201,169,110,.18);font-weight:300;line-height:1;margin-bottom:20px}
+.service-title{font-family:var(--serif);font-size:1.35rem;font-weight:400;color:var(--white);margin-bottom:14px;line-height:1.3}
+.service-desc{font-family:var(--sans);font-size:.72rem;color:rgba(255,255,255,.55);line-height:1.85}
+
+/* ABOUT */
+#about{background:var(--cream)}
+.about-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.about-img{position:relative}
+.about-img img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}
+.about-img-accent{position:absolute;top:-20px;left:-20px;width:60%;height:60%;border:1px solid var(--gold);z-index:-1}
+.about-pillars{display:flex;flex-direction:column;gap:24px;margin-top:36px}
+.about-pillar{display:flex;gap:20px;align-items:flex-start}
+.about-pillar-gem{color:var(--gold);font-size:1rem;margin-top:3px;flex-shrink:0}
+.about-pillar-title{font-family:var(--serif);font-size:1.05rem;color:var(--green-dark);margin-bottom:4px}
+.about-pillar-desc{font-family:var(--sans);font-size:.72rem;color:var(--text-light);line-height:1.75}
+
+/* PROCESS */
+#process{background:var(--green)}
+.process-inner{max-width:1000px;margin:0 auto;text-align:center}
+.process-head{margin-bottom:60px}
+.process-head .sec-title{color:var(--white)}
+.process-head .sec-label{color:var(--gold)}
+.process-head p{font-family:var(--sans);font-size:.78rem;color:rgba(255,255,255,.6);line-height:1.85;max-width:560px;margin:0 auto}
+.process-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;position:relative}
+.process-steps::before{content:'';position:absolute;top:36px;left:16.5%;right:16.5%;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent)}
+.process-step{padding:0 30px;text-align:center}
+.process-step-num{width:72px;height:72px;border:1px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 28px;font-family:var(--serif);font-size:1.6rem;color:var(--gold);font-weight:300;background:var(--green);position:relative;z-index:1}
+.process-step-title{font-family:var(--serif);font-size:1.2rem;color:var(--white);margin-bottom:12px}
+.process-step-desc{font-family:var(--sans);font-size:.7rem;color:rgba(255,255,255,.55);line-height:1.85}
+
+/* CTA BAND */
+#cta{background:var(--cream-dark);padding:80px 60px}
+.cta-inner{max-width:800px;margin:0 auto;text-align:center}
+.cta-inner .sec-title{color:var(--green-dark);margin-bottom:16px}
+.cta-inner p{font-family:var(--sans);font-size:.78rem;color:var(--text-light);line-height:1.85;margin-bottom:36px}
+.cta-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+
+/* CONTACT */
+#contact{background:var(--green-dark);padding:100px 60px}
+.contact-inner{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px}
+.contact-info .sec-title{color:var(--white)}
+.contact-info .sec-label{color:var(--gold)}
+.contact-info p{font-family:var(--sans);font-size:.78rem;color:rgba(255,255,255,.6);line-height:1.85;margin-bottom:36px}
+.contact-detail{display:flex;align-items:flex-start;gap:16px;margin-bottom:22px}
+.contact-detail-icon{color:var(--gold);font-size:1rem;margin-top:2px;flex-shrink:0}
+.contact-detail-label{font-family:var(--sans);font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.contact-detail-val{font-family:var(--serif);font-size:1.05rem;color:var(--white)}
+.contact-form{display:flex;flex-direction:column;gap:16px}
+.cf-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.cf-field{display:flex;flex-direction:column;gap:6px}
+.cf-field label{font-family:var(--sans);font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.cf-field input,.cf-field select,.cf-field textarea{background:rgba(255,255,255,.05);border:1px solid rgba(201,169,110,.25);color:var(--white);padding:13px 16px;font-family:var(--sans);font-size:.75rem;outline:none;transition:border .3s;-webkit-appearance:none}
+.cf-field input:focus,.cf-field select:focus,.cf-field textarea:focus{border-color:var(--gold)}
+.cf-field textarea{resize:none;height:110px}
+.cf-field select option{background:var(--green-dark);color:var(--white)}
+.cf-submit{padding:15px;background:var(--gold);border:none;color:var(--green-dark);font-family:var(--sans);font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;font-weight:700;cursor:pointer;transition:all .3s;margin-top:6px}
+.cf-submit:hover{background:var(--gold-light)}
+
+/* FOOTER */
+footer{background:#0f1f17;padding:48px 60px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px;border-top:1px solid rgba(201,169,110,.12)}
+.footer-logo-vc{font-family:var(--serif);font-size:1.3rem;letter-spacing:.15em;color:var(--white);font-weight:300}
+.footer-logo-sub{font-family:var(--sans);font-size:.5rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
+.footer-nav{display:flex;gap:28px;list-style:none}
+.footer-nav a{font-family:var(--sans);font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.45);text-decoration:none;transition:color .3s}
+.footer-nav a:hover{color:var(--gold)}
+.footer-copy{font-family:var(--sans);font-size:.58rem;color:rgba(255,255,255,.3);letter-spacing:.05em}
+.footer-badge{font-family:var(--sans);font-size:.55rem;letter-spacing:.1em;color:rgba(201,169,110,.6)}
+
+/* MOBILE NAV */
+.mob-menu{display:none;position:fixed;inset:0;background:rgba(14,33,22,.98);z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:32px}
+.mob-menu.open{display:flex}
+.mob-menu a{font-family:var(--serif);font-size:2rem;color:var(--white);text-decoration:none;letter-spacing:.05em;font-weight:300}
+.mob-menu a:hover{color:var(--gold)}
+.mob-close{position:absolute;top:24px;right:28px;background:none;border:none;color:var(--white);font-size:1.5rem;cursor:pointer}
+
+/* SCROLL REVEAL */
+.reveal{opacity:0;transform:translateY(40px);transition:opacity .8s ease,transform .8s ease}
+.reveal.visible{opacity:1;transform:none}
+.reveal-left{opacity:0;transform:translateX(-40px);transition:opacity .9s ease,transform .9s ease}
+.reveal-left.visible{opacity:1;transform:none}
+.reveal-right{opacity:0;transform:translateX(40px);transition:opacity .9s ease,transform .9s ease}
+.reveal-right.visible{opacity:1;transform:none}
+
+/* WDG CREDIT */
+.wdg-credit{text-align:center;padding:12px;background:#0a1710;font-family:var(--sans);font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.2)}
+.wdg-credit a{color:rgba(201,169,110,.4);text-decoration:none}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  nav{padding:18px 24px}
+  nav.scrolled{padding:12px 24px}
+  .nav-links,.nav-cta{display:none}
+  .burger{display:flex}
+  section{padding:70px 24px}
+  #cta{padding:60px 24px}
+  #contact{padding:70px 24px}
+  footer{padding:36px 24px;flex-direction:column;text-align:center}
+  .footer-nav{justify-content:center}
+  .welcome-inner,.about-inner,.contact-inner{grid-template-columns:1fr;gap:40px}
+  .about-img{order:-1}
+  .welcome-img-badge{right:0;bottom:-16px}
+  .process-steps{grid-template-columns:1fr;gap:36px}
+  .process-steps::before{display:none}
+  .cf-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- MOBILE MENU -->
+<div class="mob-menu" id="mobMenu">
+  <button class="mob-close" onclick="closeMob()">✕</button>
+  <a href="#" onclick="closeMob()">Home</a>
+  <a href="#about" onclick="closeMob()">About</a>
+  <a href="#services" onclick="closeMob()">Services</a>
+  <a href="#contact" onclick="closeMob()">Contact</a>
+  <a href="#contact" class="btn-gold" onclick="closeMob()" style="font-size:.62rem;padding:14px 30px;letter-spacing:.18em">Book a Consultation</a>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-vc">V.C.</div>
+    <div class="nav-logo-sub">Estate Planning</div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#">Home</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta">Book a Consultation</a>
+  <button class="burger" onclick="openMob()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-vc" id="hVC">V . C .</div>
+    <div class="hero-divider" id="hDiv">
+      <div class="hero-divider-line"></div>
+      <div class="hero-divider-gem">✦</div>
+      <div class="hero-divider-line"></div>
+    </div>
+    <div class="hero-ep" id="hEP">Estate Planning</div>
+    <h1 class="hero-tagline" id="hTag">Planning for the future,<br/><em>with care and clarity.</em></h1>
+    <p class="hero-sub" id="hSub">Professional estate planning services tailored to your family — Wills, LPAs, Trusts, Estate Protection and Probate Guidance.</p>
+    <div class="hero-btns" id="hBtns">
+      <a href="#contact" class="btn-gold">Book a Consultation</a>
+      <a href="#services" class="btn-outline">Our Services</a>
+    </div>
+  </div>
+  <div class="hero-scroll" id="hScroll">
+    <div class="hero-scroll-line"></div>
+    <div class="hero-scroll-txt">Scroll</div>
+  </div>
+</section>
+
+<!-- WELCOME -->
+<section id="welcome">
+  <div class="welcome-inner">
+    <div class="welcome-img reveal-left">
+      <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=900&q=80" alt="VC Estate Planning consultation"/>
+      <div class="welcome-img-badge">
+        <span class="welcome-img-badge-num">100%</span>
+        <span class="welcome-img-badge-txt">Qualified & Insured</span>
+      </div>
+    </div>
+    <div class="welcome-body reveal-right">
+      <p class="sec-label">Welcome</p>
+      <div class="sec-divider"><div class="sec-divider-line"></div><div class="sec-divider-gem">✦</div></div>
+      <h2 class="sec-title">Estate planning that feels <em>personal</em>, not transactional.</h2>
+      <div style="margin-top:28px">
+        <p>At VC Estate Planning Ltd, we believe every family deserves clear, honest guidance delivered with compassion. We take the time to understand your individual circumstances and ensure your affairs are structured correctly — without unnecessary complexity or excessive costs.</p>
+        <p>Whether you are preparing a Will, arranging Lasting Powers of Attorney, considering trusts or seeking guidance around estate protection, we are here to help make the process straightforward and stress-free.</p>
+      </div>
+      <div class="welcome-tags">
+        <span class="welcome-tag">Fully Qualified</span>
+        <span class="welcome-tag">Fully Insured</span>
+        <span class="welcome-tag">Home Appointments</span>
+        <span class="welcome-tag">Online Consultations</span>
+      </div>
+      <a href="#contact" class="btn-gold">Book a Free Consultation</a>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="services-inner">
+    <div class="services-head reveal">
+      <p class="sec-label">What We Offer</p>
+      <div class="sec-divider"><div class="sec-divider-line"></div><div class="sec-divider-gem">✦</div></div>
+      <h2 class="sec-title" style="color:var(--white)">How we can <em style="color:var(--gold)">help you</em></h2>
+    </div>
+    <div class="services-grid">
+      <div class="service-card reveal">
+        <div class="service-num">01</div>
+        <div class="service-title">Wills</div>
+        <div class="service-desc">Ensure your wishes are clearly documented and legally binding. Without one, the law decides how your estate is distributed — which may not reflect your intentions.</div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-num">02</div>
+        <div class="service-title">Mirror Wills</div>
+        <div class="service-desc">Ideal for couples who wish to leave their estates to each other and then to shared beneficiaries. A straightforward and cost-effective solution for families.</div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-num">03</div>
+        <div class="service-title">Lasting Powers of Attorney</div>
+        <div class="service-desc">Appoint trusted individuals to make decisions on your behalf if you lose mental or physical capacity. Both Property & Financial Affairs, and Health & Welfare types available.</div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-num">04</div>
+        <div class="service-title">Trusts</div>
+        <div class="service-desc">A powerful tool for protecting your assets and ensuring they are passed to the right people at the right time — whether protecting a family home or managing inheritance tax.</div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-num">05</div>
+        <div class="service-title">Estate Protection</div>
+        <div class="service-desc">Safeguard your assets from potential future care costs, creditor claims or family disputes. We help you put the right structures in place to protect what you have worked hard to build.</div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-num">06</div>
+        <div class="service-title">Probate Guidance</div>
+        <div class="service-desc">Compassionate, practical guidance to help executors and families navigate the probate process with confidence and clarity after a bereavement.</div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-num">07</div>
+        <div class="service-title">Inheritance Tax Advice</div>
+        <div class="service-desc">Effective estate planning can significantly reduce the inheritance tax burden on your loved ones. Clear, practical advice on structuring your estate to make the most of available exemptions.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-inner">
+    <div class="about-body reveal-left">
+      <p class="sec-label">Our Story</p>
+      <div class="sec-divider"><div class="sec-divider-line"></div><div class="sec-divider-gem">✦</div></div>
+      <h2 class="sec-title">About VC Estate <em>Planning</em></h2>
+      <div style="margin-top:28px">
+        <p style="font-family:var(--sans);font-size:.8rem;color:var(--text-light);line-height:1.9;margin-bottom:14px">At VC Estate Planning Ltd, we believe estate planning should be approached with both professionalism and compassion. Planning for the future can often feel overwhelming, which is why we are committed to providing clear, honest and understandable guidance.</p>
+        <p style="font-family:var(--sans);font-size:.8rem;color:var(--text-light);line-height:1.9;margin-bottom:14px">Family, trust and peace of mind are at the centre of everything we do.</p>
+      </div>
+      <div class="about-pillars">
+        <div class="about-pillar">
+          <div class="about-pillar-gem">✦</div>
+          <div>
+            <div class="about-pillar-title">Fully Qualified & Insured</div>
+            <div class="about-pillar-desc">You can trust that your estate planning is in safe, professional hands.</div>
+          </div>
+        </div>
+        <div class="about-pillar">
+          <div class="about-pillar-gem">✦</div>
+          <div>
+            <div class="about-pillar-title">Client-Focused</div>
+            <div class="about-pillar-desc">Every piece of advice is tailored to your unique family circumstances.</div>
+          </div>
+        </div>
+        <div class="about-pillar">
+          <div class="about-pillar-gem">✦</div>
+          <div>
+            <div class="about-pillar-title">Approachable Service</div>
+            <div class="about-pillar-desc">We make complex matters simple, clear and stress-free.</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:36px">
+        <a href="#contact" class="btn-gold">Take the First Step</a>
+      </div>
+    </div>
+    <div class="about-img reveal-right">
+      <div class="about-img-accent"></div>
+      <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?w=900&q=80" alt="Professional estate planning"/>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="process">
+  <div class="process-inner">
+    <div class="process-head reveal">
+      <p class="sec-label">How It Works</p>
+      <div class="sec-divider" style="justify-content:center"><div class="sec-divider-line"></div><div class="sec-divider-gem">✦</div><div class="sec-divider-line"></div></div>
+      <h2 class="sec-title" style="color:var(--white);margin-bottom:18px">Simple, clear, <em style="color:var(--gold-light)">stress-free</em></h2>
+      <p>A consultation with us is relaxed, informative and completely no-obligation. We guide you every step of the way.</p>
+    </div>
+    <div class="process-steps">
+      <div class="process-step reveal">
+        <div class="process-step-num">01</div>
+        <div class="process-step-title">Book a Consultation</div>
+        <div class="process-step-desc">Get in touch by phone, email or our online form. We'll arrange a time that suits you — at home, online or by phone.</div>
+      </div>
+      <div class="process-step reveal">
+        <div class="process-step-num">02</div>
+        <div class="process-step-title">We Listen & Advise</div>
+        <div class="process-step-desc">We take the time to understand your circumstances and explain your options clearly — without jargon or pressure.</div>
+      </div>
+      <div class="process-step reveal">
+        <div class="process-step-num">03</div>
+        <div class="process-step-title">Peace of Mind</div>
+        <div class="process-step-desc">Your documents are professionally drafted and structured correctly — giving you and your family true peace of mind.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<section id="cta">
+  <div class="cta-inner reveal">
+    <p class="sec-label" style="text-align:center">Get Started</p>
+    <div class="sec-divider" style="justify-content:center"><div class="sec-divider-line"></div><div class="sec-divider-gem">✦</div><div class="sec-divider-line"></div></div>
+    <h2 class="sec-title">Ready to protect <em>what matters most?</em></h2>
+    <p style="margin-top:16px">Book a no-obligation consultation — at home, online, or by phone. We'll guide you through every step with clarity and care.</p>
+    <div class="cta-btns">
+      <a href="#contact" class="btn-gold">Book a Consultation</a>
+      <a href="tel:07904750856" class="btn-outline" style="border-color:var(--green);color:var(--green-dark)">Call 07904 750 856</a>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-inner">
+    <div class="contact-info reveal-left">
+      <p class="sec-label">Get in Touch</p>
+      <div class="sec-divider"><div class="sec-divider-line"></div><div class="sec-divider-gem">✦</div></div>
+      <h2 class="sec-title" style="color:var(--white)">We'd love to <em style="color:var(--gold)">hear from you</em></h2>
+      <p style="margin-top:20px">Whether you have a question or are ready to take the first step, we're here to help. Reach out in whatever way suits you best.</p>
+      <div style="margin-top:36px">
+        <div class="contact-detail">
+          <div class="contact-detail-icon">✉</div>
+          <div>
+            <div class="contact-detail-label">Email</div>
+            <div class="contact-detail-val">info@vcestateplanning.com</div>
+          </div>
+        </div>
+        <div class="contact-detail">
+          <div class="contact-detail-icon">✆</div>
+          <div>
+            <div class="contact-detail-label">Phone</div>
+            <div class="contact-detail-val">07904 750 856</div>
+          </div>
+        </div>
+        <div class="contact-detail">
+          <div class="contact-detail-icon">⌂</div>
+          <div>
+            <div class="contact-detail-label">Availability</div>
+            <div class="contact-detail-val" style="font-size:.85rem;line-height:1.5">Home appointments & online<br/>consultations available</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal-right">
+      <form class="contact-form" onsubmit="submitForm(event)">
+        <div class="cf-row">
+          <div class="cf-field">
+            <label>First Name</label>
+            <input type="text" placeholder="Your first name" required/>
+          </div>
+          <div class="cf-field">
+            <label>Last Name</label>
+            <input type="text" placeholder="Your last name" required/>
+          </div>
+        </div>
+        <div class="cf-field">
+          <label>Email Address</label>
+          <input type="email" placeholder="your@email.com" required/>
+        </div>
+        <div class="cf-field">
+          <label>Phone Number</label>
+          <input type="tel" placeholder="Your phone number"/>
+        </div>
+        <div class="cf-field">
+          <label>Service of Interest</label>
+          <select>
+            <option value="">Select a service...</option>
+            <option>Wills</option>
+            <option>Mirror Wills</option>
+            <option>Lasting Powers of Attorney</option>
+            <option>Trusts</option>
+            <option>Estate Protection</option>
+            <option>Probate Guidance</option>
+            <option>Inheritance Tax Advice</option>
+            <option>General Enquiry</option>
+          </select>
+        </div>
+        <div class="cf-field">
+          <label>Message</label>
+          <textarea placeholder="Tell us a little about your situation..."></textarea>
+        </div>
+        <button type="submit" class="cf-submit">Send Enquiry</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-logo-vc">V.C.</div>
+    <div class="footer-logo-sub">Estate Planning</div>
+  </div>
+  <ul class="footer-nav">
+    <li><a href="#">Home</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="footer-copy">© 2026 VC Estate Planning Ltd. All rights reserved.</div>
+  <div class="footer-badge">Fully Qualified & Insured</div>
+</footer>
+<div class="wdg-credit">Website concept by <a href="https://wdgvideography.com">WDG Videography</a></div>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+// HERO PARALLAX
+window.addEventListener('scroll',()=>{
+  const bg=document.getElementById('heroBg');
+  if(bg) bg.style.transform=`scale(1.05) translateY(${scrollY*0.3}px)`;
+});
+
+// NAV SCROLL
+window.addEventListener('scroll',()=>{
+  document.getElementById('nav').classList.toggle('scrolled',scrollY>60);
+});
+
+// HERO ANIMATIONS
+setTimeout(()=>{
+  gsap.to('#hVC',{opacity:1,y:0,duration:1.1,ease:'power3.out'});
+  gsap.to('#hDiv',{opacity:1,duration:.8,delay:.5});
+  gsap.to('#hEP',{opacity:1,duration:.8,delay:.6});
+  gsap.to('#hTag',{opacity:1,y:0,duration:1,delay:.8,ease:'power3.out'});
+  gsap.to('#hSub',{opacity:1,duration:.9,delay:1.1});
+  gsap.to('#hBtns',{opacity:1,duration:.8,delay:1.4});
+  gsap.to('#hScroll',{opacity:1,duration:.8,delay:1.8});
+},200);
+
+// SCROLL REVEAL
+const observer=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}});
+},{threshold:.12});
+document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach((el,i)=>{
+  el.style.transitionDelay=(i%4)*0.1+'s';
+  observer.observe(el);
+});
+
+// MOBILE NAV
+function openMob(){document.getElementById('mobMenu').classList.add('open');document.body.style.overflow='hidden'}
+function closeMob(){document.getElementById('mobMenu').classList.remove('open');document.body.style.overflow=''}
+
+// FORM SUBMIT
+function submitForm(e){
+  e.preventDefault();
+  const btn=e.target.querySelector('.cf-submit');
+  btn.textContent='Sending...';
+  setTimeout(()=>{
+    btn.textContent='✓ Enquiry Sent!';
+    btn.style.background='#3d6b5a';
+    btn.style.color='#fff';
+    e.target.reset();
+    setTimeout(()=>{btn.textContent='Send Enquiry';btn.style.background='';btn.style.color=''},3000);
+  },1000);
+}
+</script>
+</body>
+</html>
