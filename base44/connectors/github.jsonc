@@ -2,6 +2,7 @@
   "type": "github",
   "scopes": [
     "repo",
-    "workflow"
+    "read:user",
+    "user:email"
   ]
 }
