@@ -180,7 +180,6 @@
     </div>
     <div class="play-btn">&#9654;</div>
   </div>
-
   <div class="port-card" data-category="brand" onclick="openLb('https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/60008351a_cr_video2.mp4','Charles Russell Transport','Brand Film')">
     <video muted loop playsinline preload="metadata">
       <source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/60008351a_cr_video2.mp4" type="video/mp4"/>
@@ -191,7 +190,6 @@
     </div>
     <div class="play-btn">&#9654;</div>
   </div>
-
   <div class="port-card" data-category="brand" onclick="openLb('https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/39cced02a_cr_video3.mp4','Charles Russell Transport','Brand Film')">
     <video muted loop playsinline preload="metadata">
       <source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/39cced02a_cr_video3.mp4" type="video/mp4"/>
@@ -202,7 +200,6 @@
     </div>
     <div class="play-btn">&#9654;</div>
   </div>
-
   <div class="port-card" data-category="brand" onclick="openLb('https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/6aa368ac8_cr_video4.mp4','Charles Russell Transport','Brand Film')">
     <video muted loop playsinline preload="metadata">
       <source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/6aa368ac8_cr_video4.mp4" type="video/mp4"/>
@@ -213,7 +210,6 @@
     </div>
     <div class="play-btn">&#9654;</div>
   </div>
-
   <div class="port-card" data-category="brand" onclick="openLb('https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/86fc5db2c_cr_video5.mp4','Charles Russell Transport','Brand Film')">
     <video muted loop playsinline preload="metadata">
       <source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/86fc5db2c_cr_video5.mp4" type="video/mp4"/>
@@ -222,6 +218,45 @@
       <div class="port-card-title">Charles Russell Transport</div>
       <div class="port-card-cat">Brand Film</div>
     </div>
+    <div class="play-btn">&#9654;</div>
+  </div>
+  <div class="port-card" data-category="brand" onclick="openLb('https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/fdd304353_cr_video6.mp4','Charles Russell Transport','Brand Film')">
+    <video muted loop playsinline preload="metadata">
+      <source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/fdd304353_cr_video6.mp4" type="video/mp4"/>
+    </video>
+    <div class="port-card-overlay">
+      <div class="port-card-title">Charles Russell Transport</div>
+      <div class="port-card-cat">Brand Film</div>
+    </div>
+    <div class="play-btn">&#9654;</div>
+  </div>
+  <div class="port-card" data-category="brand" onclick="openLb('https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/1aaea9a43_cr_video7.mp4','Charles Russell Transport','Brand Film')">
+    <video muted loop playsinline preload="metadata">
+      <source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/1aaea9a43_cr_video7.mp4" type="video/mp4"/>
+    </video>
+    <div class="port-card-overlay">
+      <div class="port-card-title">Charles Russell Transport</div>
+      <div class="port-card-cat">Brand Film</div>
+    </div>
+    <div class="play-btn">&#9654;</div>
+  </div>
+  
+    <div class="play-btn">&#9654;</div>
+  </div>
+
+  
+    <div class="play-btn">&#9654;</div>
+  </div>
+
+  
+    <div class="play-btn">&#9654;</div>
+  </div>
+
+  
+    <div class="play-btn">&#9654;</div>
+  </div>
+
+  
     <div class="play-btn">&#9654;</div>
   </div>
   <!-- ========================================================= -->
@@ -234,14 +269,7 @@
   </div>
 
   <!-- EXAMPLE CARD TEMPLATE (hidden — duplicate & fill in to add a video):
-  <div class="port-card" data-category="brand" onclick="openLb('YOUR_VIDEO_URL_HERE','Client Name','Brand Film')">
-    <video muted loop playsinline preload="none" poster="YOUR_THUMBNAIL_URL">
-      <source src="YOUR_VIDEO_URL_HERE" type="video/mp4"/>
-    </video>
-    <div class="port-card-overlay">
-      <div class="port-card-title">Client Name</div>
-      <div class="port-card-cat">Brand Film</div>
-    </div>
+  
     <div class="play-btn">
       <svg width="16" height="18" viewBox="0 0 16 18" fill="none"><path d="M1 1l14 8-14 8V1z" fill="#E8A020" stroke="#E8A020" stroke-width="1.2" stroke-linejoin="round"/></svg>
     </div>
