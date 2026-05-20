@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>WDG Videography | Full-Service Marketing & Cinematic Video — Cheltenham</title>
+  <meta name="description" content="Cinematic video production, bespoke website design & complete social media management. Based in Cheltenham. Packages from £1,200/month. Book your free strategy call."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js">
+// HERO VIDEO ROTATION
+var _hCur=0,_hTimer=null,_hDur=8000;
+function goVid(idx){
+  var vids=document.querySelectorAll('#heroVidBg video');
+  var dots=document.querySelectorAll('.h-dot');
+  vids[_hCur].classList.remove('hv-active');
+  dots[_hCur].classList.remove('active');
+  _hCur=idx;
+  vids[_hCur].classList.add('hv-active');
+  dots[_hCur].classList.add('active');
+  _resetProg();
+  clearTimeout(_hTimer);
+  _hTimer=setTimeout(_nextVid,_hDur);
+}
+function _nextVid(){goVid((_hCur+1)%5);}
+function _resetProg(){
+  var f=document.getElementById('hProgF');
+  if(!f)return;
+  f.style.transition='none';f.style.width='0';
+  requestAnimationFrame(function(){requestAnimationFrame(function(){f.style.transition='width '+_hDur+'ms linear';f.style.width='100%';});});
+}
+// Start rotation after loader
+var _origInit=typeof initHero==='function'?initHero:null;
+function _startHero(){_resetProg();_hTimer=setTimeout(_nextVid,_hDur);}
+document.addEventListener('DOMContentLoaded',function(){setTimeout(_startHero,2000);});
+
+// LIGHTBOX
+function openLb(src){
+  var lb=document.getElementById('lightbox');
+  var v=document.getElementById('lbVideo');
+  v.src=src;v.play();
+  lb.style.display='flex';
+  document.body.style.overflow='hidden';
+}
+function closeLb(){
+  var lb=document.getElementById('lightbox');
+  var v=document.getElementById('lbVideo');
+  v.pause();v.src='';
+  lb.style.display='none';
+  document.body.style.overflow='';
+}
+document.getElementById('lightbox').addEventListener('click',function(e){if(e.target===this)closeLb();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLb();});
+
+</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js">
+// HERO VIDEO ROTATION
+var _hCur=0,_hTimer=null,_hDur=8000;
+function goVid(idx){
+  var vids=document.querySelectorAll('#heroVidBg video');
+  var dots=document.querySelectorAll('.h-dot');
+  vids[_hCur].classList.remove('hv-active');
+  dots[_hCur].classList.remove('active');
+  _hCur=idx;
+  vids[_hCur].classList.add('hv-active');
+  dots[_hCur].classList.add('active');
+  _resetProg();
+  clearTimeout(_hTimer);
+  _hTimer=setTimeout(_nextVid,_hDur);
+}
+function _nextVid(){goVid((_hCur+1)%5);}
+function _resetProg(){
+  var f=document.getElementById('hProgF');
+  if(!f)return;
+  f.style.transition='none';f.style.width='0';
+  requestAnimationFrame(function(){requestAnimationFrame(function(){f.style.transition='width '+_hDur+'ms linear';f.style.width='100%';});});
+}
+// Start rotation after loader
+var _origInit=typeof initHero==='function'?initHero:null;
+function _startHero(){_resetProg();_hTimer=setTimeout(_nextVid,_hDur);}
+document.addEventListener('DOMContentLoaded',function(){setTimeout(_startHero,2000);});
+
+// LIGHTBOX
+function openLb(src){
+  var lb=document.getElementById('lightbox');
+  var v=document.getElementById('lbVideo');
+  v.src=src;v.play();
+  lb.style.display='flex';
+  document.body.style.overflow='hidden';
+}
+function closeLb(){
+  var lb=document.getElementById('lightbox');
+  var v=document.getElementById('lbVideo');
+  v.pause();v.src='';
+  lb.style.display='none';
+  document.body.style.overflow='';
+}
+document.getElementById('lightbox').addEventListener('click',function(e){if(e.target===this)closeLb();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLb();});
+
+</script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --gold:#E8A020;--gold2:#F5C050;--golddim:rgba(232,160,32,.12);--goldglow:rgba(232,160,32,.06);
+      --bg:#0D0D0D;--bg2:#111;--card:#141414;--line:#1F1F1F;--line2:#2A2A2A;
+      --w:#FFF;--g:#666;--sg:#999;
+      --serif:'Cormorant Garamond',Georgia,serif;--sans:'Inter',system-ui,sans-serif;
+    }
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--w);font-family:var(--sans);overflow-x:hidden}
+    ::-webkit-scrollbar{width:2px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--gold)}
+
+    
+
+    /* LOADER */
+    #loader{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0}
+    .ldr-logo{display:flex;align-items:center;gap:14px;opacity:0}
+    .ldr-logo img{width:70px;height:70px;object-fit:contain;filter:drop-shadow(0 0 20px rgba(232,160,32,.4))}
+    .ldr-logo-text{display:flex;flex-direction:column;gap:2px}
+    .ldr-wdg{font-family:var(--sans);font-size:2.6rem;font-weight:700;color:var(--w);letter-spacing:.06em;line-height:1}
+    .ldr-vid{font-size:.75rem;font-weight:400;color:var(--gold);letter-spacing:.35em;text-transform:lowercase}
+    .ldr-bar{width:min(260px,70vw);height:1px;background:var(--line2);margin-top:28px;overflow:hidden}
+    .ldr-fill{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--gold2))}
+    .ldr-pct{font-size:.65rem;font-weight:500;letter-spacing:.28em;color:var(--g);margin-top:12px}
+
+    /* NAV */
+    nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:22px 60px;display:flex;align-items:center;justify-content:space-between;transition:all .45s}
+    nav.sc{padding:12px 60px;background:rgba(13,13,13,.97);backdrop-filter:blur(28px);border-bottom:1px solid var(--line)}
+    nav .nav-links,.nav-btn{opacity:0;pointer-events:none;transition:opacity .35s}
+    nav.sc .nav-links,nav.sc .nav-btn{opacity:1;pointer-events:all}
+    .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .nav-logo img{height:38px;width:auto;object-fit:contain}
+    .nav-logo-t{display:flex;flex-direction:column;gap:0px}
+    .nav-wdg{font-family:var(--sans);font-size:1rem;font-weight:700;color:var(--w);letter-spacing:.08em;line-height:1}
+    .nav-vid{font-size:.52rem;font-weight:400;color:var(--gold);letter-spacing:.3em;text-transform:lowercase}
+    .nav-links{display:flex;gap:32px;list-style:none}
+    .nav-links a{font-size:.65rem;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--g);text-decoration:none;transition:color .2s}
+    .nav-links a:hover{color:var(--w)}
+    .nav-btn{font-size:.65rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;background:var(--gold);color:#0D0D0D;padding:11px 26px;text-decoration:none;border:none;font-family:var(--sans);transition:background .25s}
+    .nav-btn:hover{background:var(--gold2)}
+    .burger{display:none;flex-direction:column;gap:5px;background:none;border:none}
+    .burger span{width:22px;height:1.5px;background:var(--w);display:block}
+
+    /* HERO */
+    #hero{position:relative;height:100vh;min-height:680px;display:flex;flex-direction:column;justify-content:flex-end;padding:0 60px 88px;overflow:hidden}
+    .h-vid-bg{position:absolute;inset:0;z-index:0}
+    .h-vid-bg video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.2s ease}
+    .h-vid-bg video.hv-active{opacity:1}
+    .h-dots{position:absolute;bottom:44px;left:60px;z-index:5;display:flex;gap:8px}
+    .h-dot{width:24px;height:2px;background:rgba(255,255,255,.22);border:none;padding:0;cursor:pointer;transition:background .3s,width .3s}
+    .h-dot.active{background:#E8A020;width:36px}
+    .h-ov{position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,13,13,.5) 0%,rgba(13,13,13,.0) 22%,rgba(13,13,13,.62) 52%,rgba(13,13,13,.99) 100%),linear-gradient(90deg,rgba(13,13,13,.7) 0%,transparent 60%)}
+    .h-grain{position:absolute;inset:0;opacity:.032;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px}
+    .h-prog{position:absolute;top:0;left:0;right:0;height:1.5px;background:var(--line);z-index:3}
+    .h-prog-f{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));width:0;transition:width linear}
+    @keyframes prog{to{width:100%}}
+    .h-loc{position:relative;z-index:2;font-size:.58rem;font-weight:600;letter-spacing:.5em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:12px;margin-bottom:20px;opacity:0}
+    .h-loc::before,.h-loc::after{content:'';display:block;height:1px;width:22px;background:var(--gold)}
+    .h-loc::after{background:rgba(232,160,32,.3)}
+    .h-title{position:relative;z-index:2;font-family:var(--serif);font-size:clamp(4.5rem,13vw,15rem);font-weight:300;line-height:.87;letter-spacing:.01em;overflow:hidden}
+    .h-title .ln{display:block;transform:translateY(108%)}
+    .h-title .gold{color:var(--gold);font-style:italic}
+    .h-row{position:relative;z-index:2;display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-top:28px;flex-wrap:wrap;opacity:0;transform:translateY(16px)}
+    .h-desc{font-size:.9rem;font-weight:300;color:rgba(255,255,255,.72);line-height:1.88;max-width:500px}
+    .h-desc strong{color:var(--gold);font-weight:500}
+    .h-btns{display:flex;gap:10px;flex-shrink:0}
+    .btn-gold{display:inline-flex;align-items:center;gap:10px;background:var(--gold);color:#0D0D0D;font-size:.7rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding:16px 32px;text-decoration:none;border:none;font-family:var(--sans);transition:all .3s;position:relative;overflow:hidden}
+    .btn-gold::before{content:'';position:absolute;inset:0;background:var(--gold2);transform:scaleX(0);transform-origin:left;transition:transform .35s cubic-bezier(.77,0,.18,1)}
+    .btn-gold:hover::before{transform:scaleX(1)}
+    .btn-gold span,.btn-gold svg{position:relative;z-index:1}
+    .btn-ghost{display:inline-flex;align-items:center;gap:10px;background:transparent;color:var(--w);font-size:.7rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;padding:15px 30px;text-decoration:none;border:1px solid rgba(255,255,255,.2);transition:all .3s}
+    .btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+    .h-scroll{position:absolute;bottom:38px;right:60px;z-index:2;display:flex;flex-direction:column;align-items:center;gap:8px}
+    .h-scroll span{font-size:.54rem;font-weight:600;letter-spacing:.38em;text-transform:uppercase;color:var(--g);writing-mode:vertical-rl}
+    .h-scroll-l{width:1px;height:46px;background:linear-gradient(to bottom,var(--gold),transparent);animation:sp 2.5s ease-in-out infinite}
+    @keyframes sp{0%,100%{opacity:1}50%{opacity:.2}}
+
+    /* TICKER */
+    .tick{overflow:hidden;height:52px;background:var(--gold);display:flex;align-items:center}
+    .tick-t{display:flex;gap:48px;animation:mq 20s linear infinite;white-space:nowrap;align-items:center}
+    @keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+    .tick-i{font-family:var(--serif);font-size:1.05rem;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:#0D0D0D;flex-shrink:0;display:flex;align-items:center;gap:18px}
+    .tick-d{width:4px;height:4px;background:rgba(0,0,0,.28);border-radius:50%}
+    .tick2{background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .tick2 .tick-t{animation-direction:reverse;animation-duration:26s}
+    .tick2 .tick-i{font-family:var(--sans);font-size:.68rem;font-weight:600;letter-spacing:.32em;color:rgba(255,255,255,.18)}
+
+    /* STATS */
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}
+    .stat{padding:42px 38px;border-right:1px solid var(--line);position:relative;overflow:hidden;transition:background .3s}
+    .stat:last-child{border-right:none}
+    .stat:hover{background:var(--goldglow)}
+    .stat::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1.5px;background:var(--gold);transition:width .5s}
+    .stat:hover::after{width:100%}
+    .stat-n{font-family:var(--serif);font-size:clamp(2.4rem,4.5vw,4.5rem);font-weight:300;color:var(--gold);line-height:1}
+    .stat-l{font-size:.62rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--g);margin-top:8px;line-height:1.55}
+
+    /* SHARED */
+    .ey{font-size:.58rem;font-weight:700;letter-spacing:.52em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:10px;margin-bottom:14px}
+    .ey::before{content:'';width:14px;height:1px;background:var(--gold);display:block;flex-shrink:0}
+    .st{font-family:var(--serif);font-size:clamp(2.8rem,6.5vw,7.5rem);font-weight:300;line-height:.9;letter-spacing:.01em}
+    .st em{color:var(--gold);font-style:italic}
+    .bt{font-size:.86rem;font-weight:300;color:var(--sg);line-height:1.9}
+
+    /* WORK */
+    #work{padding:110px 60px;max-width:1500px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:90px;align-items:center}
+    .wi{position:relative}
+    .wi-wrap{aspect-ratio:3/4;overflow:hidden;position:relative}
+    .wi-wrap img{width:100%;height:100%;object-fit:cover;transform:scale(1.06);transition:transform 1.6s cubic-bezier(.16,1,.3,1)}
+    .wi-wrap:hover img{transform:scale(1)}
+    .wi::before{content:'';position:absolute;top:-18px;left:-18px;width:64px;height:64px;border-top:1.5px solid var(--gold);border-left:1.5px solid var(--gold);z-index:2}
+    .wi::after{content:'';position:absolute;bottom:-18px;right:-18px;width:64px;height:64px;border-bottom:1.5px solid var(--gold);border-right:1.5px solid var(--gold);z-index:2}
+    .wi-lbl{position:absolute;bottom:0;left:0;right:0;padding:20px 22px;background:linear-gradient(to top,rgba(13,13,13,.95),transparent);z-index:3}
+    .wi-lbl-t{font-family:var(--serif);font-size:1.05rem;font-weight:400}
+    .wi-lbl-s{font-size:.58rem;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-top:3px}
+    .cl-list{margin-top:40px}
+    .cl-item{display:flex;align-items:center;gap:18px;padding:18px 0;border-bottom:1px solid var(--line);transition:all .3s}
+    .cl-item:first-child{border-top:1px solid var(--line)}
+    .cl-item:hover{padding-left:10px}
+    .cl-dot{width:5px;height:5px;border-radius:50%;background:var(--line2);flex-shrink:0;transition:background .3s}
+    .cl-item:hover .cl-dot{background:var(--gold)}
+    .cl-name{font-family:var(--serif);font-size:1.15rem;font-weight:400;flex:1}
+    .cl-type{font-size:.58rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--g)}
+
+    /* PARALLAX */
+    .px{position:relative;height:78vh;min-height:480px;overflow:hidden;display:flex;align-items:center}
+    .px-img{position:absolute;inset:-20%;background-size:cover;background-position:center;background-attachment:fixed}
+    .px-ov{position:absolute;inset:0}
+    .px-body{position:relative;z-index:2;padding:0 60px;max-width:740px}
+    .px-body .bt{margin-top:16px;max-width:460px}
+
+    /* SERVICES */
+    #services{padding:0 60px 110px;max-width:1500px;margin:0 auto}
+    .svc-hdr{margin-bottom:52px;display:flex;align-items:flex-end;justify-content:space-between;gap:28px;flex-wrap:wrap}
+    .svc-hdr .bt{max-width:370px}
+    .svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line)}
+    .sc{background:var(--card);padding:46px 38px;position:relative;overflow:hidden;transition:background .3s}
+    .sc:hover{background:var(--bg2)}
+    .sc::before{content:'';position:absolute;top:0;left:0;width:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:width .5s}
+    .sc:hover::before{width:100%}
+    .sc.hl{background:linear-gradient(150deg,var(--golddim),var(--card) 65%)}
+    .sc.hl::after{content:'MOST POPULAR';position:absolute;top:18px;right:18px;font-size:.5rem;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(232,160,32,.28);padding:4px 10px;background:rgba(232,160,32,.05)}
+    .sc-n{font-family:var(--serif);font-size:.85rem;color:var(--line2);letter-spacing:.1em;margin-bottom:20px;transition:color .3s}
+    .sc:hover .sc-n{color:rgba(232,160,32,.3)}
+    .sc-ico{font-size:1.5rem;margin-bottom:16px}
+    .sc-t{font-family:var(--serif);font-size:1.7rem;font-weight:400;margin-bottom:12px;line-height:1.05}
+    .sc-d{font-size:.8rem;color:var(--g);line-height:1.85}
+    .sc-feats{margin-top:20px;display:flex;flex-direction:column;gap:7px}
+    .sc-feat{font-size:.74rem;color:var(--sg);display:flex;align-items:flex-start;gap:8px;line-height:1.5}
+    .sc-feat::before{content:'—';color:var(--gold);flex-shrink:0}
+
+    /* PRICING */
+    #pricing{padding:110px 60px;position:relative;overflow:hidden}
+    #pricing::before{content:'';position:absolute;top:-250px;left:50%;transform:translateX(-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(232,160,32,.05) 0%,transparent 70%);pointer-events:none}
+    .pr-inner{max-width:1500px;margin:0 auto}
+    .pr-hdr{margin-bottom:56px;display:flex;align-items:flex-end;justify-content:space-between;gap:28px;flex-wrap:wrap}
+    .pr-note{font-size:.75rem;color:var(--g);max-width:340px;line-height:1.8;text-align:right}
+    .pr-label{font-size:.58rem;font-weight:700;letter-spacing:.44em;text-transform:uppercase;color:var(--g);padding:0 0 16px;margin-bottom:1px}
+    .pr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);margin-bottom:1px}
+    .pc{background:var(--card);padding:48px 40px;display:flex;flex-direction:column;position:relative;overflow:hidden;transition:background .3s}
+    .pc:hover{background:var(--bg2)}
+    .pc.feat{background:linear-gradient(155deg,var(--golddim),var(--card) 55%);border-top:2px solid var(--gold)}
+    .pc.feat::after{content:'RECOMMENDED';position:absolute;top:18px;right:18px;font-size:.5rem;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(232,160,32,.28);padding:4px 10px;background:rgba(232,160,32,.05)}
+    .pc-tier{font-size:.58rem;font-weight:700;letter-spacing:.42em;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
+    .pc-name{font-family:var(--serif);font-size:1.9rem;font-weight:400;letter-spacing:.01em;margin-bottom:6px;line-height:1}
+    .pc-tag{font-size:.78rem;color:var(--g);margin-bottom:28px;font-weight:300}
+    .pc-price{font-family:var(--serif);font-size:clamp(2.8rem,5vw,5rem);font-weight:300;color:var(--gold);line-height:1}
+    .pc-price sup{font-size:1.4rem;vertical-align:super;margin-right:2px}
+    .pc-price .per{font-family:var(--sans);font-size:.72rem;color:var(--g);vertical-align:middle;margin-left:6px;letter-spacing:.12em;font-weight:400}
+    .pc-div{height:1px;background:var(--line);margin:26px 0}
+    .pc-feats{display:flex;flex-direction:column;gap:11px;flex:1}
+    .pc-feat{font-size:.78rem;color:var(--sg);display:flex;align-items:flex-start;gap:9px;line-height:1.6}
+    .pc-feat .y{color:var(--gold);flex-shrink:0}
+    .pc-feat .n{color:var(--line2);flex-shrink:0}
+    .pc-cta{margin-top:32px;display:block;text-align:center;padding:13px;font-size:.7rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;font-family:var(--sans);transition:all .3s;border:none}
+    .pc-cta-g{background:var(--gold);color:#0D0D0D}
+    .pc-cta-g:hover{background:var(--gold2)}
+    .pc-cta-o{background:transparent;color:var(--w);border:1px solid var(--line2)}
+    .pc-cta-o:hover{border-color:var(--gold);color:var(--gold)}
+    .pc-wide{grid-column:span 3;background:var(--card);padding:36px 40px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:36px}
+    .pc-wide-r{display:flex;align-items:center;gap:28px;flex-wrap:wrap}
+
+    /* TESTIMONIALS */
+    #testimonials{padding:0 60px 110px;max-width:1500px;margin:0 auto}
+    .tst-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);margin-top:52px}
+    .tc{background:var(--card);padding:42px 34px;position:relative;overflow:hidden;transition:background .3s}
+    .tc:hover{background:var(--bg2)}
+    .tc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:0;background:var(--gold);transition:width .4s}
+    .tc:hover::before{width:2px}
+    .tc-stars{color:var(--gold);font-size:.9rem;margin-bottom:18px;letter-spacing:2px}
+    .tc-q{font-family:var(--serif);font-size:1.02rem;font-weight:300;font-style:italic;color:rgba(255,255,255,.85);line-height:1.85;margin-bottom:24px}
+    .tc-auth{display:flex;align-items:center;gap:13px}
+    .tc-av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:.95rem;font-weight:500;color:#0D0D0D;flex-shrink:0}
+    .tc-name{font-size:.76rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+    .tc-biz{font-size:.68rem;color:var(--g);margin-top:2px}
+
+    /* PROCESS */
+    #process{padding:0 60px 110px;max-width:1500px;margin:0 auto}
+    .proc-row{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);margin-top:52px}
+    .proc{padding:40px 32px 40px 0;border-right:1px solid var(--line)}
+    .proc:last-child{border-right:none;padding-right:0}
+    .proc:not(:first-child){padding-left:32px}
+    .proc-n{font-family:var(--serif);font-size:3.8rem;font-weight:300;color:var(--line);line-height:1;margin-bottom:20px;transition:color .4s}
+    .proc:hover .proc-n{color:rgba(232,160,32,.18)}
+    .proc-t{font-family:var(--serif);font-size:1.25rem;font-weight:400;margin-bottom:10px}
+    .proc-d{font-size:.79rem;color:var(--g);line-height:1.85}
+
+    /* CTA */
+    #cta{padding:150px 60px;text-align:center;position:relative;overflow:hidden}
+    #cta::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:900px;height:900px;background:radial-gradient(ellipse,rgba(232,160,32,.07) 0%,transparent 68%);pointer-events:none}
+    .cta-in{position:relative;z-index:1}
+    .cta-kick{display:block;font-size:.58rem;font-weight:700;letter-spacing:.52em;text-transform:uppercase;color:var(--gold);margin-bottom:20px}
+    .cta-t{font-family:var(--serif);font-size:clamp(4rem,12vw,13rem);font-weight:300;line-height:.88}
+    .cta-t em{color:var(--gold);font-style:italic}
+    .cta-b{font-size:.88rem;font-weight:300;color:var(--g);line-height:1.9;max-width:540px;margin:24px auto 0}
+    .cta-acts{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:44px;flex-wrap:wrap}
+    .cta-sm{display:block;font-size:.66rem;color:var(--g);margin-top:18px;letter-spacing:.08em}
+    .cta-sm strong{color:var(--sg)}
+
+    /* FORM */
+    #form-sec{padding:0 60px 110px;max-width:940px;margin:0 auto}
+    .form-box{background:var(--card);border:1px solid var(--line);padding:60px;position:relative;overflow:hidden}
+    .form-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--gold2))}
+    .form-logo-row{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+    .form-logo-row img{height:44px;width:auto;object-fit:contain}
+    .form-logo-row .wdg-t{font-family:var(--sans);font-size:1.1rem;font-weight:700;color:var(--w);letter-spacing:.06em}
+    .form-logo-row .vid-t{font-size:.62rem;color:var(--gold);letter-spacing:.28em;text-transform:lowercase;display:block;margin-top:2px}
+    .form-title{font-family:var(--serif);font-size:clamp(2rem,4.5vw,3.8rem);font-weight:300;line-height:.95;margin-bottom:8px}
+    .form-title em{color:var(--gold);font-style:italic}
+    .form-sub{font-size:.82rem;color:var(--g);line-height:1.8;margin-bottom:36px}
+    .fg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .ff{display:flex;flex-direction:column;gap:7px}
+    .ff.full{grid-column:span 2}
+    .ff label{font-size:.56rem;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:var(--g)}
+    .ff input,.ff select,.ff textarea{background:rgba(255,255,255,.04);border:1px solid var(--line2);color:var(--w);padding:13px 15px;font-size:.84rem;font-family:var(--sans);outline:none;transition:border-color .25s;resize:none;width:100%;-webkit-appearance:none}
+    .ff input:focus,.ff select:focus,.ff textarea:focus{border-color:var(--gold);background:rgba(232,160,32,.03)}
+    .ff select option{background:#111}
+    .ff input::placeholder,.ff textarea::placeholder{color:#444}
+    .ch-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px}
+    .ch{padding:12px 8px;border:1px solid var(--line2);background:transparent;color:var(--sg);font-size:.68rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;font-family:var(--sans);text-align:center;transition:all .25s;border-radius:0}
+    .ch.on,.ch:hover{border-color:var(--gold);color:var(--gold);background:rgba(232,160,32,.06)}
+    .form-sub-btn{width:100%;background:var(--gold);color:#0D0D0D;font-size:.76rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;padding:17px;border:none;font-family:var(--sans);position:relative;overflow:hidden;margin-top:6px}
+    .form-sub-btn::before{content:'';position:absolute;inset:0;background:var(--gold2);transform:scaleX(0);transform-origin:left;transition:transform .4s cubic-bezier(.77,0,.18,1)}
+    .form-sub-btn:hover::before{transform:scaleX(1)}
+    .form-sub-btn span{position:relative;z-index:1;color:#0D0D0D}
+    .trust-r{display:flex;align-items:center;justify-content:center;gap:24px;margin-top:20px;flex-wrap:wrap}
+    .tr-it{font-size:.62rem;color:var(--g);letter-spacing:.08em;display:flex;align-items:center;gap:6px}
+    .tr-it::before{content:'✓';color:var(--gold);font-weight:700}
+
+    /* CONTACT BAR */
+    .cb{border-top:1px solid var(--line);border-bottom:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr)}
+    .cb-it{padding:36px 44px;border-right:1px solid var(--line);transition:background .3s}
+    .cb-it:last-child{border-right:none}
+    .cb-it:hover{background:var(--goldglow)}
+    .cb-lbl{font-size:.56rem;font-weight:700;letter-spacing:.36em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+    .cb-val{font-family:var(--serif);font-size:.96rem;font-weight:400;line-height:1.5}
+    .cb-val a{color:var(--w);text-decoration:none;transition:color .2s}
+    .cb-val a:hover{color:var(--gold)}
+
+    /* FOOTER */
+    footer{background:var(--bg2);padding:52px 60px 36px}
+    .ft{max-width:1500px;margin:0 auto}
+    .ft-top{display:flex;justify-content:space-between;align-items:flex-start;gap:28px;flex-wrap:wrap;padding-bottom:36px;border-bottom:1px solid var(--line)}
+    .ft-brand-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+    .ft-brand-row img{height:40px;width:auto;object-fit:contain}
+    .ft-brand-name{font-family:var(--sans);font-size:1rem;font-weight:700;color:var(--w);letter-spacing:.08em}
+    .ft-brand-sub{font-size:.62rem;font-weight:400;color:var(--gold);letter-spacing:.28em;text-transform:lowercase;display:block;margin-top:1px}
+    .ft-tagline{font-size:.62rem;color:var(--g);letter-spacing:.08em;line-height:1.7;margin-top:4px}
+    .ft-r{display:flex;flex-direction:column;gap:18px;align-items:flex-end}
+    .ft-nav{display:flex;gap:22px;flex-wrap:wrap;justify-content:flex-end}
+    .ft-nav a{font-size:.62rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--g);text-decoration:none;transition:color .2s}
+    .ft-nav a:hover{color:var(--w)}
+    .ft-soc{display:flex;gap:10px}
+    .ft-s{width:34px;height:34px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;text-decoration:none;color:var(--g);font-size:.62rem;font-weight:700;letter-spacing:.06em;transition:all .25s}
+    .ft-s:hover{border-color:var(--gold);color:var(--gold);background:var(--goldglow)}
+    .ft-btm{display:flex;justify-content:space-between;align-items:center;padding-top:22px;flex-wrap:wrap;gap:10px}
+    .ft-copy,.ft-cr{font-size:.58rem;color:var(--line2);letter-spacing:.08em}
+    .ft-cr a{color:var(--gold);text-decoration:none}
+
+    /* WHATSAPP */
+    .wa{position:fixed;bottom:28px;right:28px;z-index:5000;width:56px;height:56px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 28px rgba(37,211,102,.35);text-decoration:none;transition:transform .3s}
+    .wa:hover{transform:scale(1.1)}
+    .wa svg{width:26px;height:26px;fill:#fff}
+    .wa-ring{position:absolute;inset:-5px;border-radius:50%;border:2px solid rgba(37,211,102,.35);animation:wap 2.5s ease-in-out infinite}
+    @keyframes wap{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.25);opacity:0}}
+
+
+    /* PORTFOLIO */
+    .pv{position:relative;aspect-ratio:9/16;overflow:hidden;background:#0a0a0a;cursor:pointer}
+    .pv:hover video{transform:scale(1.05)}
+    .pv-lbl{position:absolute;bottom:18px;left:18px;font-size:.6rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);opacity:0;transition:opacity .4s}
+    .pv:hover .pv-lbl{opacity:1}
+    @media(max-width:1024px){#portfolio{padding:80px 22px!important} #portfolio>div:first-child{margin:0 auto 40px!important} #portfolio>div:last-child{grid-template-columns:1fr 1fr!important}}
+    @media(max-width:580px){#portfolio>div:last-child{grid-template-columns:1fr!important}}
+    /* REVEAL */
+    .rv{opacity:0;transform:translateY(22px);transition:opacity .95s ease,transform .95s ease}
+    .rv.on{opacity:1;transform:none}
+    .rl{opacity:0;transform:translateX(-22px);transition:opacity .95s ease,transform .95s ease}
+    .rl.on{opacity:1;transform:none}
+    .d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}.d4{transition-delay:.4s}.d5{transition-delay:.5s}
+
+    /* MOBILE */
+    @media(max-width:1024px){
+      nav,nav.sc{padding:13px 22px}
+      .nav-links{display:none}.burger{display:flex}
+      #hero{padding:0 22px 68px}.h-scroll{right:22px}
+      #work,#testimonials,#process{padding:80px 22px}
+      #services,#pricing,#form-sec{padding-left:22px;padding-right:22px}
+      #cta{padding:90px 22px}
+      #work{grid-template-columns:1fr;gap:44px}
+      .stats{grid-template-columns:1fr 1fr}
+      .stat{border-right:none;border-bottom:1px solid var(--line)}
+      .svc-grid{grid-template-columns:1fr}
+      .pr-grid{grid-template-columns:1fr}
+      .pc-wide{grid-column:span 1;grid-template-columns:1fr;gap:18px}
+      .pc-wide-r{flex-direction:column;align-items:flex-start}
+      .tst-grid{grid-template-columns:1fr}
+      .proc-row{grid-template-columns:1fr 1fr}
+      .proc{border-bottom:1px solid var(--line)}
+      .cb{grid-template-columns:1fr 1fr}
+      .cb-it{border-right:none;border-bottom:1px solid var(--line)}
+      .fg{grid-template-columns:1fr}
+      .ff.full{grid-column:span 1}
+      .form-box{padding:32px 22px}
+      .pr-hdr{flex-direction:column;gap:14px}
+      .pr-note{text-align:left}
+      .px-body{padding:0 22px}
+      .svc-hdr{flex-direction:column;gap:14px}
+      footer{padding:38px 22px 28px}
+      .ft-r{align-items:flex-start}
+      .ft-nav{justify-content:flex-start}
+    }
+    @media(max-width:580px){
+      .stats{grid-template-columns:1fr}
+      .proc-row{grid-template-columns:1fr}
+      .cb{grid-template-columns:1fr}
+      .cta-acts{flex-direction:column;align-items:center}
+      .h-btns{flex-direction:column}
+      .ch-row{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+<!-- WHATSAPP -->
+<a href="https://wa.me/447584065559?text=Hi%20WDG%20Videography%2C%20I%27d%20love%20to%20find%20out%20more%20about%20your%20marketing%20packages." class="wa" target="_blank" rel="noopener">
+  <div class="wa-ring"></div>
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="ldr-logo" id="ldrLogo">
+    <img src="https://media.base44.com/images/public/6a0c1534017166f536b1ac32/6176daae7_IMG_6698.jpg" alt="WDG Videography Logo"/>
+    <div class="ldr-logo-text"><div class="ldr-wdg">WDG</div><div class="ldr-vid">videography</div></div>
+  </div>
+  <div class="ldr-bar"><div class="ldr-fill" id="lf"></div></div>
+  <div class="ldr-pct" id="lp">0%</div>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="https://www.wdgvideography.com" class="nav-logo">
+    <img src="https://media.base44.com/images/public/6a0c1534017166f536b1ac32/6176daae7_IMG_6698.jpg" alt="WDG"/>
+    <div class="nav-logo-t"><div class="nav-wdg">WDG</div><div class="nav-vid">videography</div></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#work">Our Work</a></li>
+    <li><a href="portfolio.html">Portfolio</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#process">Process</a></li>
+    <li><a href="#form-sec">Contact</a></li>
+  </ul>
+  <a href="#form-sec" class="nav-btn">Book a Free Call</a>
+  <button class="burger" onclick="mob()" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="h-vid-bg" id="heroVidBg">
+    <video class="hv-active" autoplay muted loop playsinline id="hv0"><source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/42560c906_786e2c8a4_video_863129336157622.mp4" type="video/mp4"/></video>
+    <video autoplay muted loop playsinline id="hv1"><source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/db169c7e6_68ebb28ef_video_1310483361190446.mp4" type="video/mp4"/></video>
+    <video autoplay muted loop playsinline id="hv2"><source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/9ccda9da2_b4daf6e81_video_843068428364743.mp4" type="video/mp4"/></video>
+    <video autoplay muted loop playsinline id="hv3"><source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/533aa7058_1f0f656a9_video_4213065005671683.mp4" type="video/mp4"/></video>
+    <video autoplay muted loop playsinline id="hv4"><source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/533aa7058_1f0f656a9_video_4213065005671683.mp4" type="video/mp4"/></video>
+  </div>
+  <div class="h-dots">
+    <button class="h-dot active" onclick="goVid(0)"></button>
+    <button class="h-dot" onclick="goVid(1)"></button>
+    <button class="h-dot" onclick="goVid(2)"></button>
+    <button class="h-dot" onclick="goVid(3)"></button>
+    <button class="h-dot" onclick="goVid(4)"></button>
+  </div>
+  <div class="h-ov"></div><div class="h-grain"></div>
+  <div class="h-prog"><div class="h-prog-f"></div></div>
+  <div class="h-loc" id="hLoc">Cheltenham · Gloucestershire · UK · Nationwide</div>
+  <h1 class="h-title" id="hTit">
+    <span class="ln">Your Brand.</span>
+    <span class="ln gold">Everywhere.</span>
+    <span class="ln">Unstoppable.</span>
+  </h1>
+  <div class="h-row" id="hRow">
+    <p class="h-desc">Cinematic video production. Stunning bespoke websites. Full social media management. <strong>One agency. Total control. Zero excuses.</strong></p>
+    <div class="h-btns">
+      <a href="#form-sec" class="btn-gold"><span>Book a Free Strategy Call</span><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 6.5h11M6.5 1l5.5 5.5-5.5 5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <a href="#pricing" class="btn-ghost">See Pricing</a>
+    </div>
+  </div>
+  <div class="h-scroll"><span>Scroll</span><div class="h-scroll-l"></div></div>
+</section>
+
+<!-- TICKER 1 -->
+<div class="tick">
+  <div class="tick-t">
+    <div class="tick-i"><div class="tick-d"></div>Cinematic Video Production</div>
+    <div class="tick-i"><div class="tick-d"></div>Bespoke Website Design</div>
+    <div class="tick-i"><div class="tick-d"></div>Social Media Management</div>
+    <div class="tick-i"><div class="tick-d"></div>Brand Strategy</div>
+    <div class="tick-i"><div class="tick-d"></div>YouTube Documentaries</div>
+    <div class="tick-i"><div class="tick-d"></div>Full Marketing Management</div>
+    <div class="tick-i"><div class="tick-d"></div>Cheltenham &middot; UK &middot; Nationwide</div>
+    <div class="tick-i"><div class="tick-d"></div>Cinematic Video Production</div>
+    <div class="tick-i"><div class="tick-d"></div>Bespoke Website Design</div>
+    <div class="tick-i"><div class="tick-d"></div>Social Media Management</div>
+    <div class="tick-i"><div class="tick-d"></div>Brand Strategy</div>
+    <div class="tick-i"><div class="tick-d"></div>YouTube Documentaries</div>
+    <div class="tick-i"><div class="tick-d"></div>Full Marketing Management</div>
+    <div class="tick-i"><div class="tick-d"></div>Cheltenham &middot; UK &middot; Nationwide</div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat rv"><div class="stat-n">£450</div><div class="stat-l">Starting at — Video Packages</div></div>
+  <div class="stat rv d1"><div class="stat-n">3-in-1</div><div class="stat-l">Video · Web · Social — One Team</div></div>
+  <div class="stat rv d2"><div class="stat-n">100%</div><div class="stat-l">Done-For-You. We handle everything.</div></div>
+  <div class="stat rv d3"><div class="stat-n">UK</div><div class="stat-l">Cheltenham Based · Nationwide Reach</div></div>
+</div>
+
+<!-- TICKER 2 -->
+<div class="tick tick2">
+  <div class="tick-t">
+    <div class="tick-i">WDGvideography.com</div><div class="tick-i">Teddington's Farm Shop</div>
+    <div class="tick-i">The Longhorn Bar &amp; Grill</div><div class="tick-i">Club One</div>
+    <div class="tick-i">Austin &amp; Earl Transport</div><div class="tick-i">wdg.videography@gmail.com</div>
+    <div class="tick-i">WDGvideography.com</div><div class="tick-i">Teddington's Farm Shop</div>
+    <div class="tick-i">The Longhorn Bar &amp; Grill</div><div class="tick-i">Club One</div>
+    <div class="tick-i">Austin &amp; Earl Transport</div><div class="tick-i">wdg.videography@gmail.com</div>
+  </div>
+</div>
+
+<!-- WORK / CLIENTS -->
+<section id="work">
+  <div class="wi rl">
+    <div class="wi-wrap" style="aspect-ratio:9/16;overflow:hidden">
+      <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;"><source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/9ccda9da2_b4daf6e81_video_843068428364743.mp4" type="video/mp4"/></video>
+    </div>
+    <div class="wi-lbl"><div class="wi-lbl-t">Real Clients. Real Impact.</div><div class="wi-lbl-s">Teddington's · Longhorn · Club One · Austin &amp; Earl</div></div>
+  </div>
+  <div>
+    <div class="ey rv">Proven Track Record</div>
+    <h2 class="st rv">We've Built<br>Brands People<br><em>Actually Notice.</em></h2>
+    <p class="bt rv" style="margin-top:16px">From farm shops to bars, fitness clubs to transport companies — we've helped real local businesses completely transform how they're perceived. Our work doesn't just look good. It generates results.</p>
+    <div class="cl-list">
+      <div class="cl-item rv d1"><div class="cl-dot"></div><div class="cl-name">Teddington's Farm Shop</div><div class="cl-type">Video · Social</div></div>
+      <div class="cl-item rv d2"><div class="cl-dot"></div><div class="cl-name">The Longhorn Bar &amp; Grill</div><div class="cl-type">Video · Branding</div></div>
+      <div class="cl-item rv d3"><div class="cl-dot"></div><div class="cl-name">Club One</div><div class="cl-type">Video · Social · Web</div></div>
+      <div class="cl-item rv d4"><div class="cl-dot"></div><div class="cl-name">Austin &amp; Earl Transport</div><div class="cl-type">Website Design</div></div>
+      <div class="cl-item rv d5"><div class="cl-dot"></div><div class="cl-name">+ Many More Across the UK</div><div class="cl-type">Full Management</div></div>
+    </div>
+    <a href="#portfolio" class="btn-gold rv" style="margin-top:34px;display:inline-flex;align-items:center;gap:10px"><span>Watch Our Work</span><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 6.5h11M6.5 1l5.5 5.5-5.5 5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+  </div>
+</section>
+
+<!-- PORTFOLIO SHOWREEL -->
+<section id="portfolio" style="padding:110px 60px;background:var(--bg2);border-top:1px solid var(--line)">
+  <div style="max-width:1500px;margin:0 auto 60px">
+    <div class="ey rv">Our Work</div>
+    <h2 class="st rv">The Proof Is<br><em>In the Footage.</em></h2>
+    <p class="bt rv" style="margin-top:14px;max-width:600px">Every frame below is real client work — shot, edited and delivered by WDG. This is what your business could look like.</p>
+  </div>
+  <div style="max-width:1500px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:2px">
+    <div class="pv rv" onclick="openLb('https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/42560c906_786e2c8a4_video_863129336157622.mp4')">
+      <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;transition:transform .6s ease"><source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/42560c906_786e2c8a4_video_863129336157622.mp4" type="video/mp4"/></video>
+      <div class="pv-lbl">Client Production</div>
+    </div>
+    <div class="pv rv d1" onclick="openLb('https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/db169c7e6_68ebb28ef_video_1310483361190446.mp4')">
+      <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;transition:transform .6s ease"><source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/db169c7e6_68ebb28ef_video_1310483361190446.mp4" type="video/mp4"/></video>
+      <div class="pv-lbl">Brand Film</div>
+    </div>
+    <div class="pv rv d2" onclick="openLb('https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/9ccda9da2_b4daf6e81_video_843068428364743.mp4')">
+      <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;transition:transform .6s ease"><source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/9ccda9da2_b4daf6e81_video_843068428364743.mp4" type="video/mp4"/></video>
+      <div class="pv-lbl">Cinematic Production</div>
+    </div>
+    <div class="pv rv d1" onclick="openLb('https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/533aa7058_1f0f656a9_video_4213065005671683.mp4')">
+      <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;transition:transform .6s ease"><source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/533aa7058_1f0f656a9_video_4213065005671683.mp4" type="video/mp4"/></video>
+      <div class="pv-lbl">Social Content</div>
+    </div>
+    <div class="pv rv d2" onclick="openLb('https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/533aa7058_1f0f656a9_video_4213065005671683.mp4')">
+      <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;transition:transform .6s ease"><source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/533aa7058_1f0f656a9_video_4213065005671683.mp4" type="video/mp4"/></video>
+      <div class="pv-lbl">Brand Story</div>
+    </div>
+    <div class="pv rv d3" style="background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:40px;cursor:default">
+      <div style="font-family:var(--serif);font-size:clamp(2rem,5vw,4rem);font-weight:300;color:var(--gold);text-align:center;line-height:1.1">Your<br><em>Business<br>Here.</em></div>
+      <div style="font-size:.72rem;color:var(--g);text-align:center;line-height:1.7;max-width:200px">This could be your brand film, your product launch, your story.</div>
+      <a href="#form-sec" class="btn-gold" style="font-size:.6rem;padding:12px 22px"><span>Let's Talk</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.95);align-items:center;justify-content:center">
+  <button onclick="closeLb()" style="position:absolute;top:24px;right:30px;background:none;border:none;color:#fff;font-size:2.2rem;cursor:pointer;opacity:.7;line-height:1">✕</button>
+  <video id="lbVideo" controls style="max-width:90vw;max-height:90vh"></video>
+</div>
+
+<!-- PARALLAX 1 -->
+<div class="px">
+  <div style="position:absolute;inset:0;overflow:hidden"><video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover"><source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/42560c906_786e2c8a4_video_863129336157622.mp4" type="video/mp4"/></video></div>
+  <div class="px-ov" style="background:linear-gradient(to right,rgba(13,13,13,.97) 36%,rgba(13,13,13,.08) 100%)"></div>
+  <div class="px-body">
+    <div class="ey rv">The Truth</div>
+    <h2 class="st rv" style="font-size:clamp(3rem,8vw,9rem)">Your Competitors<br>Aren't <em>Waiting.</em></h2>
+    <p class="bt rv">Businesses winning in your market have professional video, a stunning website and active social media. The question isn't whether you need this — it's whether you can afford to wait any longer.</p>
+    <a href="#form-sec" class="btn-gold rv" style="margin-top:26px;display:inline-flex;align-items:center;gap:10px"><span>Start Today</span><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 6.5h11M6.5 1l5.5 5.5-5.5 5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="svc-hdr">
+    <div><div class="ey rv">What We Do</div><h2 class="st rv">Every Service<br>You <em>Need.</em></h2></div>
+    <p class="bt rv">Six specialist services. One cohesive team. Whether you need a single video or a complete marketing takeover — we deliver at the highest level, every single time.</p>
+  </div>
+  <div class="svc-grid">
+    <div class="sc hl rv"><div class="sc-n">01</div><div class="sc-ico">🎬</div><div class="sc-t">Cinematic Video</div><div class="sc-d">From social reels to full-length brand documentaries, shot with professional cinema equipment. We tell your story the way it deserves to be told.</div><div class="sc-feats"><div class="sc-feat">Single-location shoots starting at £450</div><div class="sc-feat">Brand films, reels, testimonials, events</div><div class="sc-feat">YouTube documentary productions</div><div class="sc-feat">Drone &amp; multi-location shoots</div></div></div>
+    <div class="sc rv d1"><div class="sc-n">02</div><div class="sc-ico">💻</div><div class="sc-t">Bespoke Websites</div><div class="sc-d">Custom-built, conversion-focused websites that make your competitors look amateur. Mobile-responsive, SEO-optimised and built to generate enquiries.</div><div class="sc-feats"><div class="sc-feat">Starting at £1,000 up to £7,000</div><div class="sc-feat">Cinematic animations &amp; mobile-first</div><div class="sc-feat">SEO-optimised from the ground up</div><div class="sc-feat">Built to convert visitors into clients</div></div></div>
+    <div class="sc rv d2"><div class="sc-n">03</div><div class="sc-ico">📱</div><div class="sc-t">Social Media</div><div class="sc-d">We run your channels end-to-end. Strategy, content creation, posting, engagement and analytics — you don't touch it, we grow it.</div><div class="sc-feats"><div class="sc-feat">Instagram, Facebook, TikTok, LinkedIn</div><div class="sc-feat">Content creation &amp; copywriting</div><div class="sc-feat">Monthly analytics &amp; reporting</div><div class="sc-feat">Included in all management packages</div></div></div>
+    <div class="sc rv"><div class="sc-n">04</div><div class="sc-ico">🏷️</div><div class="sc-t">Brand Strategy</div><div class="sc-d">We define what makes you different, position you as the premium choice, and build the visual identity that backs it up at every touchpoint.</div><div class="sc-feats"><div class="sc-feat">Brand positioning &amp; messaging</div><div class="sc-feat">Visual identity &amp; tone of voice</div><div class="sc-feat">Competitor &amp; market analysis</div></div></div>
+    <div class="sc rv d1"><div class="sc-n">05</div><div class="sc-ico">📊</div><div class="sc-t">Marketing Strategy</div><div class="sc-d">Monthly marketing meetings with our strategists give you a clear roadmap, accountability and confidence every pound is spent wisely.</div><div class="sc-feats"><div class="sc-feat">Monthly 1-to-1 strategy meetings</div><div class="sc-feat">Performance reviews &amp; growth planning</div><div class="sc-feat">Included in management packages</div></div></div>
+    <div class="sc rv d2"><div class="sc-n">06</div><div class="sc-ico">🚀</div><div class="sc-t">Full Marketing Management</div><div class="sc-d">We become your outsourced marketing department — handling everything from video shoots to website updates to daily social posting. You just run your business.</div><div class="sc-feats"><div class="sc-feat">Everything in one monthly retainer</div><div class="sc-feat">Video + web + social + strategy</div><div class="sc-feat">Your dedicated team — no overhead</div></div></div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="pr-inner">
+    <div class="pr-hdr">
+      <div><div class="ey rv">Transparent Pricing</div><h2 class="st rv">Simple.<br><em>Honest. Powerful.</em></h2></div>
+      <p class="pr-note rv">No hidden fees. No lock-in contracts. Cancel anytime. Marketing that pays for itself — or we make it right.</p>
+    </div>
+
+    <!-- MONTHLY PACKAGES -->
+    <div class="pr-label rv">Monthly Management Packages</div>
+    <div class="pr-grid">
+      <div class="pc rv">
+        <div class="pc-tier">Starter</div>
+        <div class="pc-name">Social + Video</div>
+        <div class="pc-tag">Full social management with one shoot a month</div>
+        <div class="pc-price"><span style="font-family:var(--sans);font-size:.72rem;color:var(--g);display:block;margin-bottom:4px;letter-spacing:.12em;font-weight:400">Starting at</span><sup>£</sup>1,200<span class="per">/month</span></div>
+        <div class="pc-div"></div>
+        <div class="pc-feats">
+          <div class="pc-feat"><span class="y">✦</span>Full social media management</div>
+          <div class="pc-feat"><span class="y">✦</span>1× videography shoot per month</div>
+          <div class="pc-feat"><span class="y">✦</span>1× monthly marketing strategy meeting</div>
+          <div class="pc-feat"><span class="y">✦</span>Content creation &amp; scheduling</div>
+          <div class="pc-feat"><span class="y">✦</span>Monthly performance reporting</div>
+          <div class="pc-feat"><span class="n">—</span>Website management not included</div>
+        </div>
+        <a href="#form-sec" class="pc-cta pc-cta-o">Get Started →</a>
+      </div>
+      <div class="pc feat rv d1">
+        <div class="pc-tier">Full Management</div>
+        <div class="pc-name">Everything Included</div>
+        <div class="pc-tag">Your complete marketing department — all of it</div>
+        <div class="pc-price"><span style="font-family:var(--sans);font-size:.72rem;color:var(--g);display:block;margin-bottom:4px;letter-spacing:.12em;font-weight:400">Starting at</span><sup>£</sup>1,500<span class="per">/month</span></div>
+        <div class="pc-div"></div>
+        <div class="pc-feats">
+          <div class="pc-feat"><span class="y">✦</span>Full social media management</div>
+          <div class="pc-feat"><span class="y">✦</span>2× videography shoots per month</div>
+          <div class="pc-feat"><span class="y">✦</span>2× monthly marketing strategy meetings</div>
+          <div class="pc-feat"><span class="y">✦</span>Full website management &amp; updates</div>
+          <div class="pc-feat"><span class="y">✦</span>Content creation &amp; scheduling</div>
+          <div class="pc-feat"><span class="y">✦</span>Brand strategy &amp; positioning</div>
+          <div class="pc-feat"><span class="y">✦</span>Monthly analytics &amp; growth reporting</div>
+          <div class="pc-feat"><span class="y">✦</span>Priority support &amp; response</div>
+        </div>
+        <a href="#form-sec" class="pc-cta pc-cta-g">Book Your Free Call →</a>
+      </div>
+      <div class="pc rv d2">
+        <div class="pc-tier">Bespoke</div>
+        <div class="pc-name">Custom Package</div>
+        <div class="pc-tag">Tailored entirely around your goals</div>
+        <div class="pc-price" style="font-size:2.6rem">Let's Talk</div>
+        <div class="pc-div"></div>
+        <div class="pc-feats">
+          <div class="pc-feat"><span class="y">✦</span>You tell us what you need</div>
+          <div class="pc-feat"><span class="y">✦</span>We build the perfect package</div>
+          <div class="pc-feat"><span class="y">✦</span>Larger businesses &amp; multi-location</div>
+          <div class="pc-feat"><span class="y">✦</span>National campaigns &amp; ad production</div>
+          <div class="pc-feat"><span class="y">✦</span>Flexible scope &amp; deliverables</div>
+        </div>
+        <a href="#form-sec" class="pc-cta pc-cta-o">Start a Conversation →</a>
+      </div>
+    </div>
+
+    <!-- ONE-OFF VIDEO -->
+    <div class="pr-label rv" style="margin-top:44px">One-Off Video Production Packages</div>
+    <div class="pr-grid">
+      <div class="pc rv">
+        <div class="pc-tier">Basic</div><div class="pc-name">Starter Video</div><div class="pc-tag">Perfect for social content</div>
+        <div class="pc-price"><span style="font-family:var(--sans);font-size:.72rem;color:var(--g);display:block;margin-bottom:4px;letter-spacing:.12em;font-weight:400">Starting at</span><sup>£</sup>450</div>
+        <div class="pc-div"></div>
+        <div class="pc-feats">
+          <div class="pc-feat"><span class="y">✦</span>2-hour single-location shoot</div>
+          <div class="pc-feat"><span class="y">✦</span>10 miles free travel included</div>
+          <div class="pc-feat"><span class="y">✦</span>1× 60-second edited video</div>
+          <div class="pc-feat"><span class="y">✦</span>1 revision included</div>
+          <div class="pc-feat"><span class="y">✦</span>4× 15-second social reels</div>
+        </div>
+        <a href="#form-sec" class="pc-cta pc-cta-o">Book Now →</a>
+      </div>
+      <div class="pc hl rv d1">
+        <div class="pc-tier">Growth</div><div class="pc-name">Business Growth</div><div class="pc-tag">Serious brand presence</div>
+        <div class="pc-price"><span style="font-family:var(--sans);font-size:.72rem;color:var(--g);display:block;margin-bottom:4px;letter-spacing:.12em;font-weight:400">Starting at</span><sup>£</sup>650</div>
+        <div class="pc-div"></div>
+        <div class="pc-feats">
+          <div class="pc-feat"><span class="y">✦</span>4-hour shoot, up to 2 locations</div>
+          <div class="pc-feat"><span class="y">✦</span>1× 2-minute brand film (2 revisions)</div>
+          <div class="pc-feat"><span class="y">✦</span>5× 15–30 second reels</div>
+          <div class="pc-feat"><span class="y">✦</span>1 revision per reel</div>
+          <div class="pc-feat"><span class="y">✦</span>Full professional edit &amp; grade</div>
+        </div>
+        <a href="#form-sec" class="pc-cta pc-cta-o">Book Now →</a>
+      </div>
+      <div class="pc rv d2">
+        <div class="pc-tier">Bespoke</div><div class="pc-name">Cinematic Project</div><div class="pc-tag">The full production experience</div>
+        <div class="pc-price"><span style="font-family:var(--sans);font-size:.72rem;color:var(--g);display:block;margin-bottom:4px;letter-spacing:.12em;font-weight:400">Starting at</span><sup>£</sup>1,200</div>
+        <div class="pc-div"></div>
+        <div class="pc-feats">
+          <div class="pc-feat"><span class="y">✦</span>8-hour shoot, up to 3 locations</div>
+          <div class="pc-feat"><span class="y">✦</span>Pre-production storyboarding meeting</div>
+          <div class="pc-feat"><span class="y">✦</span>1× 3–5 min cinematic brand film</div>
+          <div class="pc-feat"><span class="y">✦</span>Up to 4 revisions</div>
+          <div class="pc-feat"><span class="y">✦</span>8× 15–30 sec reels (1 rev each)</div>
+        </div>
+        <a href="#form-sec" class="pc-cta pc-cta-o">Book Now →</a>
+      </div>
+    </div>
+
+    <!-- WEBSITE STANDALONE -->
+    <div class="pr-grid" style="margin-top:1px">
+      <div class="pc-wide pc rv">
+        <div class="pc-wide-body">
+          <div class="pc-tier">Website</div>
+          <div class="pc-name">Bespoke Website Design</div>
+          <div class="pc-tag">Custom-built · Conversion-focused · SEO-optimised · The best site in your industry — guaranteed.</div>
+        </div>
+        <div class="pc-wide-r">
+          <div><div style="font-size:.56rem;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:var(--g);margin-bottom:4px">Starting at</div><div class="pc-price" style="font-size:2.6rem"><sup>£</sup>1,000 <span style="color:var(--g);font-size:1.1rem">–</span> <sup>£</sup>7,000</div></div>
+          <a href="#form-sec" class="pc-cta pc-cta-g" style="white-space:nowrap;padding:15px 30px;text-decoration:none;display:inline-block">Get a Website Quote →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <div class="ey rv">What Clients Say</div>
+  <h2 class="st rv">Don't Take Our<br><em>Word for It.</em></h2>
+  <div class="tst-grid">
+    <div class="tc rv"><div class="tc-stars">★★★★★</div><div class="tc-q">"WDG completely changed how our business is perceived. The video content is on another level — our customers genuinely comment on it every week. The best investment we've made."</div><div class="tc-auth"><div class="tc-av">T</div><div><div class="tc-name">Teddington's Farm Shop</div><div class="tc-biz">Retail · Worcestershire</div></div></div></div>
+    <div class="tc rv d1"><div class="tc-stars">★★★★★</div><div class="tc-q">"The brand film they shot is genuinely our best marketing asset. We play it everywhere — on screens in the bar, on the website, in emails. The quality is something we couldn't have achieved locally."</div><div class="tc-auth"><div class="tc-av">L</div><div><div class="tc-name">The Longhorn Bar &amp; Grill</div><div class="tc-biz">Hospitality · Cheltenham</div></div></div></div>
+    <div class="tc rv d2"><div class="tc-stars">★★★★★</div><div class="tc-q">"Having one team manage our website, video and social is a complete game changer. Everything is consistent, everything looks premium, and we're not juggling three different agencies anymore."</div><div class="tc-auth"><div class="tc-av">C</div><div><div class="tc-name">Club One</div><div class="tc-biz">Fitness &amp; Leisure · UK</div></div></div></div>
+  </div>
+</section>
+
+<!-- PARALLAX 2 -->
+<div class="px">
+  <div style="position:absolute;inset:0;overflow:hidden"><video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover"><source src="https://base44.app/api/apps/6a0c1534017166f536b1ac32/files/mp/public/6a0c1534017166f536b1ac32/533aa7058_1f0f656a9_video_4213065005671683.mp4" type="video/mp4"/></video></div>
+  <div class="px-ov" style="background:linear-gradient(to right,rgba(13,13,13,.97) 34%,rgba(13,13,13,.08) 100%)"></div>
+  <div class="px-body">
+    <div class="ey rv">One Partner</div>
+    <h2 class="st rv" style="font-size:clamp(3rem,8vw,9rem)">Total<br>Control of<br><em>Your Marketing.</em></h2>
+    <p class="bt rv">You shouldn't need a web designer, a videographer, a social media manager AND a strategist. You need one team that does all of it — seamlessly, at one clear price.</p>
+    <a href="#form-sec" class="btn-gold rv" style="margin-top:26px;display:inline-flex;align-items:center;gap:10px"><span>Book Your Free Strategy Call</span></a>
+  </div>
+</div>
+
+<!-- PROCESS -->
+<section id="process">
+  <div class="ey rv">How It Works</div>
+  <h2 class="st rv">Simple Start.<br><em>Serious Results.</em></h2>
+  <div class="proc-row">
+    <div class="proc rv"><div class="proc-n">01</div><div class="proc-t">Free Strategy Call</div><div class="proc-d">30 minutes. We audit your current marketing, understand your goals and show you exactly what's holding your business back. No obligation, no pressure — just clarity.</div></div>
+    <div class="proc rv d1"><div class="proc-n">02</div><div class="proc-t">Custom Plan</div><div class="proc-d">We build a tailored marketing plan around your business, your market and your goals. You'll know exactly what we're doing, why, and what results to expect.</div></div>
+    <div class="proc rv d2"><div class="proc-n">03</div><div class="proc-t">Full Execution</div><div class="proc-d">Video shoots, website builds, social content, strategy meetings — all rolling within 30 days. You'll look and feel like a different business almost immediately.</div></div>
+    <div class="proc rv d3"><div class="proc-n">04</div><div class="proc-t">Continuous Growth</div><div class="proc-d">Monthly reporting, fresh content, ongoing optimisation. Your marketing gets stronger, sharper and more effective with every single month that passes.</div></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="cta-in">
+    <span class="cta-kick rv">Limited Availability — Quality Over Volume, Always</span>
+    <h2 class="cta-t rv">Ready to<br><em>Dominate</em><br>Your Market?</h2>
+    <p class="cta-b rv">This is for business owners serious about growth. If you're ready to invest in marketing that actually moves the needle — we want to hear from you. Book your free call and let's map it out together.</p>
+    <div class="cta-acts rv">
+      <a href="#form-sec" class="btn-gold"><span>Book a Free Strategy Call</span></a>
+      <a href="tel:+447584065559" class="btn-ghost">Call: +44 7584 065559</a>
+    </div>
+    <span class="cta-sm rv"><strong>No contracts. No lock-in.</strong> Cancel anytime. Results or we make it right.</span>
+  </div>
+</section>
+
+<!-- FORM -->
+<section id="form-sec">
+  <div class="form-box rv">
+    <div class="form-logo-row">
+      <img src="https://media.base44.com/images/public/6a0c1534017166f536b1ac32/6176daae7_IMG_6698.jpg" alt="WDG Videography"/>
+      <div><div class="wdg-t">WDG</div><div class="vid-t">videography</div></div>
+    </div>
+    <h2 class="form-title">Book Your Free<br><em>Strategy Call</em></h2>
+    <p class="form-sub">2 minutes. No obligation. We'll review your current marketing and show you exactly what needs to change — and how WDG will change it — completely free.</p>
+    <form class="fg" id="mainForm" onsubmit="doSubmit(event)">
+      <div class="ff"><label>First Name *</label><input type="text" placeholder="John" required/></div>
+      <div class="ff"><label>Last Name *</label><input type="text" placeholder="Smith" required/></div>
+      <div class="ff"><label>Business Name *</label><input type="text" placeholder="Your Business Ltd" required/></div>
+      <div class="ff"><label>Phone Number *</label><input type="tel" id="fTel" placeholder="+44 7700 000000" required/></div>
+      <div class="ff full"><label>Email Address *</label><input type="email" id="fEmail" placeholder="john@yourbusiness.com" required/></div>
+      <div class="ff full">
+        <label>What Are You Most Interested In?</label>
+        <select id="fSvc">
+          <option value="">Select a service...</option>
+          <option>Social Media + Video Management — £1,200/month</option>
+          <option>Full Marketing Management (Everything) — £1,500/month</option>
+          <option>Bespoke / Custom Package</option>
+          <option>One-Off Video — Basic (£450)</option>
+          <option>One-Off Video — Business Growth (£650)</option>
+          <option>One-Off Video — Cinematic Project (£1,200)</option>
+          <option>Website Design (£1,000–£7,000)</option>
+          <option>Not sure — I need advice first</option>
+        </select>
+      </div>
+      <div class="ff full">
+        <label>How Would You Like Us to Contact You First?</label>
+        <div class="ch-row">
+          <button type="button" class="ch on" onclick="pickCh(this)">📞 Phone Call</button>
+          <button type="button" class="ch" onclick="pickCh(this)">💬 WhatsApp</button>
+          <button type="button" class="ch" onclick="pickCh(this)">📧 Email</button>
+        </div>
+      </div>
+      <div class="ff full"><label>Tell Us About Your Business (Optional)</label><textarea rows="4" placeholder="What do you do? Who are your customers? What are you trying to achieve? The more you tell us, the better your strategy call will be..."></textarea></div>
+      <div class="ff full"><button type="submit" class="form-sub-btn"><span id="sbTxt">Book My Free Strategy Call →</span></button></div>
+    </form>
+    <div class="trust-r">
+      <span class="tr-it">Free — no obligation</span>
+      <span class="tr-it">Response within 2 hours</span>
+      <span class="tr-it">No contracts or lock-in</span>
+      <span class="tr-it">Cheltenham-based team</span>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT BAR -->
+<div class="cb">
+  <div class="cb-it rv"><div class="cb-lbl">Phone &amp; WhatsApp</div><div class="cb-val"><a href="tel:+447584065559">+44 7584 065559</a></div></div>
+  <div class="cb-it rv d1"><div class="cb-lbl">Email</div><div class="cb-val"><a href="mailto:wdg.videography@gmail.com">wdg.videography@gmail.com</a></div></div>
+  <div class="cb-it rv d2"><div class="cb-lbl">Based In</div><div class="cb-val">Cheltenham, Gloucestershire &middot; Nationwide</div></div>
+  <div class="cb-it rv d3"><div class="cb-lbl">Website</div><div class="cb-val"><a href="https://www.wdgvideography.com" target="_blank">wdgvideography.com</a></div></div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft">
+    <div class="ft-top">
+      <div>
+        <div class="ft-brand-row">
+          <img src="https://media.base44.com/images/public/6a0c1534017166f536b1ac32/6176daae7_IMG_6698.jpg" alt="WDG"/>
+          <div><div class="ft-brand-name">WDG</div><div class="ft-brand-sub">videography</div></div>
+        </div>
+        <div class="ft-tagline">Cinematic Video · Bespoke Websites · Social Media Management<br>Full Marketing Management · Cheltenham, Gloucestershire · UK &amp; Nationwide</div>
+      </div>
+      <div class="ft-r">
+        <nav class="ft-nav">
+          <a href="#work">Our Work</a><a href="#services">Services</a><a href="#pricing">Pricing</a>
+          <a href="#process">Process</a><a href="#form-sec">Contact</a><a href="https://www.wdgvideography.com" target="_blank">Main Site</a>
+        </nav>
+        <div class="ft-soc">
+          <a href="https://www.instagram.com/wdg.videography" class="ft-s" target="_blank">IG</a>
+          <a href="https://www.tiktok.com/@wdg.videography" class="ft-s" target="_blank">TK</a>
+          <a href="https://www.facebook.com/wdgvideography" class="ft-s" target="_blank">FB</a>
+          <a href="https://wa.me/447584065559" class="ft-s" target="_blank">WA</a>
+        </div>
+      </div>
+    </div>
+    <div class="ft-btm">
+      <span class="ft-copy">&copy; 2026 WDG Videography &middot; Cheltenham, Gloucestershire &middot; All Rights Reserved</span>
+      <span class="ft-cr"><a href="https://www.wdgvideography.com">wdgvideography.com</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+
+  // LOADER
+  const lf = document.getElementById('lf');
+  const lp = document.getElementById('lp');
+  const logo = document.getElementById('ldrLogo');
+  let pct = 0;
+  setTimeout(()=>{ logo.style.opacity='1'; logo.style.transition='opacity .7s ease'; }, 150);
+  const lt = setInterval(()=>{
+    pct += Math.floor(Math.random()*9)+3;
+    if(pct>=100){ pct=100; clearInterval(lt); }
+    lf.style.width = pct+'%';
+    lp.textContent = pct+'%';
+  }, 45);
+  // LOADER — time-based so large videos never block dismissal
+(function(){
+  var fill = document.getElementById('ldrFill');
+  var pct  = document.getElementById('ldrPct');
+  var p = 0;
+  gsap.to('.ldr-logo', {opacity:1, duration:.7, delay:.1});
+  var iv = setInterval(function(){
+    p = Math.min(p + Math.random()*20 + 5, 100);
+    if(fill) fill.style.width = p + '%';
+    if(pct)  pct.textContent  = Math.round(p) + '%';
+    if(p >= 100){
+      clearInterval(iv);
+      setTimeout(function(){
+        var loader = document.getElementById('loader');
+        gsap.to(loader, {opacity:0, duration:.65, ease:'power2.inOut', onComplete:function(){
+          loader.style.display = 'none';
+          gsap.to('.h-loc', {opacity:1, y:0, duration:.6, ease:'power3.out'});
+          gsap.to('.h-title .ln', {y:'0%', duration:1.05, stagger:.13, ease:'power3.out', delay:.12});
+          gsap.to('.h-row', {opacity:1, y:0, duration:.75, delay:.65, ease:'power3.out'});
+          _resetProg();
+          _hTimer = setTimeout(_nextVid, _hDur);
+        }});
+      }, 150);
+    }
+  }, 75);
+})();
+
+  
+  document.querySelectorAll('a,button,.sc,.pc,.tc,.proc,.stat,.cl-item,.cb-it').forEach(el=>{
+    
+    
+  });
+
+  // NAV SCROLL
+  window.addEventListener('scroll', ()=>document.getElementById('nav').classList.toggle('sc', scrollY>60));
+
+  // HERO PARALLAX
+  gsap.to('#hImg', {yPercent:20, ease:'none', scrollTrigger:{trigger:'#hero', start:'top top', end:'bottom top', scrub:1}});
+
+  // SCROLL REVEAL
+  const obs = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('on'); }), {threshold:.07});
+  document.querySelectorAll('.rv,.rl,.rr').forEach(el=>obs.observe(el));
+
+  // 3D TILT on cards
+  document.querySelectorAll('.sc,.pc,.tc').forEach(card=>{
+    card.addEventListener('mousemove', e=>{
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX-r.left)/r.width-.5;
+      const y = (e.clientY-r.top)/r.height-.5;
+      gsap.to(card, {rotateY:x*5, rotateX:-y*5, duration:.35, ease:'power2.out', transformPerspective:900});
+    });
+    card.addEventListener('mouseleave', ()=>gsap.to(card, {rotateY:0, rotateX:0, duration:.65, ease:'power2.out'}));
+  });
+
+  // MAGNETIC BUTTONS
+  document.querySelectorAll('.btn-gold,.btn-ghost,.nav-btn,.pc-cta,.form-sub-btn').forEach(btn=>{
+    btn.addEventListener('mousemove', e=>{
+      const r = btn.getBoundingClientRect();
+      gsap.to(btn, {x:(e.clientX-r.left-r.width/2)*.2, y:(e.clientY-r.top-r.height/2)*.2, duration:.35, ease:'power2.out'});
+    });
+    btn.addEventListener('mouseleave', ()=>gsap.to(btn, {x:0, y:0, duration:.65, ease:'elastic.out(1,.5)'}));
+  });
+
+  // CHANNEL PICKER
+  function pickCh(el){ document.querySelectorAll('.ch').forEach(b=>b.classList.remove('on')); el.classList.add('on'); }
+
+  // FORM SUBMIT
+  function doSubmit(e){
+    e.preventDefault();
+    const sb = document.getElementById('sbTxt');
+    const email = document.getElementById('fEmail').value;
+    const svc = document.getElementById('fSvc').value;
+    sb.textContent = '✓ Sent! We\'ll be in touch within 2 hours.';
+    e.target.querySelector('.form-sub-btn').style.background='#2a6e3f';
+    const msg = encodeURIComponent('Hi WDG! I just submitted an enquiry. Service: '+(svc||'Not specified')+'. Email: '+email);
+    setTimeout(()=>window.open('https://wa.me/447584065559?text='+msg,'_blank'), 1100);
+  }
+
+  // MOBILE NAV
+  let mOpen=false;
+  function mob(){
+    mOpen=!mOpen;
+    const ul=document.querySelector('.nav-links');
+    ul.style.cssText=mOpen?'display:flex;flex-direction:column;position:fixed;top:54px;left:0;right:0;background:rgba(13,13,13,.99);padding:24px;gap:18px;border-bottom:1px solid #1F1F1F;z-index:999;':'';
+  }
+
+// HERO VIDEO ROTATION
+var _hCur=0,_hTimer=null,_hDur=8000;
+function goVid(idx){
+  var vids=document.querySelectorAll('#heroVidBg video');
+  var dots=document.querySelectorAll('.h-dot');
+  vids[_hCur].classList.remove('hv-active');
+  dots[_hCur].classList.remove('active');
+  _hCur=idx;
+  vids[_hCur].classList.add('hv-active');
+  dots[_hCur].classList.add('active');
+  _resetProg();
+  clearTimeout(_hTimer);
+  _hTimer=setTimeout(_nextVid,_hDur);
+}
+function _nextVid(){goVid((_hCur+1)%5);}
+function _resetProg(){
+  var f=document.getElementById('hProgF');
+  if(!f)return;
+  f.style.transition='none';f.style.width='0';
+  requestAnimationFrame(function(){requestAnimationFrame(function(){f.style.transition='width '+_hDur+'ms linear';f.style.width='100%';});});
+}
+// Start rotation after loader
+var _origInit=typeof initHero==='function'?initHero:null;
+function _startHero(){_resetProg();_hTimer=setTimeout(_nextVid,_hDur);}
+document.addEventListener('DOMContentLoaded',function(){setTimeout(_startHero,2000);});
+
+// LIGHTBOX
+function openLb(src){
+  var lb=document.getElementById('lightbox');
+  var v=document.getElementById('lbVideo');
+  v.src=src;v.play();
+  lb.style.display='flex';
+  document.body.style.overflow='hidden';
+}
+function closeLb(){
+  var lb=document.getElementById('lightbox');
+  var v=document.getElementById('lbVideo');
+  v.pause();v.src='';
+  lb.style.display='none';
+  document.body.style.overflow='';
+}
+document.getElementById('lightbox').addEventListener('click',function(e){if(e.target===this)closeLb();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLb();});
+
+</script>
+</body>
+</html>
