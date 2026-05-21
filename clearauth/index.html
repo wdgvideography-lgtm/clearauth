@@ -358,6 +358,35 @@
   .profile-new-dept-input { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 0.9rem; font-family: 'Inter', sans-serif; background: var(--grey-light); color: var(--text); transition: all 0.2s; }
   .profile-new-dept-input:focus { outline: none; border-color: var(--blue); background: white; box-shadow: 0 0 0 3px rgba(59,125,216,0.1); }
 
+
+  /* ===== SITE GROUPING ===== */
+  .site-section { background: white; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 14px; overflow: hidden; box-shadow: var(--card-shadow); }
+  .site-section-header { padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; transition: all 0.2s; background: linear-gradient(135deg, #F7FAFF, #EEF3FF); border-bottom: 1px solid transparent; }
+  .site-section-header:hover { background: linear-gradient(135deg, #EEF3FF, #E4ECFF); }
+  .site-section-header.open { border-bottom-color: var(--border); background: linear-gradient(135deg, #EEF3FF, #E4ECFF); }
+  .site-section-icon { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #3B7DD8, #2B4B8C); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+  .site-section-name { font-size: 0.98rem; font-weight: 800; color: var(--dark); }
+  .site-section-meta { font-size: 0.76rem; color: var(--grey); margin-top: 2px; }
+  .site-section-chevron { font-size: 0.85rem; color: var(--grey); transition: transform 0.25s; flex-shrink: 0; }
+  .site-section-header.open .site-section-chevron { transform: rotate(180deg); }
+  .site-body { display: none; }
+  .site-body.open { display: block; }
+
+  .role-subsection { border-bottom: 1px solid var(--border); }
+  .role-subsection:last-child { border-bottom: none; }
+  .role-subsection-header { padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; background: #FAFCFF; border-bottom: 1px solid transparent; transition: background 0.15s; }
+  .role-subsection-header:hover { background: #F2F6FF; }
+  .role-subsection-header.open { border-bottom-color: var(--border); background: #F2F6FF; }
+  .role-subsection-left { display: flex; align-items: center; gap: 10px; }
+  .role-subsection-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; flex-shrink: 0; }
+  .role-subsection-icon.driver { background: var(--blue-light); }
+  .role-subsection-icon.approver { background: var(--green-light); }
+  .role-subsection-title { font-size: 0.82rem; font-weight: 800; color: var(--dark); text-transform: uppercase; letter-spacing: 0.5px; }
+  .role-subsection-count { font-size: 0.72rem; color: var(--grey); margin-left: 6px; }
+  .role-subsection-chevron { font-size: 0.75rem; color: var(--grey); transition: transform 0.2s; }
+  .role-subsection-header.open .role-subsection-chevron { transform: rotate(180deg); }
+  .role-subsection-body { display: none; }
+  .role-subsection-body.open { display: block; }
 </style>
 </head>
 <body>
@@ -524,38 +553,9 @@
       </div>
     </div>
 
-    <!-- Drivers dropdown -->
-    <div class="user-section" id="drivers-section">
-      <div class="user-section-header" onclick="toggleUserSection('drivers')">
-        <div class="user-section-left">
-          <div class="user-section-icon driver">🚛</div>
-          <div>
-            <div class="user-section-name">Drivers</div>
-            <div class="user-section-count" id="drivers-count">Loading...</div>
-          </div>
-        </div>
-        <div class="user-section-chevron" id="drivers-chevron">▼</div>
-      </div>
-      <div class="user-section-body" id="drivers-body">
-        <div class="spinner"></div>
-      </div>
-    </div>
-
-    <!-- Approvers dropdown -->
-    <div class="user-section" id="approvers-section">
-      <div class="user-section-header" onclick="toggleUserSection('approvers')">
-        <div class="user-section-left">
-          <div class="user-section-icon approver">✅</div>
-          <div>
-            <div class="user-section-name">Approvers</div>
-            <div class="user-section-count" id="approvers-count">Loading...</div>
-          </div>
-        </div>
-        <div class="user-section-chevron" id="approvers-chevron">▼</div>
-      </div>
-      <div class="user-section-body" id="approvers-body">
-        <div class="spinner"></div>
-      </div>
+    <!-- Sites container -->
+    <div id="sites-container">
+      <div class="spinner"></div>
     </div>
   </div>
 </div>
@@ -878,14 +878,99 @@
   function renderUserSections() {
     const drivers = companyUsers.filter(u => u.role === 'driver');
     const approvers = companyUsers.filter(u => u.role === 'approver');
+    const allUsers = [...drivers, ...approvers];
 
-    document.getElementById('drivers-count').textContent = `${drivers.length} member${drivers.length !== 1 ? 's' : ''}`;
-    document.getElementById('approvers-count').textContent = `${approvers.length} member${approvers.length !== 1 ? 's' : ''}`;
+    // Collect all unique sites from the 'department' field
+    const siteSet = new Set();
+    allUsers.forEach(u => { if (u.department) siteSet.add(u.department); });
+    const sites = Array.from(siteSet).sort();
+    if (sites.length === 0) sites.push(null); // No sites yet — show unassigned
 
-    document.getElementById('drivers-body').innerHTML = renderUserList(drivers, 'driver');
-    document.getElementById('approvers-body').innerHTML = renderUserList(approvers, 'approver');
-    // Load approvers for each driver perm section
+    const container = document.getElementById('sites-container');
+    let html = '';
+
+    // Always include unassigned group if any unassigned users exist
+    const unassigned = allUsers.filter(u => !u.department);
+    const allSites = unassigned.length > 0 ? [...sites.filter(Boolean), null] : sites;
+
+    allSites.forEach((site, si) => {
+      const siteKey = site || '__unassigned__';
+      const siteLabel = site || 'Unassigned';
+      const siteEmoji = site ? '📍' : '📋';
+      const siteDrivers = drivers.filter(u => (site ? u.department === site : !u.department));
+      const siteApprovers = approvers.filter(u => (site ? u.department === site : !u.department));
+      const totalInSite = siteDrivers.length + siteApprovers.length;
+
+      html += `
+      <div class="site-section" id="site-section-${si}">
+        <div class="site-section-header" onclick="toggleSiteSection(${si})">
+          <div style="display:flex;align-items:center;gap:13px;flex:1;min-width:0">
+            <div class="site-section-icon">${siteEmoji}</div>
+            <div style="min-width:0">
+              <div class="site-section-name">${siteLabel}</div>
+              <div class="site-section-meta">${totalInSite} member${totalInSite !== 1 ? 's' : ''} · ${siteDrivers.length} driver${siteDrivers.length !== 1 ? 's' : ''} · ${siteApprovers.length} approver${siteApprovers.length !== 1 ? 's' : ''}</div>
+            </div>
+          </div>
+          <div class="site-section-chevron">▼</div>
+        </div>
+        <div class="site-body" id="site-body-${si}">
+
+          ${siteDrivers.length > 0 ? `
+          <div class="role-subsection">
+            <div class="role-subsection-header" onclick="toggleRoleSubsection('${siteKey}-drivers')">
+              <div class="role-subsection-left">
+                <div class="role-subsection-icon driver">🚛</div>
+                <span class="role-subsection-title">Drivers</span>
+                <span class="role-subsection-count">${siteDrivers.length}</span>
+              </div>
+              <span class="role-subsection-chevron">▼</span>
+            </div>
+            <div class="role-subsection-body" id="rsb-${siteKey}-drivers">
+              ${renderUserList(siteDrivers, 'driver')}
+            </div>
+          </div>` : ''}
+
+          ${siteApprovers.length > 0 ? `
+          <div class="role-subsection">
+            <div class="role-subsection-header" onclick="toggleRoleSubsection('${siteKey}-approvers')">
+              <div class="role-subsection-left">
+                <div class="role-subsection-icon approver">✅</div>
+                <span class="role-subsection-title">Approvers</span>
+                <span class="role-subsection-count">${siteApprovers.length}</span>
+              </div>
+              <span class="role-subsection-chevron">▼</span>
+            </div>
+            <div class="role-subsection-body" id="rsb-${siteKey}-approvers">
+              ${renderUserList(siteApprovers, 'approver')}
+            </div>
+          </div>` : ''}
+
+          ${totalInSite === 0 ? `<div class="empty-users">No members in this site yet.</div>` : ''}
+
+        </div>
+      </div>`;
+    });
+
+    container.innerHTML = html || `<div class="empty-users" style="text-align:center;padding:30px">No users yet — send an invite link to get started.</div>`;
+
+    // Load approver checks for drivers
     drivers.forEach(d => { if (d.status === 'active') loadApproverChecks(d.id, d.allowed_approvers || [], d.allow_all_approvers); });
+  }
+
+  function toggleSiteSection(si) {
+    const header = document.querySelector(`#site-section-${si} .site-section-header`);
+    const body = document.getElementById(`site-body-${si}`);
+    const isOpen = body.classList.contains('open');
+    header.classList.toggle('open', !isOpen);
+    body.classList.toggle('open', !isOpen);
+  }
+
+  function toggleRoleSubsection(key) {
+    const header = document.querySelector(`[onclick="toggleRoleSubsection('${key}')"]`);
+    const body = document.getElementById(`rsb-${key}`);
+    const isOpen = body.classList.contains('open');
+    header.classList.toggle('open', !isOpen);
+    body.classList.toggle('open', !isOpen);
   }
 
   function renderUserList(users, role) {
@@ -929,21 +1014,7 @@
     }).join('');
   }
 
-  function toggleUserSection(section) {
-    sectionOpen[section] = !sectionOpen[section];
-    const header = document.getElementById(`${section}-section`).querySelector('.user-section-header');
-    const body = document.getElementById(`${section}-body`);
-    const chevron = document.getElementById(`${section}-chevron`);
-    if (sectionOpen[section]) {
-      header.classList.add('open');
-      body.classList.add('open');
-      chevron.textContent = '▲';
-    } else {
-      header.classList.remove('open');
-      body.classList.remove('open');
-      chevron.textContent = '▼';
-    }
-  }
+  // toggleUserSection removed — site-based layout now handles this
 
   // ===== INVITE =====
   async function generateInvite(role) {
