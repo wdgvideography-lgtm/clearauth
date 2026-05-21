@@ -8,39 +8,39 @@
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --blue: #3B7DD8; --blue-dark: #2563EB; --blue-light: #EBF3FF;
-    --green: #0F9D6B; --green-light: #D6F5EC;
-    --red: #E03E3E; --red-light: #FEE8E8;
-    --amber: #E07B2A; --amber-light: #FEF0E0;
-    --purple: #7C3AED; --purple-light: #EDE9FE;
-    --dark: #1A2233; --dark2: #2D3A4F;
-    --grey: #7A8A9E; --grey-light: #F4F7FA;
-    --border: #E4EAF2; --text: #1A2233;
-    --card-shadow: 0 2px 16px rgba(30,50,90,0.08);
+    --blue: #4A9EFF; --blue-dark: #2563EB; --blue-light: rgba(74,158,255,0.15);
+    --green: #22C55E; --green-light: rgba(34,197,94,0.15);
+    --red: #EF4444; --red-light: rgba(239,68,68,0.15);
+    --amber: #F59E0B; --amber-light: rgba(245,158,11,0.15);
+    --purple: #A78BFA; --purple-light: rgba(167,139,250,0.15);
+    --dark: #0D1117; --dark2: #161B22; --dark3: #21262D; --dark4: #30363D;
+    --grey: #8B949E; --grey-light: #21262D;
+    --border: #30363D; --text: #E6EDF3;
+    --card-shadow: 0 4px 24px rgba(0,0,0,0.4);
     --card-radius: 16px;
-    --accent: #3B7DD8;
+    --accent: #4A9EFF;
   }
   html { scroll-behavior: smooth; }
-  body { font-family: 'Inter', sans-serif; background: #F0F4FA; color: var(--text); min-height: 100vh; }
+  body { font-family: 'Inter', sans-serif; background: #0D1117; color: var(--text); min-height: 100vh; }
   .view { display: none; min-height: 100vh; }
   .view.active { display: flex; flex-direction: column; }
 
   /* ===== LOGIN ===== */
   #view-login { background: linear-gradient(160deg, #1A2E50 0%, #2B4B8C 60%, #3B7DD8 100%); align-items: center; justify-content: center; padding: 32px 20px; }
-  .login-card { width: 100%; max-width: 400px; background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 24px 64px rgba(20,40,90,0.35); }
+  .login-card { width: 100%; max-width: 400px; background: #161B22; border-radius: 24px; overflow: hidden; box-shadow: 0 24px 64px rgba(0,0,0,0.6); border: 1px solid #30363D; }
   .login-header { background: linear-gradient(135deg, #1A2E50, #2B4B8C); padding: 32px 32px 28px; text-align: center; position: relative; overflow: hidden; }
   .login-header::before { content: ''; position: absolute; width: 200px; height: 200px; background: rgba(255,255,255,0.04); border-radius: 50%; top: -80px; right: -60px; }
   .login-logo { font-size: 2.4rem; font-weight: 900; color: white; letter-spacing: -1px; margin-bottom: 6px; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; gap: 0; }
   .login-logo .re { color: #7AB8FF; font-style: italic; font-weight: 900; }
   .login-logo .dash { color: rgba(255,255,255,0.5); font-weight: 300; margin: 0 2px; }
   .login-tagline { font-size: 0.7rem; color: rgba(255,255,255,0.45); letter-spacing: 3px; text-transform: uppercase; }
-  .login-body { padding: 30px 28px 26px; }
-  .login-title { font-size: 1.2rem; font-weight: 800; color: var(--dark); margin-bottom: 4px; }
-  .login-sub { font-size: 0.84rem; color: var(--grey); margin-bottom: 24px; line-height: 1.5; }
+  .login-body { padding: 30px 28px 26px; background: #161B22; }
+  .login-title { font-size: 1.2rem; font-weight: 800; color: #E6EDF3; margin-bottom: 4px; }
+  .login-sub { font-size: 0.84rem; color: #8B949E; margin-bottom: 24px; line-height: 1.5; }
   .field-group { margin-bottom: 16px; }
   .field-group label { display: block; font-size: 0.74rem; font-weight: 700; color: var(--dark2); margin-bottom: 7px; text-transform: uppercase; letter-spacing: 0.8px; }
-  .field-input { width: 100%; padding: 13px 16px; border: 1.5px solid var(--border); border-radius: 11px; font-size: 0.95rem; font-family: 'Inter', sans-serif; color: var(--text); transition: all 0.2s; background: var(--grey-light); }
-  .field-input:focus { outline: none; border-color: var(--blue); background: white; box-shadow: 0 0 0 3px rgba(59,125,216,0.12); }
+  .field-input { width: 100%; padding: 13px 16px; border: 1.5px solid #30363D; border-radius: 11px; font-size: 0.95rem; font-family: 'Inter', sans-serif; color: #E6EDF3; transition: all 0.2s; background: #21262D; }
+  .field-input:focus { outline: none; border-color: var(--blue); background: #21262D; box-shadow: 0 0 0 3px rgba(74,158,255,0.15); }
   .field-input::placeholder { color: #B0BEC8; }
   .form-error { background: var(--red-light); color: var(--red); border-radius: 10px; padding: 11px 14px; font-size: 0.83rem; font-weight: 600; margin-bottom: 14px; display: none; border-left: 3px solid var(--red); }
   .form-error.show { display: block; }
@@ -51,37 +51,37 @@
   .login-footer-note { text-align: center; font-size: 0.74rem; color: #A0AFBF; margin-top: 18px; line-height: 1.5; }
 
   /* ===== SHARED HEADER ===== */
-  .app-header { background: white; border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; box-shadow: 0 1px 8px rgba(30,50,90,0.06); }
-  .app-logo { font-size: 1.35rem; font-weight: 900; color: var(--dark); letter-spacing: -0.5px; display: flex; align-items: center; gap: 0; }
+  .app-header { background: #161B22; border-bottom: 1px solid #30363D; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; box-shadow: 0 2px 16px rgba(0,0,0,0.4); }
+  .app-logo { font-size: 1.35rem; font-weight: 900; color: var(--text); letter-spacing: -0.5px; display: flex; align-items: center; gap: 0; }
   .app-logo .re { color: var(--blue); font-style: italic; font-weight: 900; }
   .app-logo .dash { color: #C0CCDA; font-weight: 300; margin: 0 2px; }
   .header-right { display: flex; align-items: center; gap: 10px; }
   .header-badge { font-size: 0.63rem; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; padding: 5px 11px; border-radius: 20px; }
-  .badge-employee { background: #E0EEFF; color: #2563EB; }
-  .badge-approver { background: #D6F5EC; color: #0F9D6B; }
-  .badge-company { background: #EDE9FE; color: #6D28D9; }
-  .btn-logout { background: none; border: 1.5px solid var(--border); color: var(--grey); padding: 6px 13px; border-radius: 8px; font-size: 0.73rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .badge-employee { background: rgba(74,158,255,0.15); color: #4A9EFF; }
+  .badge-approver { background: rgba(34,197,94,0.15); color: #22C55E; }
+  .badge-company { background: rgba(167,139,250,0.15); color: #A78BFA; }
+  .btn-logout { background: none; border: 1.5px solid #30363D; color: #8B949E; padding: 6px 13px; border-radius: 8px; font-size: 0.73rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
   .btn-logout:hover { border-color: var(--red); color: var(--red); background: var(--red-light); }
 
   /* ===== EMPLOYEE FORM ===== */
-  #view-employee { background: #F0F4FA; }
-  .form-body { flex: 1; padding: 20px 16px 100px; max-width: 600px; margin: 0 auto; width: 100%; }
-  .section-title { font-size: 0.67rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--grey); margin-bottom: 10px; margin-top: 22px; }
+  #view-employee { background: #0D1117; }
+  .form-body { flex: 1; padding: 20px 16px 100px; max-width: 600px; margin: 0 auto; width: 100%; background: #0D1117; }
+  .section-title { font-size: 0.67rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #4A9EFF; margin-bottom: 10px; margin-top: 22px; }
   .section-title:first-child { margin-top: 0; }
   .form-group { margin-bottom: 12px; }
-  .form-group label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--dark2); margin-bottom: 6px; }
-  .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 13px 16px; border: 1.5px solid var(--border); border-radius: 11px; font-size: 0.95rem; font-family: 'Inter', sans-serif; background: white; color: var(--text); transition: all 0.2s; appearance: none; box-shadow: 0 1px 3px rgba(30,50,90,0.04); }
-  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(59,125,216,0.12); }
+  .form-group label { display: block; font-size: 0.82rem; font-weight: 600; color: #8B949E; margin-bottom: 6px; }
+  .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 13px 16px; border: 1.5px solid #30363D; border-radius: 11px; font-size: 0.95rem; font-family: 'Inter', sans-serif; background: #21262D; color: #E6EDF3; transition: all 0.2s; appearance: none; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(74,158,255,0.15); }
   .form-group textarea { resize: vertical; min-height: 80px; }
-  .form-group input::placeholder, .form-group textarea::placeholder { color: #B8C7D6; }
+  .form-group input::placeholder, .form-group textarea::placeholder { color: #484F58; }
   .urgency-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-  .urgency-btn { padding: 14px 8px; border-radius: 12px; border: 2px solid var(--border); background: white; cursor: pointer; text-align: center; font-size: 0.78rem; font-weight: 600; transition: all 0.2s; color: var(--grey); box-shadow: 0 1px 4px rgba(30,50,90,0.05); }
+  .urgency-btn { padding: 14px 8px; border-radius: 12px; border: 2px solid #30363D; background: #21262D; cursor: pointer; text-align: center; font-size: 0.78rem; font-weight: 600; transition: all 0.2s; color: #8B949E; }
   .urgency-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(30,50,90,0.1); }
   .urgency-btn.active.standard { border-color: var(--blue); background: var(--blue-light); color: var(--blue); }
   .urgency-btn.active.urgent { border-color: var(--amber); background: var(--amber-light); color: var(--amber); }
   .urgency-btn.active.critical { border-color: var(--red); background: var(--red-light); color: var(--red); }
   .urgency-icon { font-size: 1.3rem; display: block; margin-bottom: 5px; }
-  .form-footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--border); padding: 14px 20px; z-index: 40; box-shadow: 0 -4px 16px rgba(30,50,90,0.08); }
+  .form-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #161B22; border-top: 1px solid #30363D; padding: 14px 20px; z-index: 40; box-shadow: 0 -4px 24px rgba(0,0,0,0.5); }
   .btn-submit { width: 100%; max-width: 600px; margin: 0 auto; display: block; background: linear-gradient(135deg, #3B7DD8, #2B4B8C); color: white; border: none; padding: 16px; font-size: 1rem; font-weight: 700; border-radius: 13px; cursor: pointer; transition: all 0.2s; letter-spacing: 0.2px; }
   .btn-submit:hover { background: linear-gradient(135deg, #2563EB, #1A3A7A); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(59,125,216,0.3); }
   .btn-submit:disabled { background: #B0BEC8; cursor: not-allowed; transform: none; box-shadow: none; }
@@ -110,19 +110,19 @@
   .card-status-icon { font-size: 3.5rem; margin-bottom: 12px; }
   .card-status-word { font-size: 2.2rem; font-weight: 900; color: white; letter-spacing: -1px; text-transform: uppercase; margin-bottom: 4px; }
   .card-status-sub { font-size: 0.8rem; color: rgba(255,255,255,0.65); }
-  .card-body { background: white; padding: 24px; }
-  .card-type-badge { display: inline-block; background: var(--blue-light); color: var(--blue); font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 5px 12px; border-radius: 6px; margin-bottom: 20px; }
-  .card-identities { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); margin: 0 -24px; margin-top: 16px; }
-  .identity-block { background: white; padding: 14px; }
+  .card-body { background: #161B22; padding: 24px; }
+  .card-type-badge { display: inline-block; background: rgba(74,158,255,0.15); color: #4A9EFF; font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 5px 12px; border-radius: 6px; margin-bottom: 20px; }
+  .card-identities { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #30363D; margin: 0 -24px; margin-top: 16px; }
+  .identity-block { background: #161B22; padding: 14px; }
   .identity-role { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--grey); margin-bottom: 4px; }
-  .identity-name { font-size: 0.85rem; font-weight: 700; color: var(--dark); }
+  .identity-name { font-size: 0.85rem; font-weight: 700; color: #E6EDF3; }
   .identity-company { font-size: 0.75rem; color: var(--grey); }
-  .card-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 11px 0; border-bottom: 1px solid var(--border); }
+  .card-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 11px 0; border-bottom: 1px solid #30363D; }
   .card-row:last-of-type { border-bottom: none; }
-  .card-row-label { font-size: 0.72rem; font-weight: 600; color: var(--grey); text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; margin-right: 12px; }
-  .card-row-value { font-size: 0.88rem; font-weight: 600; color: var(--dark); text-align: right; }
-  .card-qr-section { background: var(--grey-light); margin: 0 -24px; padding: 18px 24px; display: flex; align-items: center; gap: 16px; }
-  .qr-placeholder { width: 60px; height: 60px; background: white; border-radius: 8px; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
+  .card-row-label { font-size: 0.72rem; font-weight: 600; color: #8B949E; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; margin-right: 12px; }
+  .card-row-value { font-size: 0.88rem; font-weight: 600; color: #E6EDF3; text-align: right; }
+  .card-qr-section { background: #21262D; margin: 0 -24px; padding: 18px 24px; display: flex; align-items: center; gap: 16px; }
+  .qr-placeholder { width: 60px; height: 60px; background: #161B22; border-radius: 8px; border: 2px solid #30363D; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
   .qr-info .qr-label { font-size: 0.7rem; font-weight: 700; color: var(--grey); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
   .qr-info .qr-value { font-size: 0.72rem; color: var(--dark2); font-family: monospace; word-break: break-all; }
   .card-expiry { background: var(--amber-light); margin: 16px -24px -24px; padding: 14px 24px; display: flex; align-items: center; gap: 10px; font-size: 0.8rem; color: var(--amber); font-weight: 600; }
@@ -136,14 +136,14 @@
   .btn-new-req { width: 100%; padding: 15px; background: var(--blue); color: white; border: none; border-radius: 12px; font-size: 0.95rem; font-weight: 700; cursor: pointer; }
 
   /* ===== APPROVER DASHBOARD ===== */
-  #view-approver { background: #F0F4FA; }
-  .dashboard-body { flex: 1; padding: 20px 16px; max-width: 700px; margin: 0 auto; width: 100%; }
+  #view-approver { background: #0D1117; }
+  .dashboard-body { flex: 1; padding: 20px 16px 100px; max-width: 700px; margin: 0 auto; width: 100%; background: #0D1117; }
   .dash-top-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-  .dash-heading { font-size: 1.15rem; font-weight: 800; color: var(--dark); }
-  .refresh-btn { background: white; border: 1.5px solid var(--border); color: var(--grey); padding: 7px 14px; border-radius: 9px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-  .refresh-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+  .dash-heading { font-size: 1.15rem; font-weight: 800; color: #E6EDF3; }
+  .refresh-btn { background: #21262D; border: 1.5px solid #30363D; color: #8B949E; padding: 7px 14px; border-radius: 9px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .refresh-btn:hover { border-color: var(--blue); color: var(--blue); background: rgba(74,158,255,0.1); }
   .dash-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
-  .tab-btn { padding: 9px 18px; border-radius: 22px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.2s; background: white; color: var(--grey); border: 1.5px solid var(--border); }
+  .tab-btn { padding: 9px 18px; border-radius: 22px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.2s; background: #21262D; color: #8B949E; border: 1.5px solid #30363D; }
   .tab-btn.active { background: var(--blue); color: white; border-color: var(--blue); box-shadow: 0 3px 10px rgba(59,125,216,0.25); }
   .tab-count { display: inline-block; background: var(--red); color: white; border-radius: 100px; font-size: 0.65rem; font-weight: 800; padding: 1px 7px; margin-left: 6px; vertical-align: middle; }
   .tab-count.zero { background: #C8D5E0; }
@@ -151,89 +151,89 @@
   .empty-state { text-align: center; padding: 60px 24px; color: var(--grey); }
   .empty-icon { font-size: 3rem; margin-bottom: 12px; }
   .empty-title { font-size: 1rem; font-weight: 700; color: var(--dark); margin-bottom: 6px; }
-    .req-card { background: white; border-radius: 16px; border: 1px solid var(--border); overflow: hidden; box-shadow: var(--card-shadow); transition: transform 0.15s, box-shadow 0.15s; }
-  .req-card:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(30,50,90,0.12); }
-  .req-card-header { padding: 16px 18px 12px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 12px; }
-  .req-type-badge { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; background: var(--blue-light); color: var(--blue); flex-shrink: 0; }
-  .req-title { font-size: 0.95rem; font-weight: 800; color: var(--dark); line-height: 1.3; flex: 1; }
+    .req-card { background: #161B22; border-radius: 16px; border: 1px solid #30363D; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.4); transition: transform 0.15s, box-shadow 0.15s; }
+  .req-card:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.6); }
+  .req-card-header { padding: 16px 18px 12px; border-bottom: 1px solid #30363D; display: flex; align-items: flex-start; gap: 12px; }
+  .req-type-badge { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; background: rgba(74,158,255,0.15); color: #4A9EFF; flex-shrink: 0; }
+  .req-title { font-size: 0.95rem; font-weight: 800; color: #E6EDF3; line-height: 1.3; flex: 1; }
   .urgency-badge { font-size: 0.68rem; font-weight: 700; padding: 3px 9px; border-radius: 20px; flex-shrink: 0; }
   .urgency-badge.Standard { background: #E0EEFF; color: #2563EB; }
   .urgency-badge.Urgent { background: var(--amber-light); color: var(--amber); }
   .urgency-badge.Critical { background: var(--red-light); color: var(--red); }
-  .req-card-body { padding: 14px 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .req-card-body { padding: 14px 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #161B22; }
   .req-field { }
-  .req-field-label { font-size: 0.67rem; font-weight: 700; color: var(--grey); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
-  .req-field-value { font-size: 0.85rem; font-weight: 600; color: var(--dark); }
-  .req-card-footer { padding: 12px 18px; background: var(--grey-light); display: flex; gap: 10px; border-top: 1px solid var(--border); }
+  .req-field-label { font-size: 0.67rem; font-weight: 700; color: #8B949E; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+  .req-field-value { font-size: 0.85rem; font-weight: 600; color: #E6EDF3; }
+  .req-card-footer { padding: 12px 18px; background: #21262D; display: flex; gap: 10px; border-top: 1px solid #30363D; }
   .btn-approve { flex: 1; padding: 11px; background: linear-gradient(135deg, #0F9D6B, #0A7A52); color: white; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
   .btn-approve:hover { box-shadow: 0 3px 12px rgba(15,157,107,0.35); transform: translateY(-1px); }
   .btn-deny { flex: 1; padding: 11px; background: white; color: var(--red); border: 1.5px solid #FFCDD2; border-radius: 10px; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
   .btn-deny:hover { background: var(--red-light); border-color: var(--red); }
-  .req-time { font-size: 0.74rem; color: var(--grey); padding: 10px 18px 12px; }
+  .req-time { font-size: 0.74rem; color: #8B949E; padding: 10px 18px 12px; background: #161B22; }
 
   /* ===== COMPANY DASHBOARD ===== */
-  #view-company { background: var(--grey-light); }
-  .company-body { flex: 1; padding: 20px; max-width: 700px; margin: 0 auto; width: 100%; }
+  #view-company { background: #0D1117; }
+  .company-body { flex: 1; padding: 20px; max-width: 700px; margin: 0 auto; width: 100%; background: #0D1117; padding-bottom: 100px; }
   .company-welcome { background: linear-gradient(135deg, #0F172A, #1E3A5F); border-radius: 14px; padding: 20px 22px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; }
   .company-welcome-text h2 { font-size: 1.1rem; font-weight: 800; color: white; margin-bottom: 3px; }
-  .company-welcome-text p { font-size: 0.82rem; color: #64748B; }
+  .company-welcome-text p { font-size: 0.82rem; color: #8B949E; }
   .company-welcome-icon { font-size: 2rem; }
-  .invite-section { background: white; border-radius: 16px; border: 1px solid var(--border); padding: 20px; margin-bottom: 20px; box-shadow: var(--card-shadow); }
+  .invite-section { background: #161B22; border-radius: 16px; border: 1px solid #30363D; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 24px rgba(0,0,0,0.3); }
   .invite-section-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--grey); margin-bottom: 14px; }
   .invite-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .btn-invite-employee { padding: 14px; background: var(--blue-light); color: var(--blue); border: 1.5px solid #C5DEFF; border-radius: 12px; font-size: 0.88rem; font-weight: 700; cursor: pointer; text-align: center; transition: all 0.2s; }
   .btn-invite-employee:hover { background: var(--blue); color: white; border-color: var(--blue); box-shadow: 0 3px 12px rgba(59,125,216,0.25); }
   .btn-invite-approver { padding: 14px; background: var(--green-light); color: var(--green); border: 1.5px solid #B0EDD8; border-radius: 12px; font-size: 0.88rem; font-weight: 700; cursor: pointer; text-align: center; transition: all 0.2s; }
   .btn-invite-approver:hover { background: var(--green); color: white; border-color: var(--green); box-shadow: 0 3px 12px rgba(15,157,107,0.25); }
-  .invite-link-box { margin-top: 14px; background: var(--grey-light); border-radius: 12px; padding: 14px; display: none; border: 1px solid var(--border); }
+  .invite-link-box { margin-top: 14px; background: #21262D; border-radius: 12px; padding: 14px; display: none; border: 1px solid #30363D; }
   .invite-link-box.show { display: block; }
   .invite-link-label { font-size: 0.72rem; font-weight: 700; color: var(--grey); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
   .invite-link-row { display: flex; gap: 8px; align-items: center; }
-  .invite-link-url { flex: 1; padding: 10px 12px; background: white; border: 1px solid var(--border); border-radius: 9px; font-size: 0.78rem; color: var(--dark2); font-family: monospace; word-break: break-all; }
+  .invite-link-url { flex: 1; padding: 10px 12px; background: #0D1117; border: 1px solid #30363D; border-radius: 9px; font-size: 0.78rem; color: #8B949E; font-family: monospace; word-break: break-all; }
   .btn-copy { padding: 10px 14px; background: var(--blue); color: white; border: none; border-radius: 8px; font-size: 0.78rem; font-weight: 700; cursor: pointer; white-space: nowrap; transition: background 0.2s; }
   .btn-copy:hover { background: var(--blue-dark); }
   .btn-copy.copied { background: var(--green); }
 
   /* User dropdowns */
-  .user-section { background: white; border-radius: 16px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 14px; box-shadow: var(--card-shadow); }
+  .user-section { background: #161B22; border-radius: 16px; border: 1px solid #30363D; overflow: hidden; margin-bottom: 14px; box-shadow: 0 4px 24px rgba(0,0,0,0.3); }
   .user-section-header { padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; border-bottom: 1px solid transparent; transition: all 0.2s; }
-  .user-section-header:hover { background: #F7FAFF; }
-  .user-section-header.open { border-bottom-color: var(--border); background: #F7FAFF; }
+  .user-section-header:hover { background: #21262D; }
+  .user-section-header.open { border-bottom-color: #30363D; background: #21262D; }
   .user-section-left { display: flex; align-items: center; gap: 12px; }
   .user-section-icon { width: 38px; height: 38px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
   .user-section-icon.employee { background: var(--blue-light); }
   .user-section-icon.approver { background: var(--green-light); }
-  .user-section-name { font-size: 0.95rem; font-weight: 800; color: var(--dark); }
+  .user-section-name { font-size: 0.95rem; font-weight: 800; color: #E6EDF3; }
   .user-section-count { font-size: 0.78rem; color: var(--grey); margin-top: 1px; }
   .user-section-chevron { font-size: 0.9rem; color: var(--grey); transition: transform 0.2s; }
   .user-section-header.open .user-section-chevron { transform: rotate(180deg); }
   .user-section-body { display: none; }
   .user-section-body.open { display: block; }
-  .user-row { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .user-row { padding: 14px 18px; border-bottom: 1px solid #30363D; display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #161B22; }
   .user-row:last-child { border-bottom: none; }
   .user-row-info { flex: 1; min-width: 0; }
-  .user-row-name { font-size: 0.88rem; font-weight: 700; color: var(--dark); }
+  .user-row-name { font-size: 0.88rem; font-weight: 700; color: #E6EDF3; }
   .user-row-username { font-size: 0.78rem; color: var(--grey); font-family: monospace; }
   .user-status-pill { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; padding: 3px 8px; border-radius: 6px; flex-shrink: 0; }
   .user-status-pill.active { background: var(--green-light); color: var(--green); }
   .user-status-pill.invited { background: var(--amber-light); color: var(--amber); }
   .user-row-actions { display: flex; gap: 8px; }
-  .btn-edit-user { padding: 6px 12px; background: var(--grey-light); color: var(--dark); border: 1px solid var(--border); border-radius: 7px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
+  .btn-edit-user { padding: 6px 12px; background: #21262D; color: #E6EDF3; border: 1px solid #30363D; border-radius: 7px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
   .btn-edit-user:hover { background: var(--blue-light); border-color: var(--blue); color: var(--blue); }
-  .btn-delete-user { padding: 6px 10px; background: none; color: var(--grey); border: 1px solid var(--border); border-radius: 7px; font-size: 0.75rem; cursor: pointer; }
+  .btn-delete-user { padding: 6px 10px; background: none; color: #8B949E; border: 1px solid #30363D; border-radius: 7px; font-size: 0.75rem; cursor: pointer; }
   .btn-delete-user:hover { background: var(--red-light); border-color: var(--red); color: var(--red); }
   .empty-users { padding: 20px 18px; font-size: 0.85rem; color: var(--grey); font-style: italic; }
 
   /* ===== EDIT USER MODAL ===== */
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; align-items: flex-end; justify-content: center; }
   .modal-overlay.open { display: flex; }
-  .modal-box { background: white; border-radius: 20px 20px 0 0; padding: 24px 24px 36px; width: 100%; max-width: 500px; }
-  .modal-title { font-size: 1.05rem; font-weight: 800; color: var(--dark); margin-bottom: 16px; }
+  .modal-box { background: #161B22; border-radius: 20px 20px 0 0; padding: 24px 24px 36px; width: 100%; max-width: 500px; border-top: 1px solid #30363D; }
+  .modal-title { font-size: 1.05rem; font-weight: 800; color: #E6EDF3; margin-bottom: 16px; }
   .modal-field { margin-bottom: 14px; }
-  .modal-field label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--dark2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .modal-field label { display: block; font-size: 0.75rem; font-weight: 700; color: #8B949E; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
   .modal-field input { width: 100%; padding: 13px 16px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 0.92rem; font-family: 'Inter', sans-serif; }
   .modal-field input:focus { outline: none; border-color: var(--blue); }
-  .modal-field .hint { font-size: 0.73rem; color: var(--grey); margin-top: 4px; }
+  .modal-field .hint { font-size: 0.73rem; color: #484F58; margin-top: 4px; }
   .modal-error { background: var(--red-light); color: var(--red); border-radius: 8px; padding: 10px 14px; font-size: 0.82rem; font-weight: 600; margin-bottom: 12px; display: none; }
   .modal-error.show { display: block; }
   .modal-actions { display: flex; gap: 10px; margin-top: 4px; }
@@ -251,12 +251,12 @@
 
   /* ===== INVITE SETUP PAGE ===== */
   #view-invite-setup { background: var(--dark); align-items: center; justify-content: center; padding: 32px 20px; }
-  .photo-upload-box { border: 2.5px dashed var(--border); border-radius: 14px; padding: 22px; text-align: center; cursor: pointer; transition: all 0.2s; background: #F8FAFF; margin-bottom: 16px; position: relative; overflow: hidden; }
-  .photo-upload-box:hover { border-color: var(--blue); background: var(--blue-light); }
+  .photo-upload-box { border: 2.5px dashed #30363D; border-radius: 14px; padding: 22px; text-align: center; cursor: pointer; transition: all 0.2s; background: #21262D; margin-bottom: 16px; position: relative; overflow: hidden; }
+  .photo-upload-box:hover { border-color: var(--blue); background: rgba(74,158,255,0.1); }
   .photo-upload-box.has-photo { border-style: solid; border-color: var(--green); background: var(--green-light); }
   .photo-upload-box img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 8px; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
   .photo-upload-icon { font-size: 2rem; margin-bottom: 6px; }
-  .photo-upload-label { font-size: 0.85rem; font-weight: 600; color: var(--dark2); }
+  .photo-upload-label { font-size: 0.85rem; font-weight: 600; color: #E6EDF3; }
   .photo-upload-sub { font-size: 0.75rem; color: var(--grey); margin-top: 3px; }
   .photo-upload-input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
   .setup-card { width: 100%; max-width: 420px; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,0.4); }
@@ -305,8 +305,8 @@
   .toast.show { opacity: 1; }
 
   /* ===== USER PROFILE PAGE ===== */
-  #view-profile { background: #F0F4FA; flex-direction: column; }
-  #view-profile .app-header { background: white; }
+  #view-profile { background: #0D1117; flex-direction: column; }
+  #view-profile .app-header { background: #161B22; }
 
   .profile-hero { background: linear-gradient(135deg, #1A2E50, #2B4B8C); padding: 24px 20px 32px; position: relative; overflow: hidden; }
   .profile-hero::before { content: ''; position: absolute; width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 50%; top: -80px; right: -60px; }
@@ -480,9 +480,8 @@
   <div class="app-header">
     <div class="app-logo"><span class="re">RE</span><span class="dash">-</span>Quest</div>
     <div class="header-right">
-      <span class="header-badge badge-employee">Employee</span>
-      <button class="btn-logout" style="background:var(--blue-light);color:var(--blue);border:1px solid #C5DEFF;margin-right:6px" onclick="showMyAccount()">My Account</button>
-      <button class="btn-logout" onclick="logout()">Sign Out</button>
+      <span id="emp-header-name" style="font-size:0.82rem;font-weight:600;color:#8B949E;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+      <div id="emp-header-avatar" style="width:32px;height:32px;border-radius:50%;background:#21262D;border:1.5px solid #30363D;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:800;color:#8B949E;cursor:pointer;flex-shrink:0" onclick="showMyAccount()"></div>
     </div>
   </div>
   <div class="form-body">
@@ -557,11 +556,11 @@
 <!-- ===== APPROVER DASHBOARD ===== -->
 <div id="view-approver" class="view">
   <div class="app-header">
-    <div class="app-logo"><span class="re">RE</span><span class="dash">-</span>Quest</div>
+    <div style="font-size:1.35rem;font-weight:900;color:#E6EDF3;letter-spacing:-0.5px">Dashboard</div>
     <div class="header-right">
-      <span class="header-badge badge-approver">Approver</span>
-      <button class="btn-logout" style="background:var(--green-light);color:var(--green);border:1px solid #B0EDD8;margin-right:6px" onclick="showMyAccount()">My Account</button>
-      <button class="btn-logout" onclick="logout()">Sign Out</button>
+      <div id="app-header-avatar" style="width:32px;height:32px;border-radius:50%;background:#21262D;border:1.5px solid #30363D;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:800;color:#8B949E;cursor:pointer;flex-shrink:0;position:relative" onclick="showMyAccount()">
+        <span id="app-header-notif" style="display:none;position:absolute;top:-4px;right:-4px;width:16px;height:16px;background:#EF4444;border-radius:50%;font-size:0.55rem;font-weight:800;color:white;display:flex;align-items:center;justify-content:center;border:2px solid #161B22" id="notif-badge"></span>
+      </div>
     </div>
   </div>
   <div class="dashboard-body">
@@ -885,8 +884,21 @@
   }
 
   function routeUser(user) {
+    // Hide all bottom navs first
+    document.getElementById('nav-employee').classList.add('hidden');
+    document.getElementById('nav-approver').classList.add('hidden');
+
     if (user.role === 'employee') {
       showView('employee');
+      document.getElementById('nav-employee').classList.remove('hidden');
+      // Populate header avatar
+      const empAv = document.getElementById('emp-header-avatar');
+      const empName = document.getElementById('emp-header-name');
+      if (empAv) {
+        if (user.photo_url) { empAv.innerHTML = `<img src="${user.photo_url}" style="width:100%;height:100%;object-fit:cover">`; }
+        else { empAv.textContent = (user.full_name||'?').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
+      }
+      if (empName) empName.textContent = user.full_name ? user.full_name.split(' ')[0] : '';
       setTimeout(() => {
         const c = document.getElementById('employee-company');
         if (c && !c.value) c.value = user.company_name || '';
@@ -896,6 +908,13 @@
       loadEmployeeApprovers(user);
     } else if (user.role === 'approver') {
       showView('approver');
+      document.getElementById('nav-approver').classList.remove('hidden');
+      // Populate header avatar
+      const appAv = document.getElementById('app-header-avatar');
+      if (appAv) {
+        if (user.photo_url) { appAv.innerHTML = `<img src="${user.photo_url}" style="width:100%;height:100%;object-fit:cover">`; }
+        else { appAv.textContent = (user.full_name||'?').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
+      }
       loadApproverDashboard();
     } else if (user.role === 'company') {
       document.getElementById('company-badge-name').textContent = user.company_name || 'Company';
@@ -1732,6 +1751,13 @@ Choose:
       });
       updatePendingCount();
       renderList();
+      // Update notification badge
+      const pendingCount = allRequests.filter(r => r.status === 'Pending').length;
+      const badge = document.getElementById('notif-badge');
+      if (badge) {
+        badge.textContent = pendingCount > 9 ? '9+' : pendingCount;
+        badge.style.display = pendingCount > 0 ? 'flex' : 'none';
+      }
     } catch(err) {
       document.getElementById('dashboard-list').innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Failed to load</div></div>`;
     }
@@ -1761,23 +1787,44 @@ Choose:
       const label = r.request_type==='Other'?(r.custom_type||'Other'):r.request_type;
       const isPending = r.status==='Pending';
       const created = r.created_date ? new Date(r.created_date).toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '—';
-      return `<div class="req-card">
-        <div class="req-card-header ${(r.urgency||'standard').toLowerCase()}">
-          <div><div class="req-type-label">${label}</div><div class="req-meta">${r.employee_name||'—'} · ${r.vehicle_reg||'No reg'} · ${created}</div></div>
-          <div class="urgency-tag ${r.urgency||'Standard'}">${r.urgency||'Standard'}</div>
+      const statusColor = {Pending:'#F59E0B',Approved:'#22C55E',Denied:'#EF4444',Closed:'#4A9EFF'}[r.status]||'#8B949E';
+      const statusIcon = {Pending:'⏳',Approved:'✅',Denied:'❌',Closed:'🔒'}[r.status]||'•';
+      const urgencyColor = {Standard:'#4A9EFF',Urgent:'#F59E0B',Critical:'#EF4444'}[r.urgency||'Standard']||'#4A9EFF';
+      const initials = (r.employee_name||'?').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+      // Mini QR placeholder (coloured circle with status icon)
+      const qrMini = `<div style="width:48px;height:48px;border-radius:10px;background:#21262D;border:1.5px solid ${statusColor}33;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0">${statusIcon}</div>`;
+      return `<div class="req-card" style="background:#161B22;border-radius:16px;border:1px solid #30363D;overflow:hidden;margin-bottom:12px">
+        <!-- Status strip -->
+        <div style="background:${statusColor}18;border-bottom:1px solid ${statusColor}33;padding:7px 16px;display:flex;align-items:center;gap:8px">
+          <span style="font-size:0.65rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:${statusColor}">${statusIcon} ${r.status}</span>
+          <span style="margin-left:auto;font-size:0.68rem;font-weight:700;color:#484F58;background:#21262D;padding:2px 8px;border-radius:6px">${r.urgency||'Standard'}</span>
         </div>
-        <div class="req-card-body">
-          <div class="req-details-row">
-            <div><div class="req-detail-label">Company</div><div class="req-detail-value">${r.employee_company||'—'}</div></div>
-            <div><div class="req-detail-label">Site</div><div class="req-detail-value">${r.site_name||'—'}</div></div>
-            <div><div class="req-detail-label">Location</div><div class="req-detail-value">${r.location||'—'}</div></div>
+        <!-- Main row -->
+        <div style="padding:14px 16px;display:flex;align-items:center;gap:14px">
+          <!-- Avatar -->
+          <div style="width:48px;height:48px;border-radius:50%;flex-shrink:0;overflow:hidden;background:#21262D;border:2px solid #30363D;display:flex;align-items:center;justify-content:center;font-size:0.9rem;font-weight:800;color:#8B949E">
+            ${r.employee_photo ? `<img src="${r.employee_photo}" style="width:100%;height:100%;object-fit:cover">` : initials}
           </div>
-          ${r.details?`<div class="req-notes">${r.details}</div>`:''}
-          ${!isPending?`<div class="done-badge ${r.status.toLowerCase()}">${r.status==='Approved'?'✅':'❌'} ${r.status}${r.denial_reason?' — '+r.denial_reason:''}</div>`:''}
+          <!-- Info -->
+          <div style="flex:1;min-width:0">
+            <div style="font-size:0.95rem;font-weight:800;color:#E6EDF3;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${label}</div>
+            <div style="font-size:0.78rem;color:#8B949E;margin-bottom:2px">🏢 ${r.employee_company||'—'}</div>
+            <div style="font-size:0.75rem;color:#484F58">🕐 ${created}</div>
+          </div>
+          <!-- QR icon -->
+          ${qrMini}
         </div>
-        ${isPending?`<div class="req-card-actions">
-          <button class="btn-approve-sm" onclick="openApproveModal('${r.approval_token}')">✅ Approve</button>
-          <button class="btn-deny-sm" onclick="openDenyModal('${r.approval_token}')">❌ Deny</button>
+        <!-- Details row -->
+        <div style="padding:0 16px 12px;display:flex;gap:16px">
+          <div style="flex:1"><div style="font-size:0.65rem;font-weight:700;color:#484F58;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px">Site</div><div style="font-size:0.82rem;font-weight:600;color:#C9D1D9">${r.site_name||'—'}</div></div>
+          <div style="flex:1"><div style="font-size:0.65rem;font-weight:700;color:#484F58;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px">Location</div><div style="font-size:0.82rem;font-weight:600;color:#C9D1D9">${r.location||'—'}</div></div>
+          <div style="flex:1"><div style="font-size:0.65rem;font-weight:700;color:#484F58;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px">Reg</div><div style="font-size:0.82rem;font-weight:600;color:#C9D1D9">${r.vehicle_reg||'—'}</div></div>
+        </div>
+        ${r.details?`<div style="margin:0 16px 12px;padding:10px 12px;background:#21262D;border-radius:8px;font-size:0.8rem;color:#8B949E;border-left:3px solid #30363D">${r.details}</div>`:''}
+        ${r.denial_reason?`<div style="margin:0 16px 12px;padding:10px 12px;background:rgba(239,68,68,0.08);border-radius:8px;font-size:0.8rem;color:#EF4444;border-left:3px solid #EF4444">Reason: ${r.denial_reason}</div>`:''}
+        ${isPending?`<div style="padding:10px 16px 14px;display:flex;gap:10px">
+          <button style="flex:1;padding:11px;background:linear-gradient(135deg,#16A34A,#15803D);color:white;border:none;border-radius:10px;font-size:0.85rem;font-weight:700;cursor:pointer" onclick="openApproveModal('${r.approval_token}')">✅ Approve</button>
+          <button style="flex:1;padding:11px;background:#21262D;color:#EF4444;border:1.5px solid rgba(239,68,68,0.3);border-radius:10px;font-size:0.85rem;font-weight:700;cursor:pointer" onclick="openDenyModal('${r.approval_token}')">❌ Deny</button>
         </div>`:''}
       </div>`;
     }).join('');
@@ -2355,6 +2402,49 @@ Choose:
 
 </script>
 
+
+<!-- ===== BOTTOM NAV: EMPLOYEE ===== -->
+<div class="bottom-nav hidden" id="nav-employee">
+  <div class="nav-item active" onclick="showEmployeeTab('home')" id="nav-emp-home">
+    <div class="nav-icon">🏠</div>
+    <div class="nav-label">Home</div>
+  </div>
+  <div class="nav-item" onclick="showEmployeeTab('requests')" id="nav-emp-requests">
+    <div class="nav-icon">📋</div>
+    <div class="nav-label">Requests</div>
+  </div>
+  <div class="nav-fab" onclick="submitRequest()">＋</div>
+  <div class="nav-item" onclick="showMyAccount()" id="nav-emp-profile">
+    <div class="nav-icon">👤</div>
+    <div class="nav-label">Profile</div>
+  </div>
+  <div class="nav-item" onclick="logout()">
+    <div class="nav-icon">🚪</div>
+    <div class="nav-label">Sign Out</div>
+  </div>
+</div>
+
+<!-- ===== BOTTOM NAV: APPROVER ===== -->
+<div class="bottom-nav hidden" id="nav-approver">
+  <div class="nav-item active" onclick="switchTab('pending', document.getElementById('tab-pending-btn'))" id="nav-app-pending">
+    <div class="nav-icon">⏳</div>
+    <div class="nav-label">Pending</div>
+  </div>
+  <div class="nav-item" onclick="switchTab('all', document.querySelectorAll('.tab-btn')[1])" id="nav-app-all">
+    <div class="nav-icon">📋</div>
+    <div class="nav-label">All</div>
+  </div>
+  <div class="nav-fab" onclick="loadApproverDashboard()">↻</div>
+  <div class="nav-item" onclick="showMyAccount()" id="nav-app-profile">
+    <div class="nav-icon">👤</div>
+    <div class="nav-label">Profile</div>
+  </div>
+  <div class="nav-item" onclick="logout()">
+    <div class="nav-icon">🚪</div>
+    <div class="nav-label">Sign Out</div>
+  </div>
+</div>
+
 <!-- ===== MY ACCOUNT MODAL ===== -->
 <div class="modal-overlay" id="my-account-modal">
   <div class="modal-box" style="max-width:360px;padding:0;overflow:hidden;border-radius:20px">
@@ -2365,7 +2455,7 @@ Choose:
       <div id="my-account-role-badge" style="display:inline-block;font-size:0.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.9);padding:3px 10px;border-radius:20px;border:1px solid rgba(255,255,255,0.25)"></div>
     </div>
     <!-- Info rows -->
-    <div style="padding:16px 20px">
+    <div style="padding:16px 20px;background:#161B22;">
       <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
         <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#F8FAFF;border-radius:10px;border:1px solid var(--border)">
           <span style="font-size:0.75rem;font-weight:700;color:var(--grey);text-transform:uppercase;letter-spacing:1px">Username</span>
