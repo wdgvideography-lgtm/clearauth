@@ -1116,15 +1116,34 @@
   let setupPhotoUrl = null;
 
   function handlePhotoSelect(event) {
-    const file = event.target.files[0];
+    const file = event.target.files && event.target.files[0];
     if (!file) return;
+
+    // Type check
+    if (!file.type.startsWith('image/')) {
+      showToast('Please select an image file (JPG, PNG, etc.)');
+      return;
+    }
+    // Size check: max 5MB (base64 inflates ~33%, so limit source to 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      showToast('Photo must be under 5MB. Please choose a smaller image.');
+      return;
+    }
+
+    const box = document.getElementById('photo-upload-box');
+    const preview = document.getElementById('photo-preview-wrap');
+    if (preview) preview.innerHTML = '<div class="photo-upload-label">Preparing photo...</div>';
+
     const reader = new FileReader();
+    reader.onerror = function() {
+      showToast('Failed to read photo file. Please try again.');
+      setupPhotoUrl = null;
+    };
     reader.onload = function(e) {
       setupPhotoUrl = e.target.result; // base64 data URL stored temporarily
-      const box = document.getElementById('photo-upload-box');
-      box.classList.add('has-photo');
-      document.getElementById('photo-preview-wrap').innerHTML = `
-        <img src="${setupPhotoUrl}" alt="Profile photo">
+      if (box) box.classList.add('has-photo');
+      if (preview) preview.innerHTML = `
+        <img src="${setupPhotoUrl}" alt="Profile photo" style="max-width:100%;border-radius:8px">
         <div class="photo-upload-label" style="color:var(--green)">✓ Photo selected</div>
         <div class="photo-upload-sub">Tap to change</div>`;
     };
@@ -1152,11 +1171,15 @@
 
     btn.disabled = true; btn.textContent = 'Creating account...';
     try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 15000);
       const res = await fetch(`${API}/clearauthRegister`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ invite_token: inviteToken, full_name: name, username, password, phone, photo_url: setupPhotoUrl })
       });
-      const data = await res.json();
+      clearTimeout(timer);
+      let data;
+      try { data = await res.json(); } catch(e) { throw new Error('Invalid server response'); }
       if (!res.ok) throw new Error(data.error || 'Setup failed');
 
       // Auto-login after successful registration
@@ -1167,7 +1190,7 @@
       // Route directly into the app
       routeUser(data.user);
     } catch (err) {
-      errEl.textContent = err.message;
+      errEl.textContent = err.name === 'AbortError' ? 'Connection timed out. Please try again.' : err.message;
       errEl.classList.add('show');
       btn.disabled = false; btn.textContent = 'Create My Account →';
     }
@@ -1244,6 +1267,8 @@
   }
 
   function renderUserSections() {
+    try {
+
     buildCompanySites();
     const employees = companyUsers.filter(u => u.role === 'employee');
     const approvers = companyUsers.filter(u => u.role === 'approver');
@@ -1329,9 +1354,17 @@
     employees.forEach(d => { if (d.status === 'active') loadApproverChecks(d.id, d.allowed_approvers || [], d.allow_all_approvers); });
     // Bind touch drag events
     bindTouchDrag();
+  
+    } catch(err) {
+      console.error('renderUserSections error:', err);
+      const container = document.getElementById('sites-container');
+      if (container) container.innerHTML = '<div style="padding:30px;text-align:center;color:#ff7b72">⚠ Dashboard render error. <button onclick="loadCompanyUsers()" style="background:none;border:none;color:#3B7DD8;cursor:pointer;font-weight:700">Retry</button></div>';
+    }
   }
 
   function renderRoleSubsection(users, role, key) {
+    try {
+
     if (!users || !users.length) return '';
     const icon = role === 'employee' ? '👤' : '✅';
     return `
@@ -1348,6 +1381,11 @@
         ${renderUserList(users, role)}
       </div>
     </div>`;
+  
+    } catch(err) {
+      console.error('renderRoleSubsection error:', err);
+      return '';
+    }
   }
 
   function toggleSiteSection(si) {
@@ -1705,6 +1743,8 @@
   }
 
   function renderUserList(users, role) {
+    try {
+
     if (!users || !users.length) return `<div class="empty-users">No members yet — send an invite link to add someone.</div>`;
     return users.map(u => {
       const isEmployee = role === 'employee';
@@ -1748,6 +1788,11 @@
         </div>
       </div>`;
     }).join('');
+  
+    } catch(err) {
+      console.error('renderUserList error:', err);
+      return '<div style="padding:20px;color:#ff7b72;font-size:0.85rem">⚠ Display error — try refreshing</div>';
+    }
   }
 
   // toggleUserSection removed — site-based layout now handles this
@@ -1836,16 +1881,27 @@
   }
 
   async function deleteUser(id, name) {
-    if (!confirm(`Delete ${name}? This cannot be undone.`)) return;
+    if (!id) { showToast('Invalid user ID.'); return; }
+    if (!confirm(`Remove ${name || 'this user'}? This cannot be undone and will cancel any pending requests.`)) return;
     try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 12000);
       const res = await fetch(`${API}/clearauthManageUser`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'delete', user_id: id })
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'delete', user_id: id }),
+        signal: controller.signal
       });
-      if (!res.ok) throw new Error('Delete failed');
-      showToast('User deleted');
+      clearTimeout(timer);
+      let data;
+      try { data = await res.json(); } catch(e) { throw new Error('Invalid server response'); }
+      if (!res.ok) throw new Error(data.error || 'Delete failed');
+      showToast(`${name || 'User'} removed ✓`);
       loadCompanyUsers();
-    } catch(err) { showToast('Error: ' + err.message); }
+    } catch(err) {
+      const msg = err.name === 'AbortError' ? 'Connection timed out' : (err.message || 'Unknown error');
+      showToast('Error: ' + msg);
+    }
   }
 
   // ===== EMPLOYEE FORM =====
@@ -2006,6 +2062,13 @@
 
   // ===== APPROVAL CARD (split design) =====
   function renderApprovalCard(r) {
+    if (!r) {
+      const cardEl = document.getElementById('view-card');
+      if (cardEl) cardEl.innerHTML = '<div style="padding:40px;text-align:center;color:#8B949E"><div style="font-size:2rem">⚠️</div><div style="margin-top:12px;font-weight:700">Invalid request data</div><button class="btn-main" style="margin-top:16px;max-width:180px" onclick="showView('employee')">← Back</button></div>';
+      return;
+    }
+    try {
+
     const isApproved = r.status === 'Approved';
     const isDenied   = r.status === 'Denied';
     const isPending  = r.status === 'Pending';
@@ -2143,6 +2206,12 @@
         <button onclick="resetEmployeeForm()" style="width:100%;padding:14px;background:#21262D;color:#E6EDF3;border:1.5px solid #30363D;border-radius:12px;font-size:0.9rem;font-weight:700;cursor:pointer">+ New Request</button>
       </div>
     `;
+  
+    } catch(err) {
+      console.error('renderApprovalCard error:', err);
+      const cardEl = document.getElementById('view-card');
+      if (cardEl) cardEl.innerHTML = `<div style="padding:40px;text-align:center;color:#8B949E"><div style="font-size:2rem">⚠️</div><div style="margin-top:12px;font-weight:700">Error displaying card</div><div style="font-size:0.85rem;margin-top:8px">${err.message}</div><button class="btn-main" style="margin-top:16px;max-width:180px" onclick="showView('employee')">← Back</button></div>`;
+    }
   }
 
   function resetEmployeeForm() {
@@ -2214,6 +2283,8 @@
   }
 
   function renderList() {
+    try {
+
     const filtered = currentTab==='pending' ? allRequests.filter(r=>r.status==='Pending') : allRequests;
     if (!filtered.length) {
       document.getElementById('dashboard-list').innerHTML = `<div class="empty-state"><div class="empty-icon">${currentTab==='pending'?'✅':'📋'}</div><div class="empty-title">${currentTab==='pending'?'No pending requests':'No requests yet'}</div></div>`;
@@ -2264,6 +2335,12 @@
         </div>`:''}
       </div>`;
     }).join('');
+  
+    } catch(err) {
+      console.error('renderList error:', err);
+      const el = document.getElementById('dashboard-list');
+      if (el) el.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Display error</div><div class="empty-sub">Try refreshing the page</div><button class="btn-main" style="margin-top:12px;max-width:160px" onclick="loadApproverDashboard()">Reload</button></div>';
+    }
   }
 
   function openDenyModal(token) { denyTargetToken=token; document.getElementById('deny-reason-text').value=''; document.getElementById('deny-modal').classList.add('open'); }
@@ -2688,33 +2765,52 @@
   let profileReqOpen = true;
 
   async function loadProfileRequests(userId, role) {
+    if (!userId) return;
     const listEl = document.getElementById('profile-req-list');
     const tabRow = document.getElementById('profile-req-tab-row');
+    if (!listEl) return;
 
     // Set tabs based on role
-    if (role === 'employee') {
-      tabRow.innerHTML = `
-        <div class="req-history-tab active" id="prt-pending" onclick="switchProfileReqTab('pending')">Pending</div>
-        <div class="req-history-tab" id="prt-past" onclick="switchProfileReqTab('past')">Past</div>`;
-    } else {
-      tabRow.innerHTML = `
-        <div class="req-history-tab active" id="prt-pending" onclick="switchProfileReqTab('pending')">Awaiting Approval</div>
-        <div class="req-history-tab" id="prt-past" onclick="switchProfileReqTab('past')">Actioned</div>`;
+    if (tabRow) {
+      if (role === 'employee') {
+        tabRow.innerHTML = `
+          <div class="req-history-tab active" id="prt-pending" onclick="switchProfileReqTab('pending')">Pending</div>
+          <div class="req-history-tab" id="prt-past" onclick="switchProfileReqTab('past')">Past</div>`;
+      } else {
+        tabRow.innerHTML = `
+          <div class="req-history-tab active" id="prt-pending" onclick="switchProfileReqTab('pending')">Awaiting</div>
+          <div class="req-history-tab" id="prt-past" onclick="switchProfileReqTab('past')">Actioned</div>`;
+      }
     }
 
-    profileReqTab = 'pending';
-    listEl.innerHTML = '<div class="req-history-loading"><div class="spinner" style="margin:12px auto"></div></div>';
+    listEl.innerHTML = '<div class="req-history-empty">Loading...</div>';
 
     try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 12000);
       const res = await fetch(`${API}/getUserRequests`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId, role })
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, role }),
+        signal: controller.signal
       });
+      clearTimeout(timer);
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || `Server error ${res.status}`);
+      }
       const data = await res.json();
-      profileReqData = data.records || [];
+      // Filter out requests older than 2 weeks
+      const twoWeeksAgo = Date.now() - (14 * 24 * 60 * 60 * 1000);
+      window._profileRequests = (data.requests || []).filter(r => {
+        if (r.status === 'Pending') return true;
+        const d = new Date(r.created_date || r.updated_date || 0).getTime();
+        return d > twoWeeksAgo;
+      });
       renderProfileReqList(role);
     } catch(e) {
-      listEl.innerHTML = '<div class="req-history-empty">Failed to load requests.</div>';
+      const msg = e.name === 'AbortError' ? 'Connection timed out' : (e.message || 'Unknown error');
+      if (listEl) listEl.innerHTML = `<div class="req-history-empty">⚠ Failed to load: ${msg}</div>`;
     }
   }
 
@@ -2727,6 +2823,10 @@
   }
 
   function renderProfileReqList(role) {
+    const listEl = document.getElementById('profile-req-list');
+    if (!listEl) return;
+    try {
+
     const listEl = document.getElementById('profile-req-list');
     let records;
 
@@ -2764,6 +2864,11 @@
         <span class="req-history-badge ${r.status}">${r.status}</span>
       </div>`;
     }).join('');
+  
+    } catch(err) {
+      console.error('renderProfileReqList error:', err);
+      listEl.innerHTML = '<div class="req-history-empty">⚠ Display error — try refreshing</div>';
+    }
   }
 
   function toggleProfileRequests() {
@@ -2778,18 +2883,34 @@
   }
 
   async async function deleteProfileUser() {
-    if (!profileUser) return;
-    if (!confirm(`Remove ${profileUser.full_name || 'this user'}? This cannot be undone.`)) return;
+    if (!profileUser || !profileUser.id) { showToast('No user selected.'); return; }
+    if (!confirm(`Remove ${profileUser.full_name || 'this user'}? This cannot be undone and will cancel any pending requests.`)) return;
+
+    const btn = document.getElementById('profile-delete-btn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Removing...'; }
+
     try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 12000);
       const res = await fetch(`${API}/clearauthManageUser`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'delete', user_id: profileUser.id })
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'delete', user_id: profileUser.id }),
+        signal: controller.signal
       });
-      if (!res.ok) throw new Error('Delete failed');
-      showToast('User removed');
+      clearTimeout(timer);
+      let data;
+      try { data = await res.json(); } catch(e) { throw new Error('Invalid server response'); }
+      if (!res.ok) throw new Error(data.error || 'Delete failed');
+      showToast(`${profileUser.full_name || 'User'} removed ✓`);
+      profileUser = null;
       backToCompany();
       loadCompanyUsers();
-    } catch(e) { showToast('Error: ' + e.message); }
+    } catch(e) {
+      const msg = e.name === 'AbortError' ? 'Connection timed out' : (e.message || 'Unknown error');
+      showToast('Error: ' + msg);
+      if (btn) { btn.disabled = false; btn.textContent = 'Remove this user'; }
+    }
   }
 
   // ===== TOAST =====
@@ -2871,6 +2992,63 @@
       errEl.textContent = e.message;
       errEl.style.display = 'block';
       btn.disabled = false; btn.textContent = 'Confirm Delete';
+    }
+  }
+
+
+  // ──────────────────────────────────────────────
+  // GLOBAL ERROR BOUNDARY
+  // Catches any uncaught exception or promise rejection
+  // and shows a user-friendly toast instead of a silent crash
+  // ──────────────────────────────────────────────
+  window.onerror = function(msg, src, line, col, err) {
+    console.error('Uncaught error:', msg, 'at', src, line, col, err);
+    // Only show toast for non-network errors to avoid spam
+    if (typeof msg === 'string' && !msg.includes('Script error')) {
+      try { showToast('App error — please refresh if something looks wrong.'); } catch(e) {}
+    }
+    return false; // Don't suppress the error in console
+  };
+
+  window.addEventListener('unhandledrejection', function(event) {
+    const msg = event.reason ? (event.reason.message || String(event.reason)) : 'Unknown error';
+    console.error('Unhandled promise rejection:', msg);
+    if (!msg.includes('AbortError') && !msg.includes('Failed to fetch')) {
+      try { showToast('Something went wrong — please try again.'); } catch(e) {}
+    }
+  });
+
+  // ──────────────────────────────────────────────
+  // SAFE DOM HELPER: safe getElementById with fallback
+  // Use safeEl(id) instead of getElementById(id) in critical paths
+  // ──────────────────────────────────────────────
+  function safeEl(id, context) {
+    const el = document.getElementById(id);
+    if (!el && context) console.warn(`safeEl: #${id} not found (${context})`);
+    return el;
+  }
+
+  // ──────────────────────────────────────────────
+  // SAFE FETCH WRAPPER: adds timeout, JSON parse safety, network error handling
+  // Usage: const data = await safeFetch(url, options, timeoutMs)
+  // ──────────────────────────────────────────────
+  async function safeFetch(url, options = {}, timeoutMs = 12000) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const res = await fetch(url, { ...options, signal: controller.signal });
+      clearTimeout(timer);
+      let data;
+      try { data = await res.json(); } catch(e) { throw new Error('Server returned invalid JSON'); }
+      if (!res.ok) throw new Error(data.error || data.message || `Request failed (${res.status})`);
+      return data;
+    } catch(err) {
+      clearTimeout(timer);
+      if (err.name === 'AbortError') throw new Error('Connection timed out. Check your internet and try again.');
+      if (err.message && (err.message.includes('Failed to fetch') || err.message.includes('NetworkError'))) {
+        throw new Error('Cannot reach server. Check your connection.');
+      }
+      throw err;
     }
   }
 
