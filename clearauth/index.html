@@ -1072,10 +1072,36 @@
       });
       const data = await res.json();
       companyUsers = data.users || [];
+
+      // Load persisted site names from company record
+      if (data.company_sites && Array.isArray(data.company_sites)) {
+        companySites = data.company_sites;
+      } else if (currentUser.department) {
+        try {
+          const parsed = JSON.parse(currentUser.department);
+          if (Array.isArray(parsed)) companySites = parsed;
+        } catch(_) {}
+      }
+
       renderUserSections();
     } catch(err) {
       showToast('Failed to load users');
     }
+  }
+
+  async function saveCompanySites() {
+    if (!currentUser) return;
+    try {
+      await fetch(`${API}/clearauthManageUser`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'update',
+          user_id: currentUser.id,
+          department: JSON.stringify(companySites)
+        })
+      });
+      currentUser.department = JSON.stringify(companySites);
+    } catch(e) { console.error('Failed to save sites', e); }
   }
 
   // ===== SITE MANAGEMENT =====
@@ -1226,30 +1252,49 @@
     setTimeout(() => document.getElementById('new-site-name').focus(), 100);
   }
 
-  function openSiteOptions(siteName, si) {
-    if (confirm(`Site: "${siteName}"
+  async function deleteSite(siteName) {
+    const usersInSite = companyUsers.filter(u => u.department === siteName);
+    const msg = usersInSite.length > 0
+      ? `Delete site "${siteName}"? The ${usersInSite.length} member(s) will be moved to Unassigned.`
+      : `Delete site "${siteName}"?`;
+    if (!confirm(msg)) return;
+    // Move users to unassigned
+    for (const u of usersInSite) await assignUserToSite(u.id, '');
+    // Remove from list
+    companySites = companySites.filter(s => s !== siteName);
+    await saveCompanySites();
+    renderUserSections();
+    showToast(`Site "${siteName}" deleted`);
+  }
 
-Choose:
-• OK = Rename this site
-• Cancel = keep as is
-
-(To delete, rename it first then use the delete option)`)) {
-      editingSite = siteName;
-      document.getElementById('create-site-modal-title').textContent = 'Rename Site';
-      document.getElementById('confirm-site-btn').textContent = 'Save';
-      document.getElementById('new-site-name').value = siteName;
-      document.getElementById('create-site-error').textContent = '';
-      document.getElementById('create-site-error').classList.remove('show');
-      document.getElementById('create-site-modal').classList.add('open');
-      setTimeout(() => document.getElementById('new-site-name').focus(), 100);
+  function openSiteOptions(siteName) {
+    editingSite = siteName;
+    document.getElementById('create-site-modal-title').textContent = `Edit Site: ${siteName}`;
+    document.getElementById('confirm-site-btn').textContent = 'Rename';
+    document.getElementById('new-site-name').value = siteName;
+    document.getElementById('create-site-error').textContent = '';
+    document.getElementById('create-site-error').classList.remove('show');
+    // Add delete button to modal if not already present
+    const confirmBtn = document.getElementById('confirm-site-btn');
+    if (!document.getElementById('delete-site-btn')) {
+      const delBtn = document.createElement('button');
+      delBtn.id = 'delete-site-btn';
+      delBtn.textContent = '🗑 Delete Site';
+      delBtn.style.cssText = 'background:none;border:1.5px solid #EF4444;color:#EF4444;padding:10px 16px;border-radius:10px;font-size:0.82rem;font-weight:700;cursor:pointer;';
+      delBtn.onclick = () => { closeCreateSiteModal(); deleteSite(editingSite); };
+      confirmBtn.parentNode.insertBefore(delBtn, confirmBtn.nextSibling);
+    } else {
+      document.getElementById('delete-site-btn').onclick = () => { closeCreateSiteModal(); deleteSite(editingSite); };
     }
+    document.getElementById('create-site-modal').classList.add('open');
+    setTimeout(() => document.getElementById('new-site-name').focus(), 100);
   }
 
   function closeCreateSiteModal() {
     document.getElementById('create-site-modal').classList.remove('open');
   }
 
-  async function confirmCreateSite() {
+  async async function confirmCreateSite() {
     const name = document.getElementById('new-site-name').value.trim();
     const errEl = document.getElementById('create-site-error');
     if (!name) { errEl.textContent = 'Please enter a site name.'; errEl.classList.add('show'); return; }
@@ -1263,12 +1308,14 @@ Choose:
       for (const u of usersInSite) {
         await assignUserToSite(u.id, name);
       }
+      await saveCompanySites();
       showToast(`Site renamed to "${name}"`);
     } else {
       companySites.push(name);
       showToast(`Site "${name}" created`);
     }
 
+    await saveCompanySites();
     closeCreateSiteModal();
     renderUserSections();
   }
@@ -1300,7 +1347,7 @@ Choose:
           await fetch(`${API}/clearauthSetPermissions`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              employee_id: userId,
+              driver_id: userId,
               allow_all_approvers: false,
               allowed_approvers: mergedIds
             })
@@ -1334,7 +1381,7 @@ Choose:
           await fetch(`${API}/clearauthSetPermissions`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              employee_id: employee.id,
+              driver_id: employee.id,
               allow_all_approvers: employee.allow_all_approvers || false,
               allowed_approvers: mergedIds
             })
@@ -1703,7 +1750,7 @@ Choose:
       status: 'Pending',
       approval_token: token,
       expires_at: new Date(Date.now() + 4*60*60*1000).toISOString(),
-      employee_user_id: currentUser ? currentUser.id : '',
+      driver_user_id: currentUser ? currentUser.id : '',
       approver_user_id: approverUserId,
     };
 
@@ -1915,7 +1962,7 @@ Choose:
     document.getElementById('dashboard-list').innerHTML = '<div class="spinner"></div>';
     try {
       const res = await fetch(`${API}/listApprovalRequests`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({})
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ company_id: currentUser.company_id })
       });
       const data = await res.json();
       const order = { Critical:0, Urgent:1, Standard:2 };
@@ -2042,7 +2089,7 @@ Choose:
     try {
       const res = await fetch(`${API}/clearauthGetApprovers`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ employee_id: user.id, company_id: user.company_id })
+        body: JSON.stringify({ driver_id: user.id, company_id: user.company_id })
       });
       const data = await res.json();
       const approvers = data.approvers || [];
@@ -2137,7 +2184,7 @@ Choose:
     try {
       const res = await fetch(`${API}/clearauthSetPermissions`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ employee_id: employeeId, allow_all_approvers: allowAll, allowed_approvers: allowedIds })
+        body: JSON.stringify({ driver_id: employeeId, allow_all_approvers: allowAll, allowed_approvers: allowedIds })
       });
       if (!res.ok) throw new Error('Failed');
       // Update local data
@@ -2340,7 +2387,7 @@ Choose:
         // Save permissions via backend
         await fetch(`${API}/clearauthSetPermissions`, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ employee_id: profileUser.id, allow_all_approvers: allowAll, allowed_approvers: allowedIds })
+          body: JSON.stringify({ driver_id: profileUser.id, allow_all_approvers: allowAll, allowed_approvers: allowedIds })
         });
       }
 
@@ -2355,7 +2402,7 @@ Choose:
             employee.allowed_approvers = merged;
             await fetch(`${API}/clearauthSetPermissions`, {
               method: 'POST', headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ employee_id: employee.id, allow_all_approvers: false, allowed_approvers: merged })
+              body: JSON.stringify({ driver_id: employee.id, allow_all_approvers: false, allowed_approvers: merged })
             });
           }
         }
@@ -2477,7 +2524,7 @@ Choose:
     }
   }
 
-  async function deleteProfileUser() {
+  async async function deleteProfileUser() {
     if (!profileUser) return;
     if (!confirm(`Remove ${profileUser.full_name || 'this user'}? This cannot be undone.`)) return;
     try {

@@ -11,9 +11,19 @@ Deno.serve(async (req) => {
 
     const records = await base44.asServiceRole.entities.ClearAuthUser.list();
 
-    // Filter to this company only, exclude password hashes
+    // Get company record to extract persisted site list
+    const companyRecord = records.find((r: any) => r.company_id === company_id && r.role === 'company');
+    let company_sites: string[] = [];
+    if (companyRecord?.department) {
+      try {
+        const parsed = JSON.parse(companyRecord.department);
+        if (Array.isArray(parsed)) company_sites = parsed;
+      } catch(_) {}
+    }
+
+    // Filter to employees/approvers only (not company account itself), exclude password hashes
     const users = records
-      .filter((r: any) => r.company_id === company_id)
+      .filter((r: any) => r.company_id === company_id && r.role !== 'company')
       .map((r: any) => ({
         id: r.id,
         full_name: r.full_name,
@@ -27,9 +37,11 @@ Deno.serve(async (req) => {
         allow_all_approvers: r.allow_all_approvers || false,
         company_id: r.company_id,
         company_name: r.company_name,
+        phone: r.phone || '',
+        photo_url: r.photo_url || '',
       }));
 
-    return Response.json({ success: true, users });
+    return Response.json({ success: true, users, company_sites });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
