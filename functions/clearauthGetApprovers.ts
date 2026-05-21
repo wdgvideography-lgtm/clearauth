@@ -28,9 +28,14 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Driver not found' }, { status: 404 });
     }
 
-    // If allow_all_approvers or no restrictions set, return all
-    if (driver.allow_all_approvers || !driver.allowed_approvers || driver.allowed_approvers.length === 0) {
+    // Only return all if explicitly granted — no access by default
+    if (driver.allow_all_approvers === true) {
       return Response.json({ success: true, approvers: allApprovers });
+    }
+
+    // If no permissions set at all, return empty — access must be explicitly granted
+    if (!driver.allowed_approvers || driver.allowed_approvers.length === 0) {
+      return Response.json({ success: true, approvers: [] });
     }
 
     // Filter to only allowed approvers
