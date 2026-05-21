@@ -848,7 +848,7 @@
           </div>
           <span class="user-status-pill ${u.status}">${u.status}</span>
           <div class="user-row-actions" onclick="event.stopPropagation()">
-            <button class="btn-delete-user" onclick="deleteUser('${u.id}','${(u.full_name||'Pending').replace(/'/g,\"\\'\")}')">🗑</button>
+            <button class="btn-delete-user" onclick="event.stopPropagation();deleteUser('${u.id}','${(u.full_name||'Pending')}')" >🗑</button>
           </div>
         </div>
       </div>`;
