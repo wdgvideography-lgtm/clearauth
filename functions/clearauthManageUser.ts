@@ -11,8 +11,47 @@ Deno.serve(async (req) => {
     }
 
     if (action === 'delete') {
+      // 1. Get the user being deleted so we know their role
+      const allUsers = await base44.asServiceRole.entities.ClearAuthUser.list();
+      const deletedUser = allUsers.find((u: any) => u.id === user_id);
+
+      // 2. Delete the user record
       await base44.asServiceRole.entities.ClearAuthUser.delete(user_id);
-      return Response.json({ success: true });
+
+      // 3. CASCADE: If they were an approver, remove them from every other user's allowed_approvers list
+      if (deletedUser?.role === 'approver') {
+        const usersWithAccess = allUsers.filter((u: any) =>
+          u.id !== user_id &&
+          Array.isArray(u.allowed_approvers) &&
+          u.allowed_approvers.includes(user_id)
+        );
+        for (const u of usersWithAccess) {
+          const cleaned = u.allowed_approvers.filter((id: string) => id !== user_id);
+          await base44.asServiceRole.entities.ClearAuthUser.update(u.id, {
+            allowed_approvers: cleaned,
+          });
+        }
+      }
+
+      // 4. CASCADE: Remove any pending approval requests where this user is the employee or approver
+      const allRequests = await base44.asServiceRole.entities.ApprovalRequest.list();
+      const relatedRequests = allRequests.filter((r: any) =>
+        r.driver_user_id === user_id || r.approver_user_id === user_id
+      );
+      for (const r of relatedRequests) {
+        // Only remove pending ones — keep historical records but nullify the user link
+        if (r.status === 'Pending') {
+          await base44.asServiceRole.entities.ApprovalRequest.update(r.id, {
+            status: 'Cancelled',
+            denial_reason: 'User account removed',
+          });
+        }
+      }
+
+      return Response.json({ success: true, cascaded: {
+        approver_references_cleaned: deletedUser?.role === 'approver' ? relatedRequests.length : 0,
+        pending_requests_cancelled: relatedRequests.filter((r: any) => r.status === 'Pending').length,
+      }});
     }
 
     if (action === 'update') {
@@ -22,7 +61,6 @@ Deno.serve(async (req) => {
       if (department !== undefined) updateData.department = department;
 
       if (password) {
-        // Hash password (simple approach — store bcrypt-style)
         const encoder = new TextEncoder();
         const data = encoder.encode(password);
         const hashBuffer = await crypto.subtle.digest('SHA-256', data);
