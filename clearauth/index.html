@@ -583,7 +583,7 @@
     <div class="invite-section">
       <div class="invite-section-title">Send Invite Link</div>
       <div class="invite-btns">
-        <button class="btn-invite-employee" onclick="generateInvite('employee')">🚛 Invite a Employee</button>
+        <button class="btn-invite-employee" onclick="generateInvite('employee')">👤 Invite a Employee</button>
         <button class="btn-invite-approver" onclick="generateInvite('approver')">✅ Invite an Approver</button>
       </div>
       <div class="invite-link-box" id="invite-link-box">
@@ -1055,7 +1055,7 @@
 
   function renderRoleSubsection(users, role, key) {
     if (!users.length) return '';
-    const icon = role === 'employee' ? '🚛' : '✅';
+    const icon = role === 'employee' ? '👤' : '✅';
     return `
     <div class="role-subsection">
       <div class="role-subsection-header open" onclick="toggleRoleSubsection('${key}')">
@@ -1427,7 +1427,7 @@ Choose:
 
       const link = `${APP_URL}?invite=${data.token}`;
       urlEl.textContent = link;
-      labelEl.textContent = role === 'employee' ? '🚛 Employee Invite Link' : '✅ Approver Invite Link';
+      labelEl.textContent = role === 'employee' ? '👤 Employee Invite Link' : '✅ Approver Invite Link';
       showToast(`${role === 'employee' ? 'Employee' : 'Approver'} invite link generated`);
 
       // Refresh user list after a short delay (new pending record created)
