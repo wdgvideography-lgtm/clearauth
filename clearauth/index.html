@@ -387,6 +387,28 @@
   .role-subsection-header.open .role-subsection-chevron { transform: rotate(180deg); }
   .role-subsection-body { display: none; }
   .role-subsection-body.open { display: block; }
+
+  /* ===== CREATE SITE BUTTON ===== */
+  .btn-create-site { padding: 9px 16px; background: linear-gradient(135deg, #3B7DD8, #2B4B8C); color: white; border: none; border-radius: 22px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.2s; letter-spacing: 0.2px; }
+  .btn-create-site:hover { box-shadow: 0 3px 12px rgba(59,125,216,0.35); transform: translateY(-1px); }
+
+  /* ===== SITE OPTIONS (rename/delete) ===== */
+  .site-options-btn { background: none; border: none; color: rgba(255,255,255,0.0); font-size: 1rem; cursor: pointer; padding: 4px 8px; border-radius: 7px; transition: all 0.2s; flex-shrink: 0; }
+  .site-section-header:hover .site-options-btn { color: rgba(59,125,216,0.7); background: rgba(59,125,216,0.08); }
+
+  /* ===== DRAG & DROP ===== */
+  .user-row.dragging { opacity: 0.4; }
+  .user-card.drag-over { background: #EEF5FF; border: 2px dashed var(--blue); border-radius: 10px; }
+  .site-drop-zone { min-height: 52px; border: 2px dashed transparent; border-radius: 12px; transition: all 0.2s; margin: 6px 12px; }
+  .site-drop-zone.drag-active { border-color: var(--blue); background: rgba(59,125,216,0.05); }
+  .site-drop-zone-label { text-align: center; padding: 14px; font-size: 0.78rem; color: var(--grey); font-style: italic; display: none; }
+  .site-drop-zone.drag-active .site-drop-zone-label { display: block; }
+  .user-card { cursor: grab; }
+  .user-card:active { cursor: grabbing; }
+
+  /* Drag handle indicator */
+  .drag-handle { color: #C8D5E4; font-size: 0.9rem; margin-right: 8px; cursor: grab; flex-shrink: 0; }
+  .user-card:hover .drag-handle { color: var(--blue); }
 </style>
 </head>
 <body>
@@ -553,9 +575,31 @@
       </div>
     </div>
 
+    <!-- Sites header row -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div style="font-size:0.68rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--grey)">Sites</div>
+      <button class="btn-create-site" onclick="openCreateSiteModal()">+ New Site</button>
+    </div>
+
     <!-- Sites container -->
     <div id="sites-container">
       <div class="spinner"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CREATE SITE MODAL ===== -->
+<div class="modal-overlay" id="create-site-modal">
+  <div class="modal-box">
+    <div class="modal-title" id="create-site-modal-title">Create New Site</div>
+    <div class="modal-field">
+      <label>Site Name</label>
+      <input type="text" id="new-site-name" placeholder="e.g. Birmingham Depot, Site A, Night Shift" onkeydown="if(event.key==='Enter')confirmCreateSite()">
+    </div>
+    <div class="modal-error" id="create-site-error"></div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeCreateSiteModal()">Cancel</button>
+      <button class="btn-modal-save" id="confirm-site-btn" onclick="confirmCreateSite()">Create Site</button>
     </div>
   </div>
 </div>
@@ -721,8 +765,9 @@
   let pollingInterval = null;
   let denyTargetToken = null;
   let companyUsers = [];
+  let companySites = []; // list of site name strings
   let inviteToken = null;
-  let sectionOpen = { drivers: false, approvers: false };
+  let dragUserId = null;
 
   // ===== NAVIGATION =====
   function showView(name) {
@@ -875,102 +920,342 @@
     }
   }
 
+  // ===== SITE MANAGEMENT =====
+  function buildCompanySites() {
+    // companySites = explicit list. Also discover any from user departments.
+    const fromUsers = new Set(companyUsers.map(u => u.department).filter(Boolean));
+    fromUsers.forEach(s => { if (!companySites.includes(s)) companySites.push(s); });
+  }
+
   function renderUserSections() {
+    buildCompanySites();
     const drivers = companyUsers.filter(u => u.role === 'driver');
     const approvers = companyUsers.filter(u => u.role === 'approver');
     const allUsers = [...drivers, ...approvers];
-
-    // Collect all unique sites from the 'department' field
-    const siteSet = new Set();
-    allUsers.forEach(u => { if (u.department) siteSet.add(u.department); });
-    const sites = Array.from(siteSet).sort();
-    if (sites.length === 0) sites.push(null); // No sites yet — show unassigned
-
     const container = document.getElementById('sites-container');
+
+    // Build list: named sites first (from companySites), then unassigned if needed
+    const unassigned = allUsers.filter(u => !u.department);
+    const sitesToRender = [...companySites]; // ordered
+
     let html = '';
 
-    // Always include unassigned group if any unassigned users exist
-    const unassigned = allUsers.filter(u => !u.department);
-    const allSites = unassigned.length > 0 ? [...sites.filter(Boolean), null] : sites;
-
-    allSites.forEach((site, si) => {
-      const siteKey = site || '__unassigned__';
-      const siteLabel = site || 'Unassigned';
-      const siteEmoji = site ? '📍' : '📋';
-      const siteDrivers = drivers.filter(u => (site ? u.department === site : !u.department));
-      const siteApprovers = approvers.filter(u => (site ? u.department === site : !u.department));
-      const totalInSite = siteDrivers.length + siteApprovers.length;
+    sitesToRender.forEach((site, si) => {
+      const siteKey = 'site_' + si;
+      const siteDrivers = drivers.filter(u => u.department === site);
+      const siteApprovers = approvers.filter(u => u.department === site);
+      const total = siteDrivers.length + siteApprovers.length;
 
       html += `
-      <div class="site-section" id="site-section-${si}">
+      <div class="site-section" id="site-section-${si}"
+           ondragover="event.preventDefault();siteDropOver(event,'${site}')"
+           ondragleave="siteDropLeave(event,'${site}')"
+           ondrop="siteDropDrop(event,'${site}','${siteKey}')">
         <div class="site-section-header" onclick="toggleSiteSection(${si})">
           <div style="display:flex;align-items:center;gap:13px;flex:1;min-width:0">
-            <div class="site-section-icon">${siteEmoji}</div>
+            <div class="site-section-icon">📍</div>
             <div style="min-width:0">
-              <div class="site-section-name">${siteLabel}</div>
-              <div class="site-section-meta">${totalInSite} member${totalInSite !== 1 ? 's' : ''} · ${siteDrivers.length} driver${siteDrivers.length !== 1 ? 's' : ''} · ${siteApprovers.length} approver${siteApprovers.length !== 1 ? 's' : ''}</div>
+              <div class="site-section-name">${site}</div>
+              <div class="site-section-meta">${total} member${total !== 1 ? 's' : ''} &middot; ${siteDrivers.length} driver${siteDrivers.length !== 1 ? 's' : ''} &middot; ${siteApprovers.length} approver${siteApprovers.length !== 1 ? 's' : ''}</div>
             </div>
           </div>
-          <div class="site-section-chevron">▼</div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <button class="site-options-btn" onclick="event.stopPropagation();openSiteOptions('${site}',${si})" title="Site options">⚙️</button>
+            <div class="site-section-chevron">▼</div>
+          </div>
         </div>
         <div class="site-body" id="site-body-${si}">
-
-          ${siteDrivers.length > 0 ? `
-          <div class="role-subsection">
-            <div class="role-subsection-header" onclick="toggleRoleSubsection('${siteKey}-drivers')">
-              <div class="role-subsection-left">
-                <div class="role-subsection-icon driver">🚛</div>
-                <span class="role-subsection-title">Drivers</span>
-                <span class="role-subsection-count">${siteDrivers.length}</span>
-              </div>
-              <span class="role-subsection-chevron">▼</span>
-            </div>
-            <div class="role-subsection-body" id="rsb-${siteKey}-drivers">
-              ${renderUserList(siteDrivers, 'driver')}
-            </div>
-          </div>` : ''}
-
-          ${siteApprovers.length > 0 ? `
-          <div class="role-subsection">
-            <div class="role-subsection-header" onclick="toggleRoleSubsection('${siteKey}-approvers')">
-              <div class="role-subsection-left">
-                <div class="role-subsection-icon approver">✅</div>
-                <span class="role-subsection-title">Approvers</span>
-                <span class="role-subsection-count">${siteApprovers.length}</span>
-              </div>
-              <span class="role-subsection-chevron">▼</span>
-            </div>
-            <div class="role-subsection-body" id="rsb-${siteKey}-approvers">
-              ${renderUserList(siteApprovers, 'approver')}
-            </div>
-          </div>` : ''}
-
-          ${totalInSite === 0 ? `<div class="empty-users">No members in this site yet.</div>` : ''}
-
+          <div class="site-drop-zone" id="drop-zone-${siteKey}">
+            <div class="site-drop-zone-label">Drop here to assign to ${site}</div>
+          </div>
+          ${renderRoleSubsection(siteDrivers, 'driver', siteKey + '-drivers')}
+          ${renderRoleSubsection(siteApprovers, 'approver', siteKey + '-approvers')}
+          ${total === 0 ? '<div class="empty-users" style="padding:12px 18px 16px;font-size:0.83rem;color:var(--grey);font-style:italic">No members yet — drag someone in or assign from their profile.</div>' : ''}
         </div>
       </div>`;
     });
 
-    container.innerHTML = html || `<div class="empty-users" style="text-align:center;padding:30px">No users yet — send an invite link to get started.</div>`;
+    // Unassigned group
+    if (unassigned.length > 0 || sitesToRender.length === 0) {
+      const uDrivers = drivers.filter(u => !u.department);
+      const uApprovers = approvers.filter(u => !u.department);
+      const uTotal = uDrivers.length + uApprovers.length;
+      html += `
+      <div class="site-section" id="site-section-unassigned"
+           ondragover="event.preventDefault();siteDropOver(event,null)"
+           ondragleave="siteDropLeave(event,null)"
+           ondrop="siteDropDrop(event,null,'unassigned')">
+        <div class="site-section-header" onclick="toggleSiteSection('unassigned')" style="background:linear-gradient(135deg,#F4F7FA,#EBF0F7)">
+          <div style="display:flex;align-items:center;gap:13px;flex:1;min-width:0">
+            <div class="site-section-icon" style="background:linear-gradient(135deg,#7A8A9E,#64748B)">📋</div>
+            <div>
+              <div class="site-section-name">Unassigned</div>
+              <div class="site-section-meta">${uTotal} member${uTotal !== 1 ? 's' : ''} not yet in a site</div>
+            </div>
+          </div>
+          <div class="site-section-chevron">▼</div>
+        </div>
+        <div class="site-body open" id="site-body-unassigned">
+          <div class="site-drop-zone" id="drop-zone-unassigned">
+            <div class="site-drop-zone-label">Drop here to remove from site</div>
+          </div>
+          ${renderRoleSubsection(uDrivers, 'driver', 'unassigned-drivers')}
+          ${renderRoleSubsection(uApprovers, 'approver', 'unassigned-approvers')}
+          ${uTotal === 0 ? '<div class="empty-users" style="padding:12px 18px 16px;font-size:0.83rem;color:var(--grey);font-style:italic">Everyone is assigned to a site.</div>' : ''}
+        </div>
+      </div>`;
+    }
 
-    // Load approver checks for drivers
+    if (!html) html = `<div style="text-align:center;padding:40px 24px;color:var(--grey);font-size:0.88rem">No sites yet. Create your first site above.</div>`;
+    container.innerHTML = html;
+
+    // Load approver permission checks for drivers
     drivers.forEach(d => { if (d.status === 'active') loadApproverChecks(d.id, d.allowed_approvers || [], d.allow_all_approvers); });
+    // Bind touch drag events
+    bindTouchDrag();
+  }
+
+  function renderRoleSubsection(users, role, key) {
+    if (!users.length) return '';
+    const icon = role === 'driver' ? '🚛' : '✅';
+    return `
+    <div class="role-subsection">
+      <div class="role-subsection-header open" onclick="toggleRoleSubsection('${key}')">
+        <div class="role-subsection-left">
+          <div class="role-subsection-icon ${role}">${icon}</div>
+          <span class="role-subsection-title">${role === 'driver' ? 'Drivers' : 'Approvers'}</span>
+          <span class="role-subsection-count">${users.length}</span>
+        </div>
+        <span class="role-subsection-chevron" style="transform:rotate(180deg)">▼</span>
+      </div>
+      <div class="role-subsection-body open" id="rsb-${key}">
+        ${renderUserList(users, role)}
+      </div>
+    </div>`;
   }
 
   function toggleSiteSection(si) {
     const header = document.querySelector(`#site-section-${si} .site-section-header`);
     const body = document.getElementById(`site-body-${si}`);
+    if (!header || !body) return;
     const isOpen = body.classList.contains('open');
     header.classList.toggle('open', !isOpen);
     body.classList.toggle('open', !isOpen);
   }
 
   function toggleRoleSubsection(key) {
-    const header = document.querySelector(`[onclick="toggleRoleSubsection('${key}')"]`);
     const body = document.getElementById(`rsb-${key}`);
+    const header = body ? body.previousElementSibling : null;
+    if (!body || !header) return;
     const isOpen = body.classList.contains('open');
     header.classList.toggle('open', !isOpen);
     body.classList.toggle('open', !isOpen);
+    const chev = header.querySelector('.role-subsection-chevron');
+    if (chev) chev.style.transform = isOpen ? '' : 'rotate(180deg)';
+  }
+
+  // ===== CREATE / RENAME / DELETE SITE =====
+  let editingSite = null;
+
+  function openCreateSiteModal() {
+    editingSite = null;
+    document.getElementById('create-site-modal-title').textContent = 'Create New Site';
+    document.getElementById('confirm-site-btn').textContent = 'Create Site';
+    document.getElementById('new-site-name').value = '';
+    document.getElementById('create-site-error').textContent = '';
+    document.getElementById('create-site-error').classList.remove('show');
+    document.getElementById('create-site-modal').classList.add('open');
+    setTimeout(() => document.getElementById('new-site-name').focus(), 100);
+  }
+
+  function openSiteOptions(siteName, si) {
+    if (confirm(`Site: "${siteName}"
+
+Choose:
+• OK = Rename this site
+• Cancel = keep as is
+
+(To delete, rename it first then use the delete option)`)) {
+      editingSite = siteName;
+      document.getElementById('create-site-modal-title').textContent = 'Rename Site';
+      document.getElementById('confirm-site-btn').textContent = 'Save';
+      document.getElementById('new-site-name').value = siteName;
+      document.getElementById('create-site-error').textContent = '';
+      document.getElementById('create-site-error').classList.remove('show');
+      document.getElementById('create-site-modal').classList.add('open');
+      setTimeout(() => document.getElementById('new-site-name').focus(), 100);
+    }
+  }
+
+  function closeCreateSiteModal() {
+    document.getElementById('create-site-modal').classList.remove('open');
+  }
+
+  async function confirmCreateSite() {
+    const name = document.getElementById('new-site-name').value.trim();
+    const errEl = document.getElementById('create-site-error');
+    if (!name) { errEl.textContent = 'Please enter a site name.'; errEl.classList.add('show'); return; }
+    if (!editingSite && companySites.includes(name)) { errEl.textContent = 'A site with this name already exists.'; errEl.classList.add('show'); return; }
+
+    if (editingSite) {
+      // Rename — update all users in this site
+      const oldName = editingSite;
+      companySites = companySites.map(s => s === oldName ? name : s);
+      const usersInSite = companyUsers.filter(u => u.department === oldName);
+      for (const u of usersInSite) {
+        await assignUserToSite(u.id, name);
+      }
+      showToast(`Site renamed to "${name}"`);
+    } else {
+      companySites.push(name);
+      showToast(`Site "${name}" created`);
+    }
+
+    closeCreateSiteModal();
+    renderUserSections();
+  }
+
+  // ===== ASSIGN USER TO SITE =====
+  async function assignUserToSite(userId, siteName) {
+    const user = companyUsers.find(u => u.id === userId);
+    if (!user) return;
+    // Update locally
+    user.department = siteName || '';
+    // Persist via backend
+    try {
+      await fetch(`${API}/clearauthManageUser`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'update', id: userId, company_id: currentUser.company_id, department: siteName || '' })
+      });
+    } catch(e) { console.error('Failed to save site assignment', e); }
+  }
+
+  // ===== DRAG & DROP (desktop) =====
+  let dragOverSite = null;
+
+  function startDrag(event, userId) {
+    dragUserId = userId;
+    event.dataTransfer.effectAllowed = 'move';
+    setTimeout(() => {
+      const card = document.getElementById('ucard-' + userId);
+      if (card) card.classList.add('dragging');
+    }, 0);
+  }
+
+  function endDrag(userId) {
+    dragUserId = null;
+    const card = document.getElementById('ucard-' + userId);
+    if (card) card.classList.remove('dragging');
+    document.querySelectorAll('.site-drop-zone').forEach(z => z.classList.remove('drag-active'));
+  }
+
+  function siteDropOver(event, site) {
+    event.preventDefault();
+    dragOverSite = site;
+    // find the zone inside this site-section
+    const section = event.currentTarget;
+    const zone = section.querySelector('.site-drop-zone');
+    if (zone) zone.classList.add('drag-active');
+  }
+
+  function siteDropLeave(event, site) {
+    const section = event.currentTarget;
+    if (!section.contains(event.relatedTarget)) {
+      const zone = section.querySelector('.site-drop-zone');
+      if (zone) zone.classList.remove('drag-active');
+    }
+  }
+
+  async function siteDropDrop(event, site, zoneKey) {
+    event.preventDefault();
+    if (!dragUserId) return;
+    const uid = dragUserId;
+    dragUserId = null;
+    document.querySelectorAll('.site-drop-zone').forEach(z => z.classList.remove('drag-active'));
+    const card = document.getElementById('ucard-' + uid);
+    if (card) card.classList.remove('dragging');
+    await assignUserToSite(uid, site);
+    renderUserSections();
+    showToast(site ? `Moved to ${site}` : 'Removed from site');
+  }
+
+  // ===== TOUCH DRAG (mobile) =====
+  let touchDragUserId = null;
+  let touchDragEl = null;
+  let touchClone = null;
+
+  function bindTouchDrag() {
+    document.querySelectorAll('.user-card[data-uid]').forEach(card => {
+      card.addEventListener('touchstart', handleTouchStart, { passive: true });
+    });
+  }
+
+  function handleTouchStart(e) {
+    const card = e.currentTarget;
+    touchDragUserId = card.dataset.uid;
+    touchDragEl = card;
+
+    // Create a visual clone
+    touchClone = card.cloneNode(true);
+    touchClone.style.cssText = `position:fixed;z-index:9999;opacity:0.85;width:${card.offsetWidth}px;pointer-events:none;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,0.2);`;
+    document.body.appendChild(touchClone);
+    card.style.opacity = '0.3';
+
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd);
+  }
+
+  function handleTouchMove(e) {
+    if (!touchClone) return;
+    e.preventDefault();
+    const t = e.touches[0];
+    touchClone.style.left = (t.clientX - touchClone.offsetWidth / 2) + 'px';
+    touchClone.style.top = (t.clientY - 30) + 'px';
+
+    // Highlight the site section under finger
+    document.querySelectorAll('.site-drop-zone').forEach(z => z.classList.remove('drag-active'));
+    touchClone.style.display = 'none';
+    const el = document.elementFromPoint(t.clientX, t.clientY);
+    touchClone.style.display = '';
+    const siteSection = el ? el.closest('.site-section') : null;
+    if (siteSection) {
+      const zone = siteSection.querySelector('.site-drop-zone');
+      if (zone) zone.classList.add('drag-active');
+    }
+  }
+
+  async function handleTouchEnd(e) {
+    document.removeEventListener('touchmove', handleTouchMove);
+    document.removeEventListener('touchend', handleTouchEnd);
+    if (!touchClone) return;
+
+    const t = e.changedTouches[0];
+    touchClone.style.display = 'none';
+    const el = document.elementFromPoint(t.clientX, t.clientY);
+    touchClone.style.display = '';
+
+    const siteSection = el ? el.closest('.site-section') : null;
+    let targetSite = null;
+    if (siteSection) {
+      const nameEl = siteSection.querySelector('.site-section-name');
+      const siteLabel = nameEl ? nameEl.textContent.trim() : null;
+      targetSite = (siteLabel && siteLabel !== 'Unassigned') ? siteLabel : null;
+    }
+
+    // Clean up
+    document.querySelectorAll('.site-drop-zone').forEach(z => z.classList.remove('drag-active'));
+    document.body.removeChild(touchClone);
+    touchClone = null;
+    if (touchDragEl) touchDragEl.style.opacity = '';
+
+    if (siteSection && touchDragUserId) {
+      await assignUserToSite(touchDragUserId, targetSite);
+      renderUserSections();
+      showToast(targetSite ? `Moved to ${targetSite}` : 'Removed from site');
+    }
+
+    touchDragUserId = null;
+    touchDragEl = null;
   }
 
   function renderUserList(users, role) {
@@ -999,8 +1284,13 @@
             <button class="btn-save-perms" onclick="savePermissions('${u.id}')">Save Access</button>
           </div>
         </div>` : '';
-      return `<div class="user-card" onclick="openUserProfile('${u.id}')" style="cursor:pointer">
+      return `<div class="user-card" id="ucard-${u.id}" data-uid="${u.id}"
+        draggable="true"
+        ondragstart="startDrag(event,'${u.id}')"
+        ondragend="endDrag('${u.id}')"
+        onclick="openUserProfile('${u.id}')">
         <div class="user-row">
+          <span class="drag-handle" title="Drag to move site">⠿</span>
           <div class="user-row-info">
             <div class="user-row-name" style="color:var(--blue)">${u.full_name || '(Pending setup)'}</div>
             <div class="user-row-username">${u.username ? '@' + u.username : 'Awaiting registration'}</div>
