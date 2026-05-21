@@ -1,0 +1,55 @@
+{
+  "type": "object",
+  "properties": {
+    "company_id": {
+      "type": "string"
+    },
+    "company_name": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "driver",
+        "approver",
+        "company"
+      ]
+    },
+    "full_name": {
+      "type": "string"
+    },
+    "username": {
+      "type": "string"
+    },
+    "password_hash": {
+      "type": "string"
+    },
+    "invite_token": {
+      "type": "string"
+    },
+    "invite_used": {
+      "type": "boolean"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "invited",
+        "active",
+        "disabled"
+      ]
+    },
+    "allowed_approvers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of approver user IDs this driver can request from. Empty = all approvers allowed."
+    },
+    "allow_all_approvers": {
+      "type": "boolean",
+      "description": "If true, driver can request from any approver in the company"
+    }
+  },
+  "required": [],
+  "name": "ClearAuthUser"
+}
