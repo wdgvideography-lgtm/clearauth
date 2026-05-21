@@ -79,6 +79,12 @@
     },
     "qr_code": {
       "type": "string"
+    },
+    "driver_user_id": {
+      "type": "string"
+    },
+    "approver_user_id": {
+      "type": "string"
     }
   },
   "required": [],
