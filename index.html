@@ -102,7 +102,7 @@
 
   /* ===== APPROVAL CARD ===== */
   #view-card { background: var(--dark); overflow-y: auto; }
-  .card-container { width: 100%; max-width: 420px; margin: 0 auto; padding: 24px 20px 40px; }
+  .card-container { width: 100%; max-width: 420px; margin: 0 auto; padding: 16px 16px 60px; }
   .approval-card { border-radius: 20px; overflow: hidden; box-shadow: 0 25px 80px rgba(0,0,0,0.6); margin-bottom: 24px; }
   .card-status-bar { padding: 28px 28px 24px; display: flex; flex-direction: column; align-items: center; text-align: center; }
   .card-status-bar.approved { background: linear-gradient(135deg, #14532D, #16A34A); }
@@ -549,7 +549,7 @@
 </div>
 
 <!-- ===== APPROVAL CARD ===== -->
-<div id="view-card" class="view" style="background:var(--dark);overflow-y:auto">
+<div id="view-card" class="view" style="background:#0D1117;overflow-y:auto;padding-bottom:40px">
   <div class="card-container" id="approval-card-container"><div class="spinner"></div></div>
 </div>
 
@@ -1666,49 +1666,144 @@ Choose:
     }, 3000);
   }
 
-  // ===== APPROVAL CARD =====
+  // ===== APPROVAL CARD (split design) =====
   function renderApprovalCard(r) {
     const isApproved = r.status === 'Approved';
+    const isDenied   = r.status === 'Denied';
+    const isPending  = r.status === 'Pending';
     const approvedAt = r.approved_at ? new Date(r.approved_at) : null;
-    const expiresAt = r.expires_at ? new Date(r.expires_at) : null;
-    const isExpired = expiresAt && expiresAt < new Date();
-    const timeStr = approvedAt ? approvedAt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'}) : '—';
-    const dateStr = approvedAt ? approvedAt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) : '—';
-    const expStr = expiresAt ? expiresAt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) : '—';
-    const label = r.request_type === 'Other' ? r.custom_type : r.request_type;
+    const expiresAt  = r.expires_at  ? new Date(r.expires_at)  : null;
+    const isExpired  = expiresAt && expiresAt < new Date();
+
+    const label = r.request_type === 'Other' ? (r.custom_type||'Other') : r.request_type;
+
+    // Time strings
+    const now = new Date();
+    const timeStr = approvedAt ? approvedAt.toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : now.toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+    let expiresStr = '';
+    if (expiresAt && !isExpired) {
+      const diffMs = expiresAt - now;
+      const diffH = Math.floor(diffMs/3600000);
+      const diffM = Math.floor((diffMs%3600000)/60000);
+      expiresStr = diffH > 0 ? `Expires in ${diffH}h ${diffM}m` : `Expires in ${diffM}m`;
+    } else if (isExpired) {
+      expiresStr = 'Expired';
+    }
+
+    // Colours
+    const statusColor    = isApproved ? '#22C55E' : isDenied ? '#EF4444' : '#F59E0B';
+    const empBg          = isApproved ? '#EBF5FB' : isDenied ? '#FEF2F2' : '#EBF5FB';
+    const appBg          = isApproved ? '#FFF7ED' : isDenied ? '#FFF7ED' : '#FFF7ED';
+    const empBadgeBg     = '#4A9EFF';
+    const appBadgeBg     = isApproved ? '#F59E0B' : isDenied ? '#EF4444' : '#8B949E';
+    const statusWord     = r.status.toUpperCase();
+    const statusSubtitle = isApproved ? 'Request Approved' : isDenied ? 'Request Denied' : 'Awaiting Approval';
+    const statusIcon     = isApproved ? '✓' : isDenied ? '✕' : '…';
+    const qrBorderColor  = statusColor;
+
+    // Avatars
+    const empInitials = (r.employee_name||'?').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+    const appInitials = (r.approver_name||'?').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+
+    // QR code — generate a real QR using a free API
+    const qrData = encodeURIComponent(r.approval_token || r.id || 'RE-QUEST');
+    const qrUrl  = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${qrData}&bgcolor=ffffff&color=000000&margin=4`;
+
+    // Left pill (employee)
+    const leftPill  = `<div style="position:absolute;bottom:22px;left:14px;background:${empBadgeBg};color:white;font-size:0.62rem;font-weight:800;letter-spacing:1px;padding:6px 12px;border-radius:20px;white-space:nowrap">🔒 Secure Verified</div>`;
+    const rightPill = `<div style="position:absolute;bottom:22px;right:14px;background:${appBadgeBg};color:white;font-size:0.62rem;font-weight:800;letter-spacing:1px;padding:6px 12px;border-radius:20px;white-space:nowrap">🛡 ${isApproved?'Approval Confirmed':isDenied?'Request Denied':'Pending'}</div>`;
+
+    // REF ID
+    const refId = 'REQ-' + (r.created_date ? new Date(r.created_date).toISOString().slice(0,10).replace(/-/g,'') : '00000000') + '-' + (r.id||'').slice(-4).toUpperCase();
 
     document.getElementById('approval-card-container').innerHTML = `
-      <div class="approval-card">
-        <div class="card-status-bar ${r.status.toLowerCase()}">
-          <div class="card-status-icon">${isApproved?'✅':'❌'}</div>
-          <div class="card-status-word">${r.status.toUpperCase()}</div>
-          <div class="card-status-sub">${isApproved?'This request has been authorised':'This request has been declined'}</div>
+      <!-- Top bar -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px">
+        <div style="font-size:1.5rem;color:#E6EDF3;cursor:pointer;line-height:1" onclick="resetEmployeeForm()">✕</div>
+        <div style="text-align:center">
+          <div style="font-size:1.3rem;font-weight:900;letter-spacing:-0.5px"><span style="color:#4A9EFF;font-style:italic">RE</span><span style="color:#8B949E;font-weight:300">-</span><span style="color:#E6EDF3">Quest</span></div>
+          <div style="font-size:0.78rem;color:#8B949E;font-weight:600;margin-top:2px">${statusSubtitle} <span style="color:${statusColor}">${isApproved?'🛡':'❌'}</span></div>
         </div>
-        <div class="card-body">
-          <div class="card-type-badge">${label}</div>
-          <div class="card-identities">
-            <div class="identity-block"><div class="identity-role">Employee</div><div class="identity-name">${r.employee_name||'—'}</div><div class="identity-company">${r.employee_company||''}</div></div>
-            <div class="identity-block"><div class="identity-role">Approver</div><div class="identity-name">${r.approver_name||'—'}</div><div class="identity-company">${r.approver_role||''}</div></div>
+        <div style="font-size:1.5rem;color:#484F58;line-height:1">···</div>
+      </div>
+
+      <!-- SPLIT CARD -->
+      <div style="margin:0 16px;border-radius:24px;overflow:visible;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.5)">
+        <!-- Left + Right halves -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;border-radius:24px;overflow:hidden">
+          <!-- LEFT: Employee -->
+          <div style="background:${empBg};padding:16px 10px 80px;text-align:center;position:relative">
+            <div style="display:inline-block;background:${empBadgeBg};color:white;font-size:0.58rem;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;padding:4px 10px;border-radius:20px;margin-bottom:12px">REQUESTED BY</div>
+            <div style="width:80px;height:80px;border-radius:50%;margin:0 auto 10px;border:3px solid white;box-shadow:0 4px 16px rgba(0,0,0,0.15);overflow:hidden;background:#ddd;display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:800;color:#4A9EFF">
+              ${r.employee_photo ? `<img src="${r.employee_photo}" style="width:100%;height:100%;object-fit:cover">` : empInitials}
+            </div>
+            <div style="font-size:0.95rem;font-weight:800;color:#1a1a2e;margin-bottom:4px">${r.employee_name||'—'}</div>
+            <div style="font-size:0.75rem;color:#555;margin-bottom:2px">🚛 ${r.request_type||'—'}</div>
+            <div style="font-size:0.7rem;color:#777;margin-bottom:2px">ID: ${(r.vehicle_reg||'—').toUpperCase()}</div>
+            <div style="font-size:0.7rem;color:#777">${r.employee_company||''}</div>
+            ${leftPill}
           </div>
-          <div style="height:14px"></div>
-          <div class="card-row"><div class="card-row-label">Vehicle</div><div class="card-row-value">${r.vehicle_reg||'—'}</div></div>
-          <div class="card-row"><div class="card-row-label">Site</div><div class="card-row-value">${r.site_name||'—'}</div></div>
-          <div class="card-row"><div class="card-row-label">Location</div><div class="card-row-value">${r.location||'—'}</div></div>
-          <div class="card-row"><div class="card-row-label">Urgency</div><div class="card-row-value">${r.urgency||'Standard'}</div></div>
-          <div class="card-row"><div class="card-row-label">Date</div><div class="card-row-value">${dateStr}</div></div>
-          <div class="card-row"><div class="card-row-label">Time</div><div class="card-row-value">${timeStr}</div></div>
-          ${r.denial_reason?`<div class="denial-reason-box"><div class="denial-label">Reason for Denial</div><div class="denial-text">${r.denial_reason}</div></div>`:''}
-          ${r.approver_note?`<div class="approval-note-box"><div class="approval-note-label">📋 Approver Note</div><div class="approval-note-text">${r.approver_note}</div></div>`:''}
-          <div class="card-qr-section" style="margin-top:14px">
-            <div class="qr-placeholder">🔲</div>
-            <div class="qr-info"><div class="qr-label">Verification Token</div><div class="qr-value">${r.approval_token}</div></div>
+          <!-- RIGHT: Approver -->
+          <div style="background:${appBg};padding:16px 10px 80px;text-align:center;position:relative">
+            <div style="display:inline-block;background:${appBadgeBg};color:white;font-size:0.58rem;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;padding:4px 10px;border-radius:20px;margin-bottom:12px">${isApproved?'APPROVED BY':isDenied?'DENIED BY':'ASSIGNED TO'}</div>
+            <div style="width:80px;height:80px;border-radius:50%;margin:0 auto 10px;border:3px solid white;box-shadow:0 4px 16px rgba(0,0,0,0.15);overflow:hidden;background:#ddd;display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:800;color:${appBadgeBg}">
+              ${r.approver_photo ? `<img src="${r.approver_photo}" style="width:100%;height:100%;object-fit:cover">` : appInitials}
+            </div>
+            <div style="font-size:0.95rem;font-weight:800;color:#1a1a2e;margin-bottom:4px">${r.approver_name||'—'}</div>
+            <div style="font-size:0.75rem;color:#555;margin-bottom:2px">🛡 ${r.approver_role||'Approver'}</div>
+            <div style="font-size:0.7rem;color:#777;margin-bottom:2px">ID: ${(r.approver_name||'APR').substring(0,3).toUpperCase()}-${Math.abs((r.id||'').split('').reduce((a,c)=>a+c.charCodeAt(0),0))%90000+10000}</div>
+            <div style="font-size:0.7rem;color:#777">${r.site_name||''}</div>
+            ${rightPill}
           </div>
-          <div class="card-expiry ${isExpired?'expired':''}">
-            ${isExpired?'⛔ This authorisation has expired':`⏱️ Valid until ${expStr} — present to site staff`}
-          </div>
+        </div>
+
+        <!-- OVERLAPPING QR CIRCLE -->
+        <div style="position:absolute;left:50%;bottom:-60px;transform:translateX(-50%);width:130px;height:130px;border-radius:50%;background:white;border:5px solid ${qrBorderColor};box-shadow:0 8px 32px rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;overflow:hidden;z-index:10">
+          ${isApproved || isDenied ? `<img src="${qrUrl}" style="width:110px;height:110px;display:block">` : `<div style="font-size:2rem;color:${statusColor}">⏳</div>`}
+          <!-- Status overlay dot -->
+          <div style="position:absolute;bottom:8px;right:8px;width:28px;height:28px;border-radius:50%;background:${statusColor};border:3px solid white;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:900;color:white">${statusIcon}</div>
         </div>
       </div>
-      <button class="btn-new-req" onclick="resetEmployeeForm()">+ New Request</button>
+
+      <!-- BOTTOM SECTION (below the card + QR overlap) -->
+      <div style="margin:0 16px;background:#161B22;border-radius:0 0 20px 20px;padding:76px 20px 24px;text-align:center;border:1px solid #30363D;border-top:none">
+        <!-- Status word -->
+        <div style="font-size:1.8rem;font-weight:900;letter-spacing:1px;color:${statusColor};margin-bottom:4px">${statusWord}</div>
+        <div style="font-size:0.82rem;color:#8B949E;margin-bottom:8px">${label}</div>
+
+        ${r.approver_note ? `<div style="font-size:1.05rem;font-weight:800;color:#E6EDF3;margin-bottom:12px">${r.approver_note}</div>` : (r.location ? `<div style="font-size:1.05rem;font-weight:800;color:#E6EDF3;margin-bottom:12px">${r.location}</div>` : '')}
+
+        ${r.denial_reason ? `<div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:0.82rem;color:#EF4444">Reason: ${r.denial_reason}</div>` : ''}
+
+        <!-- Time row -->
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:6px">
+          <span style="font-size:1rem">🕐</span>
+          <div style="text-align:left">
+            <div style="font-size:0.88rem;font-weight:700;color:#C9D1D9">${timeStr}</div>
+            ${expiresStr ? `<div style="font-size:0.75rem;color:#8B949E">${expiresStr}</div>` : ''}
+          </div>
+        </div>
+
+        <!-- Ref ID -->
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin:12px 0 16px">
+          <span style="font-size:1rem;color:#8B949E">#</span>
+          <div>
+            <div style="font-size:0.72rem;color:#484F58;text-transform:uppercase;letter-spacing:1px;margin-bottom:1px">Request ID</div>
+            <div style="font-size:0.82rem;font-weight:800;color:#E6EDF3;font-family:monospace">${refId}</div>
+          </div>
+        </div>
+
+        <!-- Security footer -->
+        <div style="background:#1C2128;border:1px solid ${statusColor}33;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <span style="font-size:1.2rem;color:${statusColor};flex-shrink:0">🛡</span>
+          <div style="text-align:left">
+            <div style="font-size:0.78rem;color:#C9D1D9">This authorisation is secure and traceable.</div>
+            <div style="font-size:0.75rem;color:${statusColor};font-weight:600">Show this screen for verification.</div>
+          </div>
+        </div>
+
+        <button onclick="resetEmployeeForm()" style="width:100%;padding:14px;background:#21262D;color:#E6EDF3;border:1.5px solid #30363D;border-radius:12px;font-size:0.9rem;font-weight:700;cursor:pointer">+ New Request</button>
+      </div>
     `;
   }
 
