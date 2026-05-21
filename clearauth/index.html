@@ -994,7 +994,7 @@
       if (!res.ok || !data.success) {
         document.getElementById('setup-role-label').textContent = 'Invalid or expired invite';
         document.getElementById('setup-company-badge').textContent = 'Please contact your company admin for a new link';
-        document.getElementById('setup-submit-btn').disabled = true;
+        document.getElementById('setup-btn').disabled = true;
         return;
       }
       const role = data.role || 'employee';
@@ -1206,7 +1206,7 @@
   }
 
   function renderRoleSubsection(users, role, key) {
-    if (!users.length) return '';
+    if (!users || !users.length) return '';
     const icon = role === 'employee' ? '👤' : '✅';
     return `
     <div class="role-subsection">
@@ -1551,7 +1551,7 @@
   }
 
   function renderUserList(users, role) {
-    if (!users.length) return `<div class="empty-users">No members yet — send an invite link to add someone.</div>`;
+    if (!users || !users.length) return `<div class="empty-users">No members yet — send an invite link to add someone.</div>`;
     return users.map(u => {
       const isEmployee = role === 'employee';
       const allowAll = u.allow_all_approvers;
@@ -1777,7 +1777,7 @@
   }
 
   // ===== POLLING =====
-  function startPolling(token) {
+  async function startPolling(token) {
     if (pollingInterval) clearInterval(pollingInterval);
     pollingInterval = setInterval(async () => {
       try {
@@ -2493,7 +2493,7 @@
         : profileReqData.filter(r => r.status !== 'Pending');
     }
 
-    if (!records.length) {
+    if (!records || !records.length) {
       listEl.innerHTML = `<div class="req-history-empty">${
         profileReqTab === 'pending' ? 'No pending requests.' : 'No past requests in the last 2 weeks.'
       }</div>`;
