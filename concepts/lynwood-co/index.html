@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lynwood & Co | Australian Cafe | Cotswolds</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --terra: #C17A4A;
+    --terra-light: #D9956A;
+    --terra-pale: #F5EBE0;
+    --sage: #7B9E87;
+    --sage-light: #A8C5B0;
+    --cream: #FDFAF5;
+    --warm-white: #F8F3EC;
+    --dark: #1E1A16;
+    --text: #3D3329;
+    --text-light: #7A6A5A;
+    --stone: #E8E0D5;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 60px;
+    background: rgba(253,250,245,0.96);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(193,122,74,0.12);
+  }
+  .nav-logo {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1.35rem; font-weight: 700; color: var(--dark);
+    letter-spacing: 0.5px;
+  }
+  .nav-logo span { color: var(--terra); }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a {
+    color: var(--text-light); text-decoration: none;
+    font-size: 0.8rem; letter-spacing: 1.5px; text-transform: uppercase;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--terra); }
+  .nav-locations {
+    background: var(--terra); color: white;
+    padding: 10px 22px; font-size: 0.75rem;
+    font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase;
+    text-decoration: none; transition: background 0.3s;
+  }
+  .nav-locations:hover { background: var(--dark); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    background: var(--warm-white);
+    display: grid; grid-template-columns: 1fr 1fr;
+    overflow: hidden;
+  }
+  .hero-left {
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 140px 80px 80px;
+    position: relative; z-index: 2;
+  }
+  .hero-right {
+    background: linear-gradient(160deg, #D4A87A 0%, #8B6340 50%, #3D2810 100%);
+    position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .hero-right-pattern {
+    position: absolute; inset: 0;
+    background: 
+      radial-gradient(ellipse at 30% 40%, rgba(255,255,255,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(123,158,135,0.15) 0%, transparent 50%);
+  }
+  .hero-right-text {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 14rem; font-weight: 700;
+    color: rgba(255,255,255,0.04);
+    user-select: none; position: absolute;
+    white-space: nowrap;
+  }
+  .hero-right-icon {
+    position: relative; z-index: 2;
+    text-align: center; color: rgba(255,255,255,0.12);
+    font-size: 8rem;
+  }
+  .hero-eyebrow {
+    font-size: 0.7rem; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--terra); margin-bottom: 24px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .hero-eyebrow::before { content: ''; width: 30px; height: 1px; background: var(--terra); }
+  .hero h1 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: clamp(2.8rem, 5vw, 4.8rem);
+    font-weight: 700; line-height: 1.1;
+    color: var(--dark); margin-bottom: 24px;
+  }
+  .hero h1 em { color: var(--terra); font-style: italic; }
+  .hero-sub {
+    font-size: 1rem; line-height: 1.8; color: var(--text-light);
+    max-width: 400px; margin-bottom: 40px;
+  }
+  .hero-divider { width: 40px; height: 2px; background: var(--terra); margin-bottom: 24px; }
+  .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 60px; }
+  .btn-terra {
+    background: var(--terra); color: white;
+    padding: 14px 32px; font-size: 0.8rem;
+    font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase;
+    text-decoration: none; transition: all 0.3s;
+  }
+  .btn-terra:hover { background: var(--dark); }
+  .btn-sage {
+    background: var(--sage); color: white;
+    padding: 14px 32px; font-size: 0.8rem;
+    font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase;
+    text-decoration: none; transition: all 0.3s;
+  }
+  .btn-sage:hover { background: var(--dark); }
+  .hero-locations {
+    display: flex; flex-wrap: wrap; gap: 10px;
+  }
+  .location-pill {
+    background: var(--stone); color: var(--text-light);
+    padding: 6px 14px; font-size: 0.72rem;
+    letter-spacing: 1px; text-transform: uppercase;
+    border-radius: 0; border-left: 2px solid var(--terra);
+  }
+
+  /* STATS STRIP */
+  .stats {
+    background: var(--dark);
+    padding: 50px 60px;
+    display: flex; justify-content: center; gap: 80px; flex-wrap: wrap;
+  }
+  .stat-item { text-align: center; }
+  .stat-num {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 2.8rem; font-weight: 700; color: var(--terra);
+  }
+  .stat-label { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-top: 6px; }
+  .stat-div { width: 1px; background: rgba(193,122,74,0.2); align-self: stretch; }
+
+  /* STORY */
+  .story {
+    padding: 120px 60px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: center;
+  }
+  .story-visual {
+    position: relative;
+  }
+  .story-card-main {
+    background: var(--terra-pale);
+    padding: 60px 50px;
+    border: 1px solid rgba(193,122,74,0.15);
+    position: relative;
+  }
+  .story-card-main::before {
+    content: '"';
+    font-family: 'Libre Baskerville', serif;
+    font-size: 8rem; color: rgba(193,122,74,0.12);
+    position: absolute; top: -20px; left: 30px;
+    line-height: 1;
+  }
+  .story-card-quote {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1.3rem; font-style: italic; color: var(--dark);
+    line-height: 1.6; margin-bottom: 20px; position: relative;
+  }
+  .story-card-attr { font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: var(--terra); }
+  .story-card-accent {
+    position: absolute; bottom: -20px; right: -20px;
+    background: var(--sage);
+    width: 80px; height: 80px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem;
+  }
+  .story-content {}
+  .section-label {
+    font-size: 0.65rem; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--terra); margin-bottom: 16px;
+  }
+  .story-content h2 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    font-weight: 700; color: var(--dark); margin-bottom: 24px; line-height: 1.2;
+  }
+  .story-content h2 em { color: var(--terra); font-style: italic; }
+  .story-content p { color: var(--text-light); line-height: 1.9; font-size: 0.95rem; margin-bottom: 16px; }
+  .story-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 32px; }
+  .story-tag {
+    border: 1px solid rgba(193,122,74,0.3); color: var(--terra);
+    padding: 8px 18px; font-size: 0.72rem; letter-spacing: 1.5px; text-transform: uppercase;
+  }
+
+  /* LOCATIONS */
+  .locations-section {
+    background: var(--warm-white);
+    padding: 120px 60px;
+  }
+  .locations-header { text-align: center; margin-bottom: 72px; }
+  .locations-header h2 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 700; color: var(--dark);
+  }
+  .locations-header h2 em { color: var(--terra); font-style: italic; }
+  .locations-header p { color: var(--text-light); margin-top: 16px; font-size: 0.95rem; max-width: 500px; margin-left: auto; margin-right: auto; }
+  .locations-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 2px; max-width: 1100px; margin: 0 auto; background: var(--stone);
+  }
+  .loc-card {
+    background: var(--cream);
+    padding: 40px 32px;
+    transition: background 0.3s, transform 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .loc-card::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+    height: 3px; background: var(--terra);
+    transform: scaleX(0); transition: transform 0.4s; transform-origin: left;
+  }
+  .loc-card:hover::after { transform: scaleX(1); }
+  .loc-card:hover { background: var(--terra-pale); }
+  .loc-num {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 2.5rem; font-weight: 700;
+    color: rgba(193,122,74,0.12); margin-bottom: 16px; line-height: 1;
+  }
+  .loc-name {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1.2rem; font-weight: 700; color: var(--dark); margin-bottom: 8px;
+  }
+  .loc-hours { font-size: 0.8rem; color: var(--text-light); margin-bottom: 8px; }
+  .loc-phone { font-size: 0.82rem; color: var(--terra); font-weight: 500; }
+
+  /* MENU PREVIEW */
+  .menu-preview {
+    padding: 120px 60px;
+    background: var(--dark);
+    color: var(--cream);
+  }
+  .menu-preview-header { margin-bottom: 72px; }
+  .menu-preview-header h2 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 700;
+  }
+  .menu-preview-header h2 em { color: var(--terra); font-style: italic; }
+  .menu-preview-header p { color: rgba(253,250,245,0.5); margin-top: 16px; font-size: 0.95rem; }
+  .menu-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+  }
+  .menu-item { border-top: 1px solid rgba(193,122,74,0.2); padding-top: 24px; }
+  .menu-item-cat { font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: var(--terra); margin-bottom: 12px; }
+  .menu-item-name { font-family: 'Libre Baskerville', serif; font-size: 1.2rem; color: var(--cream); margin-bottom: 8px; }
+  .menu-item-desc { font-size: 0.82rem; color: rgba(253,250,245,0.45); line-height: 1.6; }
+
+  /* CTA */
+  .cta-section {
+    background: linear-gradient(135deg, var(--terra-pale) 0%, var(--stone) 100%);
+    padding: 120px 60px; text-align: center;
+  }
+  .cta-section h2 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 700; color: var(--dark); margin-bottom: 20px;
+  }
+  .cta-section h2 em { color: var(--terra); font-style: italic; }
+  .cta-section p { color: var(--text-light); font-size: 1rem; max-width: 460px; margin: 0 auto 40px; }
+  .cta-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+  /* FOOTER */
+  footer {
+    background: var(--dark);
+    border-top: 1px solid rgba(193,122,74,0.1);
+    padding: 48px 60px;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;
+  }
+  .footer-logo {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1.2rem; font-weight: 700; color: var(--cream);
+  }
+  .footer-logo span { color: var(--terra); }
+  .footer-info { font-size: 0.78rem; color: rgba(253,250,245,0.35); }
+  .footer-credit { font-size: 0.7rem; color: rgba(253,250,245,0.3); letter-spacing: 1px; }
+  .footer-credit span { color: var(--terra); }
+
+  @media (max-width: 900px) {
+    nav { padding: 20px 24px; }
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 1fr; }
+    .hero-right { min-height: 350px; }
+    .hero-left { padding: 120px 24px 60px; }
+    .story, .locations-section { padding: 80px 24px; }
+    .story { grid-template-columns: 1fr; gap: 48px; }
+    .locations-grid { grid-template-columns: 1fr 1fr; }
+    .menu-preview { padding: 80px 24px; }
+    .menu-grid { grid-template-columns: 1fr 1fr; gap: 24px; }
+    .cta-section { padding: 80px 24px; }
+    footer { flex-direction: column; text-align: center; padding: 40px 24px; }
+    .stats { gap: 32px; padding: 40px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Lynwood <span>&</span> Co</div>
+  <ul class="nav-links">
+    <li><a href="#story">Our Story</a></li>
+    <li><a href="#locations">Locations</a></li>
+    <li><a href="#menu">Menu</a></li>
+  </ul>
+  <a href="#locations" class="nav-locations">Find a Cafe</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">Australian Coffee Culture · Cotswolds</div>
+    <h1>Good coffee.<br><em>Honest food.</em><br>Since 2015.</h1>
+    <div class="hero-divider"></div>
+    <p class="hero-sub">Bringing the down-to-earth, family-oriented coffee culture of Sydney to the heart of the Cotswolds. Nine locations, one simple promise — great coffee and food, done properly.</p>
+    <div class="hero-actions">
+      <a href="#locations" class="btn-terra">Find Your Local</a>
+      <a href="#menu" class="btn-sage">See the Menu</a>
+    </div>
+    <div class="hero-locations">
+      <div class="location-pill">Moreton-in-Marsh</div>
+      <div class="location-pill">Northleach</div>
+      <div class="location-pill">Witney</div>
+      <div class="location-pill">Cirencester</div>
+      <div class="location-pill">Fairford</div>
+      <div class="location-pill">Lechlade</div>
+      <div class="location-pill">Bampton</div>
+      <div class="location-pill">Burford</div>
+      <div class="location-pill">Carterton</div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-right-pattern"></div>
+    <div class="hero-right-text">LYNWOOD</div>
+    <div class="hero-right-icon">☕</div>
+  </div>
+</section>
+
+<div class="stats">
+  <div class="stat-item">
+    <div class="stat-num">9</div>
+    <div class="stat-label">Cotswold Locations</div>
+  </div>
+  <div class="stat-div"></div>
+  <div class="stat-item">
+    <div class="stat-num">10+</div>
+    <div class="stat-label">Years Serving</div>
+  </div>
+  <div class="stat-div"></div>
+  <div class="stat-item">
+    <div class="stat-num">20+</div>
+    <div class="stat-label">Years Family Heritage</div>
+  </div>
+  <div class="stat-div"></div>
+  <div class="stat-item">
+    <div class="stat-num">SYD</div>
+    <div class="stat-label">Australian Roots</div>
+  </div>
+</div>
+
+<section class="story" id="story">
+  <div class="story-visual">
+    <div class="story-card-main">
+      <div class="story-card-quote">We believe in good coffee, good food, and the kind of place that feels like home the moment you walk in.</div>
+      <div class="story-card-attr">The Lynwood & Co Story</div>
+      <div class="story-card-accent">🌿</div>
+    </div>
+  </div>
+  <div class="story-content">
+    <p class="section-label">Who We Are</p>
+    <h2>A piece of <em>Sydney</em><br>in the Cotswolds.</h2>
+    <p>The Lynwood & Co name has been synonymous with quality for over 20 years — originally built on Australian artisan preserves and chutneys, and now carrying that same spirit into our nine cafes across the Cotswolds.</p>
+    <p>Since 2015, we've been serving properly made coffee, honest seasonal food, and the kind of warm hospitality that Australia does better than anywhere else. No pretension. Just quality.</p>
+    <p>We also offer wholesale coffee and products for local businesses that share our standards.</p>
+    <div class="story-tags">
+      <div class="story-tag">Artisan Coffee</div>
+      <div class="story-tag">Seasonal Food</div>
+      <div class="story-tag">Wholesale</div>
+      <div class="story-tag">Gift Cards</div>
+    </div>
+  </div>
+</section>
+
+<section class="locations-section" id="locations">
+  <div class="locations-header">
+    <p class="section-label" style="justify-content:center">Where to Find Us</p>
+    <h2>Nine cafes across the <em>Cotswolds</em></h2>
+    <p>From Moreton-in-Marsh to Carterton, there's a Lynwood & Co near you. Each location has its own character, all sharing the same commitment to quality.</p>
+  </div>
+  <div class="locations-grid">
+    <div class="loc-card">
+      <div class="loc-num">01</div>
+      <div class="loc-name">Moreton-in-Marsh</div>
+      <div class="loc-hours">Mon–Sat 7:30–4 · Sun 8–4</div>
+      <div class="loc-phone">01608 544788</div>
+    </div>
+    <div class="loc-card">
+      <div class="loc-num">02</div>
+      <div class="loc-name">Northleach</div>
+      <div class="loc-hours">Mon–Sat 8–4 · Sun 8–3</div>
+      <div class="loc-phone">01451 544555</div>
+    </div>
+    <div class="loc-card">
+      <div class="loc-num">03</div>
+      <div class="loc-name">Witney</div>
+      <div class="loc-hours">Mon–Sat 8–5 · Sun 8–4</div>
+      <div class="loc-phone">01993 771210</div>
+    </div>
+    <div class="loc-card">
+      <div class="loc-num">04</div>
+      <div class="loc-name">Cirencester</div>
+      <div class="loc-hours">Mon–Sun 7–5</div>
+      <div class="loc-phone">01285 420444</div>
+    </div>
+    <div class="loc-card">
+      <div class="loc-num">05</div>
+      <div class="loc-name">Fairford</div>
+      <div class="loc-hours">Mon–Sat 8–4 · Sun 8–2</div>
+      <div class="loc-phone">01285 711117</div>
+    </div>
+    <div class="loc-card">
+      <div class="loc-num">06</div>
+      <div class="loc-name">Lechlade</div>
+      <div class="loc-hours">Mon–Sat 8–4 · Sun 8–3</div>
+      <div class="loc-phone">01367 253707</div>
+    </div>
+    <div class="loc-card">
+      <div class="loc-num">07</div>
+      <div class="loc-name">Bampton</div>
+      <div class="loc-hours">Mon–Sun 8–4</div>
+      <div class="loc-phone">01993 680900</div>
+    </div>
+    <div class="loc-card">
+      <div class="loc-num">08</div>
+      <div class="loc-name">Burford</div>
+      <div class="loc-hours">Mon–Sun 8–4</div>
+      <div class="loc-phone">01993 822543</div>
+    </div>
+    <div class="loc-card">
+      <div class="loc-num">09</div>
+      <div class="loc-name">Carterton</div>
+      <div class="loc-hours">Mon–Sat 8–4</div>
+      <div class="loc-phone">01993 844442</div>
+    </div>
+  </div>
+</section>
+
+<section class="menu-preview" id="menu">
+  <div class="menu-preview-header">
+    <p class="section-label" style="color:var(--terra)">What We Serve</p>
+    <h2>Simple. <em>Seasonal.</em> Satisfying.</h2>
+    <p>Honest food made with good ingredients. Our menu changes with the seasons — always fresh, never complicated.</p>
+  </div>
+  <div class="menu-grid">
+    <div class="menu-item">
+      <div class="menu-item-cat">Coffee</div>
+      <div class="menu-item-name">Flat White</div>
+      <div class="menu-item-desc">Australian-style double ristretto with perfectly textured milk. Our signature.</div>
+    </div>
+    <div class="menu-item">
+      <div class="menu-item-cat">Breakfast</div>
+      <div class="menu-item-name">Smashed Avo</div>
+      <div class="menu-item-desc">Sourdough, avocado, poached eggs, chilli flakes, lemon. A Lynwood classic.</div>
+    </div>
+    <div class="menu-item">
+      <div class="menu-item-cat">Lunch</div>
+      <div class="menu-item-name">Seasonal Bowls</div>
+      <div class="menu-item-desc">Fresh, seasonal ingredients put together simply and served with care. Changes weekly.</div>
+    </div>
+    <div class="menu-item">
+      <div class="menu-item-cat">Treats</div>
+      <div class="menu-item-name">Baked Goods</div>
+      <div class="menu-item-desc">Cakes, slices, and pastries made daily. The kind that disappear fast.</div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <p class="section-label" style="justify-content:center;color:var(--terra)">Come In</p>
+  <h2>Your local <em>Lynwood & Co</em></h2>
+  <p>Nine locations across the Cotswolds. Find the one nearest you and come see what all the fuss is about.</p>
+  <div class="cta-actions">
+    <a href="#locations" class="btn-terra">Find Your Location</a>
+    <a href="mailto:contact@lynwoodandco.com" class="btn-sage">Get in Touch</a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">Lynwood <span>&</span> Co</div>
+  <div class="footer-info">Nine locations across the Cotswolds · contact@lynwoodandco.com</div>
+  <div class="footer-credit">Website concept by <span>WDG Videography</span></div>
+</footer>
+
+</body>
+</html>
