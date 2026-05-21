@@ -786,9 +786,9 @@
       <div class="profile-section-header" onclick="toggleProfileRequests()" style="cursor:pointer;user-select:none">
         <span class="profile-section-icon" id="profile-req-icon">📋</span>
         <span class="profile-section-title" id="profile-req-title">Request History</span>
-        <span style="margin-left:auto;font-size:0.8rem;color:var(--grey)" id="profile-req-chevron">▼</span>
+        <span style="margin-left:auto;font-size:0.8rem;color:var(--grey)" id="profile-req-chevron">▲</span>
       </div>
-      <div id="profile-requests-body" style="display:none">
+      <div id="profile-requests-body" style="display:block">
         <div class="req-history-tab-row" id="profile-req-tab-row">
           <!-- tabs injected by JS per role -->
         </div>
@@ -1925,6 +1925,14 @@ Choose:
       accessSection.style.display = 'none';
     }
 
+    // Auto-load request history
+    profileReqOpen = true;
+    const reqBody = document.getElementById('profile-requests-body');
+    const chevron = document.getElementById('profile-req-chevron');
+    if (reqBody) reqBody.style.display = 'block';
+    if (chevron) chevron.textContent = '▲';
+    loadProfileRequests(profileUser.id, profileUser.role);
+
     showView('profile');
   }
 
@@ -2103,7 +2111,7 @@ Choose:
   // ===== PROFILE REQUEST HISTORY =====
   let profileReqData = [];
   let profileReqTab = 'pending'; // 'pending' or 'past'
-  let profileReqOpen = false;
+  let profileReqOpen = true;
 
   async function loadProfileRequests(userId, role) {
     const listEl = document.getElementById('profile-req-list');
