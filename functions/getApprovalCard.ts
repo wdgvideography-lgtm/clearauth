@@ -15,7 +15,31 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Not found' }, { status: 404 });
     }
 
-    return Response.json({ record: records[0] });
+    const record = records[0];
+
+    // Enrich with profile photos from ClearAuthUser
+    try {
+      const allUsers = await base44.asServiceRole.entities.ClearAuthUser.list();
+
+      if (record.driver_user_id) {
+        const emp = allUsers.find((u: any) => u.id === record.driver_user_id);
+        if (emp) {
+          record.employee_photo = emp.photo_url || '';
+        }
+      }
+
+      if (record.approver_user_id) {
+        const app = allUsers.find((u: any) => u.id === record.approver_user_id);
+        if (app) {
+          record.approver_photo = app.photo_url || '';
+          if (!record.approver_role && app.department) record.approver_role = app.department;
+        }
+      }
+    } catch (_) {
+      // If enrichment fails, still return the record
+    }
+
+    return Response.json({ record });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
