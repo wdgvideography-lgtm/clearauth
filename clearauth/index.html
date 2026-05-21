@@ -6,148 +6,87 @@
 <title>ClearAuth — Instant Ops Authorisation</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --blue: #2563EB;
-    --blue-dark: #1D4ED8;
-    --blue-light: #EFF6FF;
-    --green: #16A34A;
-    --green-light: #DCFCE7;
-    --red: #DC2626;
-    --red-light: #FEE2E2;
-    --amber: #D97706;
-    --amber-light: #FEF3C7;
-    --dark: #0F172A;
-    --dark2: #1E293B;
-    --grey: #64748B;
-    --grey-light: #F1F5F9;
-    --border: #E2E8F0;
-    --text: #0F172A;
+    --blue: #2563EB; --blue-dark: #1D4ED8; --blue-light: #EFF6FF;
+    --green: #16A34A; --green-light: #DCFCE7;
+    --red: #DC2626; --red-light: #FEE2E2;
+    --amber: #D97706; --amber-light: #FEF3C7;
+    --dark: #0F172A; --dark2: #1E293B;
+    --grey: #64748B; --grey-light: #F1F5F9;
+    --border: #E2E8F0; --text: #0F172A;
   }
-
   html { scroll-behavior: smooth; }
   body { font-family: 'Inter', sans-serif; background: var(--grey-light); color: var(--text); min-height: 100vh; }
-
   .view { display: none; min-height: 100vh; }
   .view.active { display: flex; flex-direction: column; }
 
-  /* ===== LANDING / AUTH ===== */
-  #view-landing {
+  /* ===== LOGIN SCREEN ===== */
+  #view-login {
     background: var(--dark);
     align-items: center; justify-content: center;
-    padding: 0; min-height: 100vh;
+    padding: 40px 24px;
   }
-  .auth-split {
-    display: flex; width: 100%; min-height: 100vh;
+  .login-card {
+    width: 100%; max-width: 400px;
+    background: white; border-radius: 20px;
+    overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,0.4);
   }
-  .auth-brand {
-    display: none;
-    flex: 1; background: linear-gradient(160deg, #0F172A 0%, #1E3A5F 100%);
-    padding: 60px; flex-direction: column; justify-content: space-between;
-    position: relative; overflow: hidden;
+  .login-header {
+    background: linear-gradient(135deg, #0F172A, #1E3A5F);
+    padding: 32px 32px 28px; text-align: center;
   }
-  .auth-brand::before {
-    content: 'CA'; position: absolute; bottom: -40px; right: -40px;
-    font-size: 20rem; font-weight: 900; color: rgba(37,99,235,0.06);
-    letter-spacing: -10px; line-height: 1;
+  .login-logo { font-size: 2rem; font-weight: 900; color: white; letter-spacing: -1px; margin-bottom: 4px; }
+  .login-logo span { color: var(--blue); }
+  .login-tagline { font-size: 0.75rem; color: #64748B; letter-spacing: 2px; text-transform: uppercase; }
+  .login-body { padding: 32px; }
+  .login-title { font-size: 1.2rem; font-weight: 800; color: var(--dark); margin-bottom: 4px; }
+  .login-sub { font-size: 0.83rem; color: var(--grey); margin-bottom: 24px; }
+  .field-group { margin-bottom: 16px; }
+  .field-group label { display: block; font-size: 0.78rem; font-weight: 700; color: var(--dark2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .field-input {
+    width: 100%; padding: 14px 16px;
+    border: 1.5px solid var(--border); border-radius: 10px;
+    font-size: 0.95rem; font-family: 'Inter', sans-serif;
+    color: var(--text); transition: border-color 0.2s;
   }
-  .brand-logo { font-size: 2rem; font-weight: 900; color: white; letter-spacing: -1px; }
-  .brand-logo span { color: var(--blue); }
-  .brand-tagline { font-size: 2.2rem; font-weight: 800; color: white; line-height: 1.2; margin-bottom: 16px; }
-  .brand-tagline em { color: #60A5FA; font-style: normal; }
-  .brand-sub { color: #64748B; font-size: 1rem; line-height: 1.7; max-width: 360px; }
-  .brand-features { display: flex; flex-direction: column; gap: 14px; }
-  .brand-feature { display: flex; align-items: center; gap: 12px; color: #94A3B8; font-size: 0.88rem; }
-  .brand-feature-icon { width: 32px; height: 32px; background: rgba(37,99,235,0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .auth-panel {
-    flex: 1; background: white; display: flex; align-items: center; justify-content: center;
-    padding: 40px 24px; min-height: 100vh;
+  .field-input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+  .field-input::placeholder { color: #CBD5E1; }
+  .login-error {
+    background: var(--red-light); color: var(--red);
+    border-radius: 8px; padding: 10px 14px;
+    font-size: 0.82rem; font-weight: 600;
+    margin-bottom: 16px; display: none;
   }
-  .auth-box { width: 100%; max-width: 400px; }
-  .auth-mobile-logo { font-size: 1.8rem; font-weight: 900; color: var(--dark); letter-spacing: -1px; margin-bottom: 8px; }
-  .auth-mobile-logo span { color: var(--blue); }
-  .auth-title { font-size: 1.5rem; font-weight: 800; color: var(--dark); margin-bottom: 6px; }
-  .auth-sub { font-size: 0.88rem; color: var(--grey); margin-bottom: 32px; line-height: 1.5; }
-  .auth-tabs { display: flex; background: var(--grey-light); border-radius: 10px; padding: 4px; margin-bottom: 28px; }
-  .auth-tab {
-    flex: 1; padding: 10px; border-radius: 8px; border: none;
-    font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.2s;
-    background: transparent; color: var(--grey);
-  }
-  .auth-tab.active { background: white; color: var(--dark); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
-  .auth-form { display: flex; flex-direction: column; gap: 14px; }
-  .auth-input-group { display: flex; flex-direction: column; gap: 6px; }
-  .auth-input-group label { font-size: 0.8rem; font-weight: 600; color: var(--dark2); }
-  .auth-input {
-    padding: 14px 16px; border: 1.5px solid var(--border); border-radius: 10px;
-    font-size: 0.95rem; font-family: 'Inter', sans-serif; color: var(--text);
-    transition: border-color 0.2s; width: 100%;
-  }
-  .auth-input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
-  .auth-input::placeholder { color: #CBD5E1; }
-  .role-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .role-option {
-    padding: 14px 12px; border-radius: 10px; border: 2px solid var(--border);
-    background: white; cursor: pointer; text-align: center; transition: all 0.2s;
-  }
-  .role-option.active { border-color: var(--blue); background: var(--blue-light); }
-  .role-option.active.approver-role { border-color: var(--green); background: var(--green-light); }
-  .role-icon { font-size: 1.4rem; margin-bottom: 6px; display: block; }
-  .role-label { font-size: 0.8rem; font-weight: 700; color: var(--dark); }
-  .role-desc { font-size: 0.7rem; color: var(--grey); margin-top: 2px; }
-  .btn-auth {
+  .login-error.show { display: block; }
+  .btn-login-submit {
     width: 100%; padding: 16px; background: var(--blue); color: white;
     border: none; border-radius: 12px; font-size: 1rem; font-weight: 700;
-    cursor: pointer; transition: background 0.2s; margin-top: 4px;
+    cursor: pointer; transition: background 0.2s;
   }
-  .btn-auth:hover { background: var(--blue-dark); }
-  .btn-auth:disabled { background: #94A3B8; cursor: not-allowed; }
-  .auth-divider { display: flex; align-items: center; gap: 12px; color: var(--grey); font-size: 0.8rem; }
-  .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-  .auth-error { background: var(--red-light); color: var(--red); border-radius: 8px; padding: 10px 14px; font-size: 0.82rem; font-weight: 600; display: none; }
-  .auth-error.show { display: block; }
-  .auth-switch { text-align: center; font-size: 0.83rem; color: var(--grey); margin-top: 20px; }
-  .auth-switch a { color: var(--blue); font-weight: 700; cursor: pointer; text-decoration: none; }
-  .auth-switch a:hover { text-decoration: underline; }
-  .btn-primary {
-    background: var(--blue); color: white; border: none;
-    padding: 18px 32px; font-size: 1rem; font-weight: 700;
-    border-radius: 12px; cursor: pointer; transition: all 0.2s; width: 100%;
-  }
-  .btn-primary:hover { background: var(--blue-dark); transform: translateY(-1px); }
-  .btn-secondary {
-    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
-    color: white; padding: 18px 32px; font-size: 1rem; font-weight: 600;
-    border-radius: 12px; cursor: pointer; transition: all 0.2s; width: 100%;
-  }
-  .btn-secondary:hover { background: rgba(255,255,255,0.1); }
-  @media (min-width: 900px) {
-    .auth-brand { display: flex; }
-    .auth-panel { min-height: 100vh; }
-    .auth-mobile-logo { display: none; }
-  }
+  .btn-login-submit:hover { background: var(--blue-dark); }
+  .login-footer-note { text-align: center; font-size: 0.75rem; color: #94A3B8; margin-top: 20px; }
 
   /* ===== SHARED HEADER ===== */
   .app-header {
     background: white; border-bottom: 1px solid var(--border);
-    padding: 16px 20px; display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px; display: flex; align-items: center; justify-content: space-between;
     position: sticky; top: 0; z-index: 50;
   }
-  .app-logo { font-size: 1.3rem; font-weight: 900; color: var(--dark); letter-spacing: -1px; }
+  .app-logo { font-size: 1.2rem; font-weight: 900; color: var(--dark); letter-spacing: -1px; }
   .app-logo span { color: var(--blue); }
-  .header-badge { font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; }
+  .header-right { display: flex; align-items: center; gap: 10px; }
+  .header-user { font-size: 0.78rem; font-weight: 600; color: var(--grey); }
+  .header-badge { font-size: 0.62rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; }
   .badge-driver { background: #DBEAFE; color: #1D4ED8; }
   .badge-approver { background: #D1FAE5; color: #065F46; }
-  .header-right { display: flex; align-items: center; gap: 10px; }
-  .btn-logout { background: none; border: 1px solid var(--border); color: var(--grey); padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
+  .btn-logout { background: none; border: 1px solid var(--border); color: var(--grey); padding: 6px 12px; border-radius: 8px; font-size: 0.72rem; font-weight: 600; cursor: pointer; }
   .btn-logout:hover { border-color: var(--red); color: var(--red); }
 
   /* ===== DRIVER FORM ===== */
   #view-driver { background: var(--grey-light); }
   .form-body { flex: 1; padding: 24px 20px 100px; max-width: 600px; margin: 0 auto; width: 100%; }
-  .section-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--grey); margin-bottom: 12px; margin-top: 24px; }
+  .section-title { font-size: 0.68rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--grey); margin-bottom: 12px; margin-top: 24px; }
   .section-title:first-child { margin-top: 0; }
   .form-group { margin-bottom: 14px; }
   .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--dark2); margin-bottom: 6px; }
@@ -171,7 +110,7 @@
   .urgency-btn.active.urgent { border-color: var(--amber); background: var(--amber-light); color: var(--amber); }
   .urgency-btn.active.critical { border-color: var(--red); background: var(--red-light); color: var(--red); }
   .urgency-icon { font-size: 1.2rem; display: block; margin-bottom: 4px; }
-  .form-footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--border); padding: 16px 20px; }
+  .form-footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--border); padding: 16px 20px; z-index: 40; }
   .btn-submit {
     width: 100%; max-width: 600px; margin: 0 auto; display: block;
     background: var(--blue); color: white; border: none; padding: 18px;
@@ -180,7 +119,7 @@
   .btn-submit:hover { background: var(--blue-dark); }
   .btn-submit:disabled { background: #94A3B8; cursor: not-allowed; }
 
-  /* ===== PENDING VIEW ===== */
+  /* ===== PENDING ===== */
   #view-pending { background: var(--dark); align-items: center; justify-content: center; padding: 40px 24px; text-align: center; }
   .pending-pulse {
     width: 100px; height: 100px; border-radius: 50%;
@@ -210,69 +149,49 @@
   .card-status-bar { padding: 28px 28px 24px; display: flex; flex-direction: column; align-items: center; text-align: center; }
   .card-status-bar.approved { background: linear-gradient(135deg, #14532D, #16A34A); }
   .card-status-bar.denied { background: linear-gradient(135deg, #7F1D1D, #DC2626); }
-  .card-status-bar.pending { background: linear-gradient(135deg, #1E3A5F, #2563EB); }
   .card-status-icon { font-size: 3.5rem; margin-bottom: 12px; }
   .card-status-word { font-size: 2.2rem; font-weight: 900; color: white; letter-spacing: -1px; text-transform: uppercase; margin-bottom: 4px; }
   .card-status-sub { font-size: 0.8rem; color: rgba(255,255,255,0.65); }
   .card-body { background: white; padding: 24px; }
   .card-type-badge { display: inline-block; background: var(--blue-light); color: var(--blue); font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 5px 12px; border-radius: 6px; margin-bottom: 20px; }
-  .card-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--border); }
-  .card-row:last-of-type { border-bottom: none; }
-  .card-row-label { font-size: 0.72rem; font-weight: 600; color: var(--grey); text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; margin-right: 12px; }
-  .card-row-value { font-size: 0.88rem; font-weight: 600; color: var(--dark); text-align: right; }
   .card-identities { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); margin: 0 -24px; margin-top: 16px; }
   .identity-block { background: white; padding: 14px; }
   .identity-role { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--grey); margin-bottom: 4px; }
   .identity-name { font-size: 0.85rem; font-weight: 700; color: var(--dark); }
   .identity-company { font-size: 0.75rem; color: var(--grey); }
+  .card-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .card-row:last-of-type { border-bottom: none; }
+  .card-row-label { font-size: 0.72rem; font-weight: 600; color: var(--grey); text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; margin-right: 12px; }
+  .card-row-value { font-size: 0.88rem; font-weight: 600; color: var(--dark); text-align: right; }
   .card-qr-section { background: var(--grey-light); margin: 0 -24px; padding: 20px 24px; display: flex; align-items: center; gap: 16px; }
   .qr-placeholder { width: 64px; height: 64px; background: white; border-radius: 8px; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
-  .qr-info { flex: 1; }
-  .qr-label { font-size: 0.7rem; font-weight: 700; color: var(--grey); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-  .qr-value { font-size: 0.75rem; color: var(--dark2); font-family: monospace; word-break: break-all; }
+  .qr-info .qr-label { font-size: 0.7rem; font-weight: 700; color: var(--grey); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .qr-info .qr-value { font-size: 0.75rem; color: var(--dark2); font-family: monospace; word-break: break-all; }
   .card-expiry { background: var(--amber-light); margin: 16px -24px -24px; padding: 14px 24px; display: flex; align-items: center; gap: 10px; font-size: 0.8rem; color: var(--amber); font-weight: 600; }
   .card-expiry.expired { background: var(--red-light); color: var(--red); }
   .denial-reason-box { background: var(--red-light); border-radius: 10px; padding: 14px 16px; margin-top: 16px; }
   .denial-label { font-size: 0.7rem; font-weight: 700; color: var(--red); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
   .denial-text { font-size: 0.88rem; color: #7F1D1D; }
-
-  /* PIN login removed — replaced by account system */
+  .btn-new-request { width: 100%; padding: 16px; background: var(--blue); color: white; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; margin-bottom: 40px; }
 
   /* ===== APPROVER DASHBOARD ===== */
-  #view-approver-dashboard { background: var(--grey-light); }
+  #view-approver { background: var(--grey-light); }
   .dashboard-body { flex: 1; padding: 20px; max-width: 700px; margin: 0 auto; width: 100%; }
+  .dashboard-header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .dashboard-heading { font-size: 1.1rem; font-weight: 800; color: var(--dark); }
+  .refresh-btn { background: none; border: 1px solid var(--border); color: var(--grey); padding: 6px 14px; border-radius: 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
+  .refresh-btn:hover { background: var(--grey-light); }
   .dashboard-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
-  .tab-btn {
-    padding: 8px 18px; border-radius: 8px; border: none;
-    font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.2s;
-    background: white; color: var(--grey); border: 1px solid var(--border);
-  }
+  .tab-btn { padding: 8px 18px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.2s; background: white; color: var(--grey); border: 1px solid var(--border); }
   .tab-btn.active { background: var(--blue); color: white; border-color: var(--blue); }
-  .tab-count {
-    display: inline-block; background: var(--red); color: white;
-    border-radius: 100px; font-size: 0.65rem; font-weight: 800;
-    padding: 1px 7px; margin-left: 6px; vertical-align: middle;
-  }
+  .tab-count { display: inline-block; background: var(--red); color: white; border-radius: 100px; font-size: 0.65rem; font-weight: 800; padding: 1px 7px; margin-left: 6px; vertical-align: middle; }
   .tab-count.zero { background: var(--grey); }
-
   .requests-list { display: flex; flex-direction: column; gap: 14px; }
   .empty-state { text-align: center; padding: 60px 24px; color: var(--grey); }
   .empty-icon { font-size: 3rem; margin-bottom: 12px; }
   .empty-title { font-size: 1rem; font-weight: 700; color: var(--dark); margin-bottom: 6px; }
-
-  /* Request card in dashboard */
-  .req-card {
-    background: white; border-radius: 14px;
-    border: 1px solid var(--border);
-    overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    transition: box-shadow 0.2s;
-  }
-  .req-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-  .req-card-header {
-    padding: 16px 18px 12px;
-    display: flex; align-items: flex-start; justify-content: space-between;
-    border-bottom: 1px solid var(--border);
-  }
+  .req-card { background: white; border-radius: 14px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+  .req-card-header { padding: 16px 18px 12px; display: flex; align-items: flex-start; justify-content: space-between; border-bottom: 1px solid var(--border); }
   .req-card-header.critical { border-left: 4px solid var(--red); }
   .req-card-header.urgent { border-left: 4px solid var(--amber); }
   .req-card-header.standard { border-left: 4px solid var(--blue); }
@@ -284,165 +203,75 @@
   .urgency-tag.Critical { background: var(--red-light); color: var(--red); }
   .req-card-body { padding: 14px 18px; }
   .req-details-row { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 10px; }
-  .req-detail { font-size: 0.82rem; }
   .req-detail-label { color: var(--grey); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-  .req-detail-value { color: var(--dark); font-weight: 600; margin-top: 2px; }
+  .req-detail-value { color: var(--dark); font-weight: 600; font-size: 0.82rem; margin-top: 2px; }
   .req-notes { background: var(--grey-light); border-radius: 8px; padding: 10px 12px; font-size: 0.82rem; color: var(--dark2); line-height: 1.5; margin-bottom: 12px; }
   .req-card-actions { display: flex; gap: 10px; padding: 12px 18px; border-top: 1px solid var(--border); background: var(--grey-light); }
-  .btn-approve-sm {
-    flex: 1; padding: 12px; background: var(--green); color: white;
-    border: none; border-radius: 10px; font-size: 0.88rem; font-weight: 700;
-    cursor: pointer; transition: background 0.2s;
-  }
+  .btn-approve-sm { flex: 1; padding: 12px; background: var(--green); color: white; border: none; border-radius: 10px; font-size: 0.88rem; font-weight: 700; cursor: pointer; }
   .btn-approve-sm:hover { background: #15803D; }
-  .btn-deny-sm {
-    flex: 1; padding: 12px; background: white; color: var(--red);
-    border: 2px solid var(--red); border-radius: 10px; font-size: 0.88rem; font-weight: 700;
-    cursor: pointer; transition: all 0.2s;
-  }
+  .btn-deny-sm { flex: 1; padding: 12px; background: white; color: var(--red); border: 2px solid var(--red); border-radius: 10px; font-size: 0.88rem; font-weight: 700; cursor: pointer; }
   .btn-deny-sm:hover { background: var(--red-light); }
-
-  /* Deny modal */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.7); z-index: 200;
-    align-items: flex-end; justify-content: center;
-  }
-  .modal-overlay.open { display: flex; }
-  .modal-box {
-    background: white; border-radius: 20px 20px 0 0;
-    padding: 28px 24px 40px; width: 100%; max-width: 600px;
-  }
-  .modal-title { font-size: 1.1rem; font-weight: 800; color: var(--dark); margin-bottom: 16px; }
-  .modal-box textarea {
-    width: 100%; padding: 14px; border: 2px solid var(--border);
-    border-radius: 10px; font-size: 0.9rem; font-family: 'Inter', sans-serif;
-    resize: vertical; min-height: 80px; margin-bottom: 12px;
-  }
-  .modal-box textarea:focus { outline: none; border-color: var(--red); }
-  .modal-actions { display: flex; gap: 10px; }
-  .btn-confirm-deny {
-    flex: 1; padding: 14px; background: var(--red); color: white;
-    border: none; border-radius: 10px; font-size: 0.9rem; font-weight: 700; cursor: pointer;
-  }
-  .btn-cancel { flex: 1; padding: 14px; background: var(--grey-light); color: var(--dark); border: none; border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
-
-  /* Status badges on done requests */
   .done-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px; font-size: 0.82rem; font-weight: 700; }
   .done-badge.approved { background: var(--green-light); color: var(--green); }
   .done-badge.denied { background: var(--red-light); color: var(--red); }
 
-  /* ===== SHARED UTILITIES ===== */
+  /* ===== DENY MODAL ===== */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; align-items: flex-end; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal-box { background: white; border-radius: 20px 20px 0 0; padding: 28px 24px 40px; width: 100%; max-width: 600px; }
+  .modal-title { font-size: 1.1rem; font-weight: 800; color: var(--dark); margin-bottom: 16px; }
+  .modal-box textarea { width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 10px; font-size: 0.9rem; font-family: 'Inter', sans-serif; resize: vertical; min-height: 80px; margin-bottom: 12px; }
+  .modal-box textarea:focus { outline: none; border-color: var(--red); }
+  .modal-actions { display: flex; gap: 10px; }
+  .btn-confirm-deny { flex: 1; padding: 14px; background: var(--red); color: white; border: none; border-radius: 10px; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
+  .btn-cancel { flex: 1; padding: 14px; background: var(--grey-light); color: var(--dark); border: none; border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+
+  /* ===== UTILS ===== */
   .spinner { width: 40px; height: 40px; border: 3px solid rgba(37,99,235,0.2); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 60px auto; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--dark); color: white; padding: 12px 20px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; opacity: 0; transition: opacity 0.3s; z-index: 300; white-space: nowrap; }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--dark); color: white; padding: 12px 20px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; opacity: 0; transition: opacity 0.3s; z-index: 300; white-space: nowrap; pointer-events: none; }
   .toast.show { opacity: 1; }
-  .refresh-btn { background: none; border: 1px solid var(--border); color: var(--grey); padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
-  .refresh-btn:hover { background: var(--grey-light); }
 </style>
 </head>
 <body>
 
-<!-- LANDING / AUTH -->
-<div id="view-landing" class="view active">
-  <div class="auth-split">
-    <!-- Brand panel (desktop only) -->
-    <div class="auth-brand">
-      <div class="brand-logo">Clear<span>Auth</span></div>
-      <div>
-        <div class="brand-tagline">No calls.<br>No waiting.<br><em>Just authorised.</em></div>
-        <div class="brand-sub">Instant, secure, traceable approvals for transport and logistics operations.</div>
+<!-- ===== LOGIN ===== -->
+<div id="view-login" class="view active">
+  <div style="margin:auto;width:100%;max-width:420px;padding:20px">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-logo">Clear<span>Auth</span></div>
+        <div class="login-tagline">Instant Ops Authorisation</div>
       </div>
-      <div class="brand-features">
-        <div class="brand-feature"><div class="brand-feature-icon">⚡</div>Instant request delivery</div>
-        <div class="brand-feature"><div class="brand-feature-icon">🔐</div>Secure QR-verified approval cards</div>
-        <div class="brand-feature"><div class="brand-feature-icon">⏱️</div>Timestamped & auto-expiring</div>
-        <div class="brand-feature"><div class="brand-feature-icon">📋</div>Full audit trail — no paper needed</div>
-      </div>
-    </div>
+      <div class="login-body">
+        <div class="login-title">Sign in</div>
+        <div class="login-sub">Enter your credentials provided by your company.</div>
 
-    <!-- Auth panel -->
-    <div class="auth-panel">
-      <div class="auth-box">
-        <div class="auth-mobile-logo">Clear<span>Auth</span></div>
+        <div class="login-error" id="login-error"></div>
 
-        <!-- Tabs -->
-        <div class="auth-tabs">
-          <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Sign In</button>
-          <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Create Account</button>
+        <div class="field-group">
+          <label>Username</label>
+          <input type="text" class="field-input" id="login-username" placeholder="e.g. WDG Driver" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
         </div>
-
-        <!-- Error -->
-        <div class="auth-error" id="auth-error"></div>
-
-        <!-- LOGIN FORM -->
-        <div id="auth-login-form">
-          <div class="auth-title">Welcome back</div>
-          <div class="auth-sub">Sign in to continue to ClearAuth.</div>
-          <div class="auth-form">
-            <div class="auth-input-group">
-              <label>Email address</label>
-              <input type="email" class="auth-input" id="login-email" placeholder="you@company.com" autocomplete="email">
-            </div>
-            <div class="auth-input-group">
-              <label>Password</label>
-              <input type="password" class="auth-input" id="login-password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
-            </div>
-            <button class="btn-auth" onclick="doLogin()" id="btn-login">Sign In</button>
-          </div>
-          <div class="auth-switch">Don't have an account? <a onclick="switchAuthTab('register')">Create one</a></div>
+        <div class="field-group">
+          <label>Password</label>
+          <input type="password" class="field-input" id="login-password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
         </div>
-
-        <!-- REGISTER FORM -->
-        <div id="auth-register-form" style="display:none">
-          <div class="auth-title">Create your account</div>
-          <div class="auth-sub">Join ClearAuth — it takes 30 seconds.</div>
-          <div class="auth-form">
-            <div class="auth-input-group">
-              <label>Full Name</label>
-              <input type="text" class="auth-input" id="reg-name" placeholder="James Williams" autocomplete="name">
-            </div>
-            <div class="auth-input-group">
-              <label>Email address</label>
-              <input type="email" class="auth-input" id="reg-email" placeholder="you@company.com" autocomplete="email">
-            </div>
-            <div class="auth-input-group">
-              <label>Company / Organisation</label>
-              <input type="text" class="auth-input" id="reg-company" placeholder="Russell Transport Ltd">
-            </div>
-            <div class="auth-input-group">
-              <label>Password</label>
-              <input type="password" class="auth-input" id="reg-password" placeholder="Min. 8 characters" autocomplete="new-password">
-            </div>
-            <div class="auth-input-group">
-              <label>I am a...</label>
-              <div class="role-selector">
-                <div class="role-option active" id="role-driver" onclick="selectRole('driver')">
-                  <span class="role-icon">🚛</span>
-                  <div class="role-label">Driver</div>
-                  <div class="role-desc">Submit requests</div>
-                </div>
-                <div class="role-option approver-role" id="role-approver" onclick="selectRole('approver')">
-                  <span class="role-icon">✅</span>
-                  <div class="role-label">Approver</div>
-                  <div class="role-desc">Review & action</div>
-                </div>
-              </div>
-            </div>
-            <button class="btn-auth" onclick="doRegister()" id="btn-register">Create Account →</button>
-          </div>
-          <div class="auth-switch">Already have an account? <a onclick="switchAuthTab('login')">Sign in</a></div>
-        </div>
+        <button class="btn-login-submit" onclick="doLogin()">Sign In →</button>
+        <div class="login-footer-note">Contact your operations manager for login details.</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- DRIVER FORM -->
+<!-- ===== DRIVER VIEW ===== -->
 <div id="view-driver" class="view">
   <div class="app-header">
     <div class="app-logo">Clear<span>Auth</span></div>
-    <div class="header-badge badge-driver">Driver</div>
+    <div class="header-right">
+      <div class="header-badge badge-driver">Driver</div>
+      <button class="btn-logout" onclick="logout()">Sign Out</button>
+    </div>
   </div>
   <div class="form-body">
     <div class="section-title">Request Type</div>
@@ -496,9 +325,9 @@
 
     <div class="section-title">Urgency Level</div>
     <div class="urgency-row">
-      <button class="urgency-btn active standard" onclick="setUrgency('Standard', this)"><span class="urgency-icon">🟢</span>Standard</button>
-      <button class="urgency-btn urgent" onclick="setUrgency('Urgent', this)"><span class="urgency-icon">🟡</span>Urgent</button>
-      <button class="urgency-btn critical" onclick="setUrgency('Critical', this)"><span class="urgency-icon">🔴</span>Critical</button>
+      <button class="urgency-btn active standard" onclick="setUrgency('Standard',this)"><span class="urgency-icon">🟢</span>Standard</button>
+      <button class="urgency-btn urgent" onclick="setUrgency('Urgent',this)"><span class="urgency-icon">🟡</span>Urgent</button>
+      <button class="urgency-btn critical" onclick="setUrgency('Critical',this)"><span class="urgency-icon">🔴</span>Critical</button>
     </div>
 
     <div class="section-title" style="margin-top:24px">Approver Details</div>
@@ -520,7 +349,7 @@
   </div>
 </div>
 
-<!-- PENDING -->
+<!-- ===== PENDING ===== -->
 <div id="view-pending" class="view">
   <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;background:var(--dark)">
     <div class="pending-pulse">⏳</div>
@@ -537,17 +366,15 @@
   </div>
 </div>
 
-<!-- APPROVAL CARD (driver result) -->
+<!-- ===== APPROVAL CARD ===== -->
 <div id="view-card" class="view" style="background:var(--dark);overflow-y:auto">
-  <div class="card-container" id="approval-card-container" style="padding:24px 20px">
+  <div class="card-container" id="approval-card-container" style="padding:24px 20px 40px">
     <div class="spinner"></div>
   </div>
 </div>
 
-<!-- Approver login replaced by account system -->
-
-<!-- APPROVER DASHBOARD -->
-<div id="view-approver-dashboard" class="view">
+<!-- ===== APPROVER DASHBOARD ===== -->
+<div id="view-approver" class="view">
   <div class="app-header">
     <div class="app-logo">Clear<span>Auth</span></div>
     <div class="header-right">
@@ -556,15 +383,15 @@
     </div>
   </div>
   <div class="dashboard-body">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-      <div style="font-size:1.1rem;font-weight:800;color:var(--dark)">Requests</div>
+    <div class="dashboard-header-row">
+      <div class="dashboard-heading">Requests</div>
       <button class="refresh-btn" onclick="loadDashboard()">↻ Refresh</button>
     </div>
     <div class="dashboard-tabs">
-      <button class="tab-btn active" onclick="switchTab('pending',this)" id="tab-pending">
+      <button class="tab-btn active" id="tab-pending-btn" onclick="switchTab('pending',this)">
         Pending <span class="tab-count" id="count-pending">0</span>
       </button>
-      <button class="tab-btn" onclick="switchTab('all',this)" id="tab-all">All Requests</button>
+      <button class="tab-btn" id="tab-all-btn" onclick="switchTab('all',this)">All Requests</button>
     </div>
     <div id="dashboard-list" class="requests-list">
       <div class="spinner"></div>
@@ -572,7 +399,7 @@
   </div>
 </div>
 
-<!-- DENY MODAL -->
+<!-- ===== DENY MODAL ===== -->
 <div class="modal-overlay" id="deny-modal">
   <div class="modal-box">
     <div class="modal-title">❌ Deny Request</div>
@@ -584,18 +411,23 @@
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
   const API_BASE = 'https://assistant-36b1ac32.base44.app/functions';
-  
 
-  let currentToken = null;
-  let pollingInterval = null;
+  // ===== CREDENTIALS =====
+  // Companies issue these credentials to their staff
+  const ACCOUNTS = [
+    { username: 'WDG Driver', password: '1212', role: 'driver',   company: 'WDG' },
+    { username: 'WDG',        password: '1234', role: 'approver', company: 'WDG' },
+  ];
+
+  let currentUser = null;
   let urgency = 'Standard';
   let currentTab = 'pending';
   let allRequests = [];
+  let pollingInterval = null;
   let denyTargetToken = null;
 
   // ===== NAVIGATION =====
@@ -605,6 +437,68 @@
     window.scrollTo(0, 0);
   }
 
+  // ===== LOGIN =====
+  function doLogin() {
+    const username = document.getElementById('login-username').value.trim();
+    const password = document.getElementById('login-password').value;
+    const errEl = document.getElementById('login-error');
+    errEl.classList.remove('show');
+
+    const match = ACCOUNTS.find(a =>
+      a.username.toLowerCase() === username.toLowerCase() && a.password === password
+    );
+
+    if (!match) {
+      errEl.textContent = 'Incorrect username or password. Contact your operations manager.';
+      errEl.classList.add('show');
+      return;
+    }
+
+    currentUser = match;
+    sessionStorage.setItem('clearauth_user', JSON.stringify(match));
+
+    if (match.role === 'driver') {
+      showView('driver');
+      // Pre-fill company
+      setTimeout(() => {
+        const compEl = document.getElementById('driver-company');
+        if (compEl && !compEl.value) compEl.value = match.company;
+      }, 50);
+    } else {
+      showView('approver');
+      loadDashboard();
+    }
+  }
+
+  function logout() {
+    currentUser = null;
+    sessionStorage.removeItem('clearauth_user');
+    if (pollingInterval) clearInterval(pollingInterval);
+    document.getElementById('login-username').value = '';
+    document.getElementById('login-password').value = '';
+    document.getElementById('login-error').classList.remove('show');
+    showView('login');
+  }
+
+  // Restore session on reload
+  window.addEventListener('DOMContentLoaded', () => {
+    const stored = sessionStorage.getItem('clearauth_user');
+    if (stored) {
+      currentUser = JSON.parse(stored);
+      if (currentUser.role === 'driver') {
+        showView('driver');
+        setTimeout(() => {
+          const compEl = document.getElementById('driver-company');
+          if (compEl && !compEl.value) compEl.value = currentUser.company;
+        }, 50);
+      } else {
+        showView('approver');
+        loadDashboard();
+      }
+    }
+  });
+
+  // ===== DRIVER FORM =====
   function handleTypeChange() {
     const val = document.getElementById('req-type').value;
     document.getElementById('custom-type-group').style.display = val === 'Other' ? 'block' : 'none';
@@ -616,150 +510,15 @@
     btn.classList.add('active');
   }
 
-  // PIN/passcode login replaced by account system
-
-  // ===== DASHBOARD =====
-  async function loadDashboard() {
-    document.getElementById('dashboard-list').innerHTML = '<div class="spinner"></div>';
-    try {
-      const res = await fetch(`${API_BASE}/listApprovalRequests`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) });
-      if (!res.ok) throw new Error('Failed to load');
-      const data = await res.json();
-      allRequests = (data.records || data || []).sort((a, b) => {
-        // Sort: Critical > Urgent > Standard, then newest first
-        const urgencyOrder = { Critical: 0, Urgent: 1, Standard: 2 };
-        if (urgencyOrder[a.urgency] !== urgencyOrder[b.urgency]) return urgencyOrder[a.urgency] - urgencyOrder[b.urgency];
-        return new Date(b.created_date) - new Date(a.created_date);
-      });
-      updatePendingCount();
-      renderList();
-    } catch (err) {
-      document.getElementById('dashboard-list').innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Failed to load</div><div>${err.message}</div></div>`;
-    }
-  }
-
-  function updatePendingCount() {
-    const pending = allRequests.filter(r => r.status === 'Pending').length;
-    const el = document.getElementById('count-pending');
-    el.textContent = pending;
-    el.className = 'tab-count' + (pending === 0 ? ' zero' : '');
-  }
-
-  function switchTab(tab, btn) {
-    currentTab = tab;
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    renderList();
-  }
-
-  function renderList() {
-    const filtered = currentTab === 'pending'
-      ? allRequests.filter(r => r.status === 'Pending')
-      : allRequests;
-
-    if (filtered.length === 0) {
-      document.getElementById('dashboard-list').innerHTML = `
-        <div class="empty-state">
-          <div class="empty-icon">${currentTab === 'pending' ? '✅' : '📋'}</div>
-          <div class="empty-title">${currentTab === 'pending' ? 'No pending requests' : 'No requests yet'}</div>
-          <div style="font-size:0.85rem;color:var(--grey)">${currentTab === 'pending' ? 'All clear — nothing waiting for approval.' : 'Requests will appear here as they come in.'}</div>
-        </div>`;
-      return;
-    }
-
-    document.getElementById('dashboard-list').innerHTML = filtered.map(r => renderRequestCard(r)).join('');
-  }
-
-  function renderRequestCard(r) {
-    const requestLabel = r.request_type === 'Other' ? (r.custom_type || 'Other') : r.request_type;
-    const isPending = r.status === 'Pending';
-    const createdAt = r.created_date ? new Date(r.created_date).toLocaleString('en-GB', {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '—';
-
-    return `
-    <div class="req-card">
-      <div class="req-card-header ${(r.urgency||'standard').toLowerCase()}">
-        <div>
-          <div class="req-type-label">${requestLabel}</div>
-          <div class="req-meta">${r.driver_name || '—'} · ${r.vehicle_reg || 'No reg'} · ${createdAt}</div>
-        </div>
-        <div class="urgency-tag ${r.urgency || 'Standard'}">${r.urgency || 'Standard'}</div>
-      </div>
-      <div class="req-card-body">
-        <div class="req-details-row">
-          <div class="req-detail">
-            <div class="req-detail-label">Company</div>
-            <div class="req-detail-value">${r.driver_company || '—'}</div>
-          </div>
-          <div class="req-detail">
-            <div class="req-detail-label">Site</div>
-            <div class="req-detail-value">${r.site_name || '—'}</div>
-          </div>
-          <div class="req-detail">
-            <div class="req-detail-label">Location</div>
-            <div class="req-detail-value">${r.location || '—'}</div>
-          </div>
-        </div>
-        ${r.details ? `<div class="req-notes">${r.details}</div>` : ''}
-        ${!isPending ? `<div class="done-badge ${r.status.toLowerCase()}">${r.status === 'Approved' ? '✅' : '❌'} ${r.status}${r.denial_reason ? ': ' + r.denial_reason : ''}</div>` : ''}
-      </div>
-      ${isPending ? `
-      <div class="req-card-actions">
-        <button class="btn-approve-sm" onclick="processDecision('${r.approval_token}','Approved')">✅ Approve</button>
-        <button class="btn-deny-sm" onclick="openDenyModal('${r.approval_token}')">❌ Deny</button>
-      </div>` : ''}
-    </div>`;
-  }
-
-  // ===== DENY MODAL =====
-  function openDenyModal(token) {
-    denyTargetToken = token;
-    document.getElementById('deny-reason-text').value = '';
-    document.getElementById('deny-modal').classList.add('open');
-  }
-  function closeDenyModal() {
-    document.getElementById('deny-modal').classList.remove('open');
-    denyTargetToken = null;
-  }
-  function confirmDeny() {
-    const reason = document.getElementById('deny-reason-text').value.trim();
-    closeDenyModal();
-    processDecision(denyTargetToken, 'Denied', reason);
-  }
-
-  // ===== PROCESS DECISION =====
-  async function processDecision(token, action, reason) {
-    try {
-      const res = await fetch(`${API_BASE}/handleApproval`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, action, denial_reason: reason || '' })
-      });
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || 'Failed');
-      }
-      showToast(action === 'Approved' ? '✅ Request approved' : '❌ Request denied');
-      loadDashboard();
-    } catch (err) {
-      showToast('Error: ' + err.message);
-    }
-  }
-
-  // ===== DRIVER SUBMIT =====
   async function submitRequest() {
     const type = document.getElementById('req-type').value;
     const driverName = document.getElementById('driver-name').value.trim();
-
-    if (!type || !driverName) {
-      showToast('Please fill in at least the request type and your name');
-      return;
-    }
+    if (!type || !driverName) { showToast('Please fill in request type and your name'); return; }
 
     const btn = document.getElementById('submit-btn');
-    btn.disabled = true;
-    btn.textContent = 'Sending...';
+    btn.disabled = true; btn.textContent = 'Sending...';
 
-    const token = 'AUTH-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+    const token = 'AUTH-' + Math.random().toString(36).substring(2,10).toUpperCase();
     const expiresAt = new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString();
 
     const payload = {
@@ -771,7 +530,7 @@
       site_name: document.getElementById('site-name').value.trim(),
       location: document.getElementById('location').value.trim(),
       details: document.getElementById('details').value.trim(),
-      urgency: urgency,
+      urgency,
       approver_name: document.getElementById('approver-name').value.trim(),
       approver_role: document.getElementById('approver-role').value.trim(),
       approver_email: document.getElementById('approver-email').value.trim(),
@@ -786,9 +545,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-      if (!res.ok) throw new Error('Failed to create request');
-
-      currentToken = token;
+      if (!res.ok) throw new Error('Failed to submit');
       document.getElementById('pending-ref-id').textContent = token;
       showView('pending');
       startPolling(token);
@@ -816,14 +573,13 @@
           renderApprovalCard(data.record);
           showView('card');
         }
-      } catch (e) {}
+      } catch(e) {}
     }, 3000);
   }
 
-  // ===== RENDER APPROVAL CARD =====
+  // ===== APPROVAL CARD =====
   function renderApprovalCard(r) {
     const isApproved = r.status === 'Approved';
-    const statusIcon = isApproved ? '✅' : '❌';
     const statusClass = r.status.toLowerCase();
     const approvedAt = r.approved_at ? new Date(r.approved_at) : null;
     const expiresAt = r.expires_at ? new Date(r.expires_at) : null;
@@ -836,7 +592,7 @@
     document.getElementById('approval-card-container').innerHTML = `
       <div class="approval-card">
         <div class="card-status-bar ${statusClass}">
-          <div class="card-status-icon">${statusIcon}</div>
+          <div class="card-status-icon">${isApproved ? '✅' : '❌'}</div>
           <div class="card-status-word">${r.status.toUpperCase()}</div>
           <div class="card-status-sub">${isApproved ? 'This request has been authorised' : 'This request has been declined'}</div>
         </div>
@@ -874,130 +630,139 @@
           </div>
         </div>
       </div>
-      <button class="btn-primary" onclick="showView('landing')" style="margin-bottom:40px">New Request</button>
+      <button class="btn-new-request" onclick="goBackToDriver()">+ New Request</button>
     `;
+  }
+
+  function goBackToDriver() {
+    // Reset form
+    document.getElementById('req-type').value = '';
+    document.getElementById('driver-name').value = '';
+    document.getElementById('vehicle-reg').value = '';
+    document.getElementById('site-name').value = '';
+    document.getElementById('location').value = '';
+    document.getElementById('details').value = '';
+    document.getElementById('approver-name').value = '';
+    document.getElementById('approver-role').value = '';
+    document.getElementById('approver-email').value = '';
+    document.getElementById('submit-btn').disabled = false;
+    document.getElementById('submit-btn').textContent = 'Send Authorisation Request →';
+    urgency = 'Standard';
+    document.querySelectorAll('.urgency-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.urgency-btn.standard').classList.add('active');
+    if (currentUser) {
+      setTimeout(() => {
+        document.getElementById('driver-company').value = currentUser.company || '';
+      }, 50);
+    }
+    showView('driver');
+  }
+
+  // ===== APPROVER DASHBOARD =====
+  async function loadDashboard() {
+    document.getElementById('dashboard-list').innerHTML = '<div class="spinner"></div>';
+    try {
+      const res = await fetch(`${API_BASE}/listApprovalRequests`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+      });
+      if (!res.ok) throw new Error('Failed to load');
+      const data = await res.json();
+      const urgencyOrder = { Critical: 0, Urgent: 1, Standard: 2 };
+      allRequests = (data.records || []).sort((a, b) => {
+        if (urgencyOrder[a.urgency] !== urgencyOrder[b.urgency]) return urgencyOrder[a.urgency] - urgencyOrder[b.urgency];
+        return new Date(b.created_date) - new Date(a.created_date);
+      });
+      updatePendingCount();
+      renderList();
+    } catch (err) {
+      document.getElementById('dashboard-list').innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Failed to load</div><div>${err.message}</div></div>`;
+    }
+  }
+
+  function updatePendingCount() {
+    const n = allRequests.filter(r => r.status === 'Pending').length;
+    const el = document.getElementById('count-pending');
+    el.textContent = n;
+    el.className = 'tab-count' + (n === 0 ? ' zero' : '');
+  }
+
+  function switchTab(tab, btn) {
+    currentTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderList();
+  }
+
+  function renderList() {
+    const filtered = currentTab === 'pending' ? allRequests.filter(r => r.status === 'Pending') : allRequests;
+    if (!filtered.length) {
+      document.getElementById('dashboard-list').innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">${currentTab === 'pending' ? '✅' : '📋'}</div>
+          <div class="empty-title">${currentTab === 'pending' ? 'No pending requests' : 'No requests yet'}</div>
+          <div style="font-size:0.85rem">${currentTab === 'pending' ? 'All clear — nothing waiting.' : 'Requests will appear here as they come in.'}</div>
+        </div>`;
+      return;
+    }
+    document.getElementById('dashboard-list').innerHTML = filtered.map(renderReqCard).join('');
+  }
+
+  function renderReqCard(r) {
+    const label = r.request_type === 'Other' ? (r.custom_type || 'Other') : r.request_type;
+    const isPending = r.status === 'Pending';
+    const created = r.created_date ? new Date(r.created_date).toLocaleString('en-GB', {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '—';
+    return `
+    <div class="req-card">
+      <div class="req-card-header ${(r.urgency||'standard').toLowerCase()}">
+        <div>
+          <div class="req-type-label">${label}</div>
+          <div class="req-meta">${r.driver_name || '—'} · ${r.vehicle_reg || 'No reg'} · ${created}</div>
+        </div>
+        <div class="urgency-tag ${r.urgency||'Standard'}">${r.urgency||'Standard'}</div>
+      </div>
+      <div class="req-card-body">
+        <div class="req-details-row">
+          <div><div class="req-detail-label">Company</div><div class="req-detail-value">${r.driver_company||'—'}</div></div>
+          <div><div class="req-detail-label">Site</div><div class="req-detail-value">${r.site_name||'—'}</div></div>
+          <div><div class="req-detail-label">Location</div><div class="req-detail-value">${r.location||'—'}</div></div>
+        </div>
+        ${r.details ? `<div class="req-notes">${r.details}</div>` : ''}
+        ${!isPending ? `<div class="done-badge ${r.status.toLowerCase()}">${r.status==='Approved'?'✅':'❌'} ${r.status}${r.denial_reason?' — '+r.denial_reason:''}</div>` : ''}
+      </div>
+      ${isPending ? `
+      <div class="req-card-actions">
+        <button class="btn-approve-sm" onclick="processDecision('${r.approval_token}','Approved')">✅ Approve</button>
+        <button class="btn-deny-sm" onclick="openDenyModal('${r.approval_token}')">❌ Deny</button>
+      </div>` : ''}
+    </div>`;
+  }
+
+  // ===== DENY MODAL =====
+  function openDenyModal(token) { denyTargetToken = token; document.getElementById('deny-reason-text').value = ''; document.getElementById('deny-modal').classList.add('open'); }
+  function closeDenyModal() { document.getElementById('deny-modal').classList.remove('open'); denyTargetToken = null; }
+  function confirmDeny() { const reason = document.getElementById('deny-reason-text').value.trim(); closeDenyModal(); processDecision(denyTargetToken,'Denied',reason); }
+
+  async function processDecision(token, action, reason) {
+    try {
+      const res = await fetch(`${API_BASE}/handleApproval`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, action, denial_reason: reason || '' })
+      });
+      if (!res.ok) { const e = await res.json(); throw new Error(e.error||'Failed'); }
+      showToast(action === 'Approved' ? '✅ Approved' : '❌ Denied');
+      loadDashboard();
+    } catch(err) { showToast('Error: ' + err.message); }
   }
 
   // ===== TOAST =====
   function showToast(msg) {
     const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
+    t.textContent = msg; t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3000);
   }
-
-  // ===== SIMPLE AUTH (localStorage) =====
-  // Users stored in localStorage keyed by email
-  let currentUser = null;
-  let selectedRole = 'driver';
-
-  function switchAuthTab(tab) {
-    document.getElementById('auth-login-form').style.display = tab === 'login' ? 'block' : 'none';
-    document.getElementById('auth-register-form').style.display = tab === 'register' ? 'block' : 'none';
-    document.getElementById('tab-login').classList.toggle('active', tab === 'login');
-    document.getElementById('tab-register').classList.toggle('active', tab === 'register');
-    document.getElementById('auth-error').classList.remove('show');
-  }
-
-  function selectRole(role) {
-    selectedRole = role;
-    document.getElementById('role-driver').classList.toggle('active', role === 'driver');
-    document.getElementById('role-approver').classList.toggle('active', role === 'approver');
-  }
-
-  function showAuthError(msg) {
-    const el = document.getElementById('auth-error');
-    el.textContent = msg;
-    el.classList.add('show');
-  }
-
-  function getUsers() {
-    return JSON.parse(localStorage.getItem('clearauth_users') || '{}');
-  }
-  function saveUsers(users) {
-    localStorage.setItem('clearauth_users', JSON.stringify(users));
-  }
-  function saveSession(user) {
-    localStorage.setItem('clearauth_session', JSON.stringify(user));
-    currentUser = user;
-  }
-  function clearSession() {
-    localStorage.removeItem('clearauth_session');
-    currentUser = null;
-  }
-  function loadSession() {
-    const s = localStorage.getItem('clearauth_session');
-    return s ? JSON.parse(s) : null;
-  }
-
-  function doLogin() {
-    const email = document.getElementById('login-email').value.trim().toLowerCase();
-    const password = document.getElementById('login-password').value;
-    if (!email || !password) { showAuthError('Please enter your email and password.'); return; }
-
-    const users = getUsers();
-    const user = users[email];
-    if (!user || user.password !== btoa(password)) {
-      showAuthError('Incorrect email or password. Try again.');
-      return;
-    }
-    saveSession(user);
-    afterLogin(user);
-  }
-
-  function doRegister() {
-    const name = document.getElementById('reg-name').value.trim();
-    const email = document.getElementById('reg-email').value.trim().toLowerCase();
-    const company = document.getElementById('reg-company').value.trim();
-    const password = document.getElementById('reg-password').value;
-
-    if (!name || !email || !password) { showAuthError('Please fill in all required fields.'); return; }
-    if (password.length < 8) { showAuthError('Password must be at least 8 characters.'); return; }
-    if (!email.includes('@')) { showAuthError('Please enter a valid email address.'); return; }
-
-    const users = getUsers();
-    if (users[email]) { showAuthError('An account with this email already exists. Sign in instead.'); return; }
-
-    const user = { name, email, company, role: selectedRole, password: btoa(password), createdAt: new Date().toISOString() };
-    users[email] = user;
-    saveUsers(users);
-    saveSession(user);
-    afterLogin(user);
-  }
-
-  function afterLogin(user) {
-    currentUser = user;
-    if (user.role === 'approver') {
-      showView('approver-dashboard');
-      loadDashboard();
-    } else {
-      // Pre-fill driver name and company
-      showView('driver');
-      setTimeout(() => {
-        const nameEl = document.getElementById('driver-name');
-        const compEl = document.getElementById('driver-company');
-        if (nameEl && !nameEl.value) nameEl.value = user.name || '';
-        if (compEl && !compEl.value) compEl.value = user.company || '';
-      }, 100);
-    }
-  }
-
-  function logout() {
-    clearSession();
-    // Clear pin fields if they exist
-    ['p1','p2','p3','p4'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
-    showView('landing');
-  }
-
-  // Check for existing session on load
-  window.addEventListener('DOMContentLoaded', () => {
-    const session = loadSession();
-    if (session) {
-      currentUser = session;
-      afterLogin(session);
-    }
-  });
-
 </script>
 </body>
 </html>
