@@ -128,6 +128,9 @@
   .card-expiry { background: var(--amber-light); margin: 16px -24px -24px; padding: 14px 24px; display: flex; align-items: center; gap: 10px; font-size: 0.8rem; color: var(--amber); font-weight: 600; }
   .card-expiry.expired { background: var(--red-light); color: var(--red); }
   .denial-reason-box { background: var(--red-light); border-radius: 10px; padding: 14px 16px; margin-top: 16px; }
+  .approval-note-box { background: linear-gradient(135deg, #e8f5ee, #d4edd9); border-left: 4px solid #0f9d6b; border-radius: 10px; padding: 12px 16px; margin: 12px 0; }
+  .approval-note-label { font-size: 0.7rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #0a7a55; margin-bottom: 5px; }
+  .approval-note-text { font-size: 0.95rem; font-weight: 600; color: #1a4d35; }
   .denial-label { font-size: 0.7rem; font-weight: 700; color: var(--red); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
   .denial-text { font-size: 0.88rem; color: #7F1D1D; }
   .btn-new-req { width: 100%; padding: 15px; background: var(--blue); color: white; border: none; border-radius: 12px; font-size: 0.95rem; font-weight: 700; cursor: pointer; }
@@ -239,8 +242,11 @@
   .btn-modal-cancel { flex: 1; padding: 13px; background: var(--grey-light); color: var(--dark); border: none; border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
 
   /* ===== DENY MODAL ===== */
-  #deny-modal .modal-box textarea { width: 100%; padding: 13px; border: 2px solid var(--border); border-radius: 10px; font-size: 0.9rem; font-family: 'Inter', sans-serif; resize: vertical; min-height: 80px; margin-bottom: 12px; }
+  #deny-modal .modal-box textarea, #approve-modal .modal-box textarea { width: 100%; padding: 13px; border: 2px solid var(--border); border-radius: 10px; font-size: 0.9rem; font-family: 'Inter', sans-serif; resize: vertical; min-height: 80px; margin-bottom: 12px; box-sizing: border-box; }
   #deny-modal .modal-box textarea:focus { outline: none; border-color: var(--red); }
+  #approve-modal .modal-box textarea:focus { outline: none; border-color: var(--green); }
+  .btn-confirm-approve { background: var(--green); color: white; border: none; padding: 11px 22px; border-radius: 10px; font-weight: 700; font-size: 0.9rem; cursor: pointer; }
+  .btn-confirm-approve:hover { background: #0a8a5c; }
   .btn-confirm-deny { flex: 1; padding: 13px; background: var(--red); color: white; border: none; border-radius: 10px; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
 
   /* ===== INVITE SETUP PAGE ===== */
@@ -701,6 +707,18 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="approve-modal">
+  <div class="modal-box">
+    <div class="modal-title">✅ Approve Request</div>
+    <p style="font-size:0.85rem;color:#666;margin:0 0 10px 0">Add a note for the employee (optional) — e.g. bay allocation, instructions.</p>
+    <textarea id="approve-note-text" placeholder="e.g. Bay 9, report to gate B..."></textarea>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeApproveModal()">Cancel</button>
+      <button class="btn-confirm-approve" onclick="confirmApprove()">Confirm Approval</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <!-- ===== USER PROFILE VIEW ===== -->
@@ -802,6 +820,7 @@
   let allRequests = [];
   let pollingInterval = null;
   let denyTargetToken = null;
+  let approveTargetToken = null;
   let companyUsers = [];
   let companySites = []; // list of site name strings
   let inviteToken = null;
@@ -1611,6 +1630,7 @@ Choose:
           <div class="card-row"><div class="card-row-label">Date</div><div class="card-row-value">${dateStr}</div></div>
           <div class="card-row"><div class="card-row-label">Time</div><div class="card-row-value">${timeStr}</div></div>
           ${r.denial_reason?`<div class="denial-reason-box"><div class="denial-label">Reason for Denial</div><div class="denial-text">${r.denial_reason}</div></div>`:''}
+          ${r.approver_note?`<div class="approval-note-box"><div class="approval-note-label">📋 Approver Note</div><div class="approval-note-text">${r.approver_note}</div></div>`:''}
           <div class="card-qr-section" style="margin-top:14px">
             <div class="qr-placeholder">🔲</div>
             <div class="qr-info"><div class="qr-label">Verification Token</div><div class="qr-value">${r.approval_token}</div></div>
@@ -1707,7 +1727,7 @@ Choose:
           ${!isPending?`<div class="done-badge ${r.status.toLowerCase()}">${r.status==='Approved'?'✅':'❌'} ${r.status}${r.denial_reason?' — '+r.denial_reason:''}</div>`:''}
         </div>
         ${isPending?`<div class="req-card-actions">
-          <button class="btn-approve-sm" onclick="processDecision('${r.approval_token}','Approved')">✅ Approve</button>
+          <button class="btn-approve-sm" onclick="openApproveModal('${r.approval_token}')">✅ Approve</button>
           <button class="btn-deny-sm" onclick="openDenyModal('${r.approval_token}')">❌ Deny</button>
         </div>`:''}
       </div>`;
@@ -1716,13 +1736,17 @@ Choose:
 
   function openDenyModal(token) { denyTargetToken=token; document.getElementById('deny-reason-text').value=''; document.getElementById('deny-modal').classList.add('open'); }
   function closeDenyModal() { document.getElementById('deny-modal').classList.remove('open'); denyTargetToken=null; }
-  function confirmDeny() { const r=document.getElementById('deny-reason-text').value.trim(); closeDenyModal(); processDecision(denyTargetToken,'Denied',r); }
+  function confirmDeny() { const r=document.getElementById('deny-reason-text').value.trim(); closeDenyModal(); processDecision(denyTargetToken,'Denied',r,''); }
 
-  async function processDecision(token, action, reason) {
+  function openApproveModal(token) { approveTargetToken=token; document.getElementById('approve-note-text').value=''; document.getElementById('approve-modal').classList.add('open'); }
+  function closeApproveModal() { document.getElementById('approve-modal').classList.remove('open'); approveTargetToken=null; }
+  function confirmApprove() { const note=document.getElementById('approve-note-text').value.trim(); closeApproveModal(); processDecision(approveTargetToken,'Approved','',note); }
+
+  async function processDecision(token, action, reason, note) {
     try {
       const res = await fetch(`${API}/handleApproval`, {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({token, action, denial_reason: reason||''})
+        body: JSON.stringify({token, action, denial_reason: reason||'', approver_note: note||''})
       });
       if (!res.ok) { const e=await res.json(); throw new Error(e.error||'Failed'); }
       showToast(action==='Approved'?'✅ Approved':'❌ Denied');
