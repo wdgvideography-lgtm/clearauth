@@ -33,26 +33,84 @@
   .view { display: none; min-height: 100vh; }
   .view.active { display: flex; flex-direction: column; }
 
-  /* ===== LANDING ===== */
+  /* ===== LANDING / AUTH ===== */
   #view-landing {
     background: var(--dark);
     align-items: center; justify-content: center;
-    padding: 40px 24px; text-align: center;
+    padding: 0; min-height: 100vh;
   }
-  .landing-badge {
-    display: inline-block;
-    background: rgba(37,99,235,0.15);
-    border: 1px solid rgba(37,99,235,0.3);
-    color: #93C5FD;
-    font-size: 0.7rem; font-weight: 600;
-    letter-spacing: 3px; text-transform: uppercase;
-    padding: 6px 16px; border-radius: 100px; margin-bottom: 32px;
+  .auth-split {
+    display: flex; width: 100%; min-height: 100vh;
   }
-  .landing-logo { font-size: 3rem; font-weight: 900; color: white; letter-spacing: -2px; margin-bottom: 4px; }
-  .landing-logo span { color: var(--blue); }
-  .landing-tagline { font-size: 0.85rem; color: #94A3B8; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 48px; }
-  .landing-desc { font-size: 1.05rem; color: #CBD5E1; line-height: 1.7; max-width: 400px; margin: 0 auto 56px; }
-  .landing-buttons { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 360px; margin: 0 auto 48px; }
+  .auth-brand {
+    display: none;
+    flex: 1; background: linear-gradient(160deg, #0F172A 0%, #1E3A5F 100%);
+    padding: 60px; flex-direction: column; justify-content: space-between;
+    position: relative; overflow: hidden;
+  }
+  .auth-brand::before {
+    content: 'CA'; position: absolute; bottom: -40px; right: -40px;
+    font-size: 20rem; font-weight: 900; color: rgba(37,99,235,0.06);
+    letter-spacing: -10px; line-height: 1;
+  }
+  .brand-logo { font-size: 2rem; font-weight: 900; color: white; letter-spacing: -1px; }
+  .brand-logo span { color: var(--blue); }
+  .brand-tagline { font-size: 2.2rem; font-weight: 800; color: white; line-height: 1.2; margin-bottom: 16px; }
+  .brand-tagline em { color: #60A5FA; font-style: normal; }
+  .brand-sub { color: #64748B; font-size: 1rem; line-height: 1.7; max-width: 360px; }
+  .brand-features { display: flex; flex-direction: column; gap: 14px; }
+  .brand-feature { display: flex; align-items: center; gap: 12px; color: #94A3B8; font-size: 0.88rem; }
+  .brand-feature-icon { width: 32px; height: 32px; background: rgba(37,99,235,0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .auth-panel {
+    flex: 1; background: white; display: flex; align-items: center; justify-content: center;
+    padding: 40px 24px; min-height: 100vh;
+  }
+  .auth-box { width: 100%; max-width: 400px; }
+  .auth-mobile-logo { font-size: 1.8rem; font-weight: 900; color: var(--dark); letter-spacing: -1px; margin-bottom: 8px; }
+  .auth-mobile-logo span { color: var(--blue); }
+  .auth-title { font-size: 1.5rem; font-weight: 800; color: var(--dark); margin-bottom: 6px; }
+  .auth-sub { font-size: 0.88rem; color: var(--grey); margin-bottom: 32px; line-height: 1.5; }
+  .auth-tabs { display: flex; background: var(--grey-light); border-radius: 10px; padding: 4px; margin-bottom: 28px; }
+  .auth-tab {
+    flex: 1; padding: 10px; border-radius: 8px; border: none;
+    font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.2s;
+    background: transparent; color: var(--grey);
+  }
+  .auth-tab.active { background: white; color: var(--dark); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+  .auth-form { display: flex; flex-direction: column; gap: 14px; }
+  .auth-input-group { display: flex; flex-direction: column; gap: 6px; }
+  .auth-input-group label { font-size: 0.8rem; font-weight: 600; color: var(--dark2); }
+  .auth-input {
+    padding: 14px 16px; border: 1.5px solid var(--border); border-radius: 10px;
+    font-size: 0.95rem; font-family: 'Inter', sans-serif; color: var(--text);
+    transition: border-color 0.2s; width: 100%;
+  }
+  .auth-input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+  .auth-input::placeholder { color: #CBD5E1; }
+  .role-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .role-option {
+    padding: 14px 12px; border-radius: 10px; border: 2px solid var(--border);
+    background: white; cursor: pointer; text-align: center; transition: all 0.2s;
+  }
+  .role-option.active { border-color: var(--blue); background: var(--blue-light); }
+  .role-option.active.approver-role { border-color: var(--green); background: var(--green-light); }
+  .role-icon { font-size: 1.4rem; margin-bottom: 6px; display: block; }
+  .role-label { font-size: 0.8rem; font-weight: 700; color: var(--dark); }
+  .role-desc { font-size: 0.7rem; color: var(--grey); margin-top: 2px; }
+  .btn-auth {
+    width: 100%; padding: 16px; background: var(--blue); color: white;
+    border: none; border-radius: 12px; font-size: 1rem; font-weight: 700;
+    cursor: pointer; transition: background 0.2s; margin-top: 4px;
+  }
+  .btn-auth:hover { background: var(--blue-dark); }
+  .btn-auth:disabled { background: #94A3B8; cursor: not-allowed; }
+  .auth-divider { display: flex; align-items: center; gap: 12px; color: var(--grey); font-size: 0.8rem; }
+  .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .auth-error { background: var(--red-light); color: var(--red); border-radius: 8px; padding: 10px 14px; font-size: 0.82rem; font-weight: 600; display: none; }
+  .auth-error.show { display: block; }
+  .auth-switch { text-align: center; font-size: 0.83rem; color: var(--grey); margin-top: 20px; }
+  .auth-switch a { color: var(--blue); font-weight: 700; cursor: pointer; text-decoration: none; }
+  .auth-switch a:hover { text-decoration: underline; }
   .btn-primary {
     background: var(--blue); color: white; border: none;
     padding: 18px 32px; font-size: 1rem; font-weight: 700;
@@ -65,12 +123,10 @@
     border-radius: 12px; cursor: pointer; transition: all 0.2s; width: 100%;
   }
   .btn-secondary:hover { background: rgba(255,255,255,0.1); }
-  .landing-features { display: flex; flex-direction: column; gap: 12px; max-width: 360px; margin: 0 auto; }
-  .feature-pill {
-    display: flex; align-items: center; gap: 10px;
-    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
-    padding: 12px 16px; border-radius: 10px;
-    font-size: 0.85rem; color: #94A3B8; text-align: left;
+  @media (min-width: 900px) {
+    .auth-brand { display: flex; }
+    .auth-panel { min-height: 100vh; }
+    .auth-mobile-logo { display: none; }
   }
 
   /* ===== SHARED HEADER ===== */
@@ -180,33 +236,7 @@
   .denial-label { font-size: 0.7rem; font-weight: 700; color: var(--red); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
   .denial-text { font-size: 0.88rem; color: #7F1D1D; }
 
-  /* ===== APPROVER LOGIN ===== */
-  #view-approver-login {
-    background: var(--dark); align-items: center; justify-content: center; padding: 40px 24px;
-  }
-  .login-box { width: 100%; max-width: 360px; text-align: center; }
-  .login-icon { font-size: 3rem; margin-bottom: 20px; }
-  .login-title { font-size: 1.8rem; font-weight: 900; color: white; letter-spacing: -1px; margin-bottom: 8px; }
-  .login-title span { color: var(--blue); }
-  .login-sub { color: #64748B; font-size: 0.9rem; margin-bottom: 36px; line-height: 1.5; }
-  .pin-row { display: flex; gap: 12px; justify-content: center; margin-bottom: 24px; }
-  .pin-digit {
-    width: 56px; height: 64px; border-radius: 12px;
-    border: 2px solid rgba(255,255,255,0.12);
-    background: rgba(255,255,255,0.06);
-    color: white; font-size: 1.8rem; font-weight: 800;
-    text-align: center; font-family: 'Inter', sans-serif;
-    transition: border-color 0.2s;
-  }
-  .pin-digit:focus { outline: none; border-color: var(--blue); background: rgba(37,99,235,0.12); }
-  .login-error { color: #F87171; font-size: 0.85rem; margin-bottom: 16px; min-height: 20px; }
-  .btn-login {
-    width: 100%; padding: 16px; background: var(--blue); color: white;
-    border: none; border-radius: 12px; font-size: 1rem; font-weight: 700;
-    cursor: pointer; transition: background 0.2s;
-  }
-  .btn-login:hover { background: var(--blue-dark); }
-  .login-hint { margin-top: 20px; color: #334155; font-size: 0.78rem; }
+  /* PIN login removed — replaced by account system */
 
   /* ===== APPROVER DASHBOARD ===== */
   #view-approver-dashboard { background: var(--grey-light); }
@@ -313,21 +343,98 @@
 </head>
 <body>
 
-<!-- LANDING -->
+<!-- LANDING / AUTH -->
 <div id="view-landing" class="view active">
-  <div class="landing-badge">Instant Ops Authorisation</div>
-  <div class="landing-logo">Clear<span>Auth</span></div>
-  <div class="landing-tagline">No calls. No waiting. No chaos.</div>
-  <p class="landing-desc">Send a request, get an instant approval. Secure, traceable, and timestamped — every time.</p>
-  <div class="landing-buttons">
-    <button class="btn-primary" onclick="showView('driver')">🚛 I'm a Driver / Operator</button>
-    <button class="btn-secondary" onclick="showView('approver-login')">✅ I'm an Approver</button>
-  </div>
-  <div class="landing-features">
-    <div class="feature-pill"><span>⚡</span> Instant request to the right person</div>
-    <div class="feature-pill"><span>🔐</span> Secure QR-verified approval cards</div>
-    <div class="feature-pill"><span>⏱️</span> Time-stamped & auto-expiring</div>
-    <div class="feature-pill"><span>📋</span> Full audit trail, no paper needed</div>
+  <div class="auth-split">
+    <!-- Brand panel (desktop only) -->
+    <div class="auth-brand">
+      <div class="brand-logo">Clear<span>Auth</span></div>
+      <div>
+        <div class="brand-tagline">No calls.<br>No waiting.<br><em>Just authorised.</em></div>
+        <div class="brand-sub">Instant, secure, traceable approvals for transport and logistics operations.</div>
+      </div>
+      <div class="brand-features">
+        <div class="brand-feature"><div class="brand-feature-icon">⚡</div>Instant request delivery</div>
+        <div class="brand-feature"><div class="brand-feature-icon">🔐</div>Secure QR-verified approval cards</div>
+        <div class="brand-feature"><div class="brand-feature-icon">⏱️</div>Timestamped & auto-expiring</div>
+        <div class="brand-feature"><div class="brand-feature-icon">📋</div>Full audit trail — no paper needed</div>
+      </div>
+    </div>
+
+    <!-- Auth panel -->
+    <div class="auth-panel">
+      <div class="auth-box">
+        <div class="auth-mobile-logo">Clear<span>Auth</span></div>
+
+        <!-- Tabs -->
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Sign In</button>
+          <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Create Account</button>
+        </div>
+
+        <!-- Error -->
+        <div class="auth-error" id="auth-error"></div>
+
+        <!-- LOGIN FORM -->
+        <div id="auth-login-form">
+          <div class="auth-title">Welcome back</div>
+          <div class="auth-sub">Sign in to continue to ClearAuth.</div>
+          <div class="auth-form">
+            <div class="auth-input-group">
+              <label>Email address</label>
+              <input type="email" class="auth-input" id="login-email" placeholder="you@company.com" autocomplete="email">
+            </div>
+            <div class="auth-input-group">
+              <label>Password</label>
+              <input type="password" class="auth-input" id="login-password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+            </div>
+            <button class="btn-auth" onclick="doLogin()" id="btn-login">Sign In</button>
+          </div>
+          <div class="auth-switch">Don't have an account? <a onclick="switchAuthTab('register')">Create one</a></div>
+        </div>
+
+        <!-- REGISTER FORM -->
+        <div id="auth-register-form" style="display:none">
+          <div class="auth-title">Create your account</div>
+          <div class="auth-sub">Join ClearAuth — it takes 30 seconds.</div>
+          <div class="auth-form">
+            <div class="auth-input-group">
+              <label>Full Name</label>
+              <input type="text" class="auth-input" id="reg-name" placeholder="James Williams" autocomplete="name">
+            </div>
+            <div class="auth-input-group">
+              <label>Email address</label>
+              <input type="email" class="auth-input" id="reg-email" placeholder="you@company.com" autocomplete="email">
+            </div>
+            <div class="auth-input-group">
+              <label>Company / Organisation</label>
+              <input type="text" class="auth-input" id="reg-company" placeholder="Russell Transport Ltd">
+            </div>
+            <div class="auth-input-group">
+              <label>Password</label>
+              <input type="password" class="auth-input" id="reg-password" placeholder="Min. 8 characters" autocomplete="new-password">
+            </div>
+            <div class="auth-input-group">
+              <label>I am a...</label>
+              <div class="role-selector">
+                <div class="role-option active" id="role-driver" onclick="selectRole('driver')">
+                  <span class="role-icon">🚛</span>
+                  <div class="role-label">Driver</div>
+                  <div class="role-desc">Submit requests</div>
+                </div>
+                <div class="role-option approver-role" id="role-approver" onclick="selectRole('approver')">
+                  <span class="role-icon">✅</span>
+                  <div class="role-label">Approver</div>
+                  <div class="role-desc">Review & action</div>
+                </div>
+              </div>
+            </div>
+            <button class="btn-auth" onclick="doRegister()" id="btn-register">Create Account →</button>
+          </div>
+          <div class="auth-switch">Already have an account? <a onclick="switchAuthTab('login')">Sign in</a></div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -437,24 +544,7 @@
   </div>
 </div>
 
-<!-- APPROVER LOGIN -->
-<div id="view-approver-login" class="view" style="background:var(--dark)">
-  <div class="login-box" style="margin:auto">
-    <div class="login-icon">🔒</div>
-    <div class="login-title">Clear<span>Auth</span></div>
-    <div class="login-sub">Enter your 4-digit passcode to access the approver dashboard.</div>
-    <div class="pin-row">
-      <input class="pin-digit" type="password" maxlength="1" id="p1" oninput="pinNext(this,'p2')" onkeydown="pinBack(event,this,null)">
-      <input class="pin-digit" type="password" maxlength="1" id="p2" oninput="pinNext(this,'p3')" onkeydown="pinBack(event,this,'p1')">
-      <input class="pin-digit" type="password" maxlength="1" id="p3" oninput="pinNext(this,'p4')" onkeydown="pinBack(event,this,'p2')">
-      <input class="pin-digit" type="password" maxlength="1" id="p4" oninput="pinNext(this,null)"  onkeydown="pinBack(event,this,'p3')">
-    </div>
-    <div class="login-error" id="login-error"></div>
-    <button class="btn-login" onclick="checkPasscode()">Enter Dashboard</button>
-    <div class="login-hint">Passcode provided by your operations manager.</div>
-    <button onclick="showView('landing')" style="margin-top:24px;background:none;border:none;color:#334155;font-size:0.82rem;cursor:pointer">← Back</button>
-  </div>
-</div>
+<!-- Approver login replaced by account system -->
 
 <!-- APPROVER DASHBOARD -->
 <div id="view-approver-dashboard" class="view">
@@ -500,7 +590,6 @@
 <script>
   const API_BASE = 'https://assistant-36b1ac32.base44.app/functions';
   
-  const PASSCODE = '1234';
 
   let currentToken = null;
   let pollingInterval = null;
@@ -527,37 +616,7 @@
     btn.classList.add('active');
   }
 
-  // ===== PIN INPUT =====
-  function pinNext(el, nextId) {
-    if (el.value && nextId) {
-      document.getElementById(nextId).focus();
-    }
-    document.getElementById('login-error').textContent = '';
-  }
-  function pinBack(e, el, prevId) {
-    if (e.key === 'Backspace' && !el.value && prevId) {
-      document.getElementById(prevId).focus();
-    }
-    if (e.key === 'Enter') checkPasscode();
-  }
-
-  // ===== PASSCODE LOGIN =====
-  function checkPasscode() {
-    const code = ['p1','p2','p3','p4'].map(id => document.getElementById(id).value).join('');
-    if (code === PASSCODE) {
-      showView('approver-dashboard');
-      loadDashboard();
-    } else {
-      document.getElementById('login-error').textContent = 'Incorrect passcode. Try again.';
-      ['p1','p2','p3','p4'].forEach(id => document.getElementById(id).value = '');
-      document.getElementById('p1').focus();
-    }
-  }
-
-  function logout() {
-    ['p1','p2','p3','p4'].forEach(id => document.getElementById(id).value = '');
-    showView('landing');
-  }
+  // PIN/passcode login replaced by account system
 
   // ===== DASHBOARD =====
   async function loadDashboard() {
@@ -826,6 +885,119 @@
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3000);
   }
+
+  // ===== SIMPLE AUTH (localStorage) =====
+  // Users stored in localStorage keyed by email
+  let currentUser = null;
+  let selectedRole = 'driver';
+
+  function switchAuthTab(tab) {
+    document.getElementById('auth-login-form').style.display = tab === 'login' ? 'block' : 'none';
+    document.getElementById('auth-register-form').style.display = tab === 'register' ? 'block' : 'none';
+    document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+    document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+    document.getElementById('auth-error').classList.remove('show');
+  }
+
+  function selectRole(role) {
+    selectedRole = role;
+    document.getElementById('role-driver').classList.toggle('active', role === 'driver');
+    document.getElementById('role-approver').classList.toggle('active', role === 'approver');
+  }
+
+  function showAuthError(msg) {
+    const el = document.getElementById('auth-error');
+    el.textContent = msg;
+    el.classList.add('show');
+  }
+
+  function getUsers() {
+    return JSON.parse(localStorage.getItem('clearauth_users') || '{}');
+  }
+  function saveUsers(users) {
+    localStorage.setItem('clearauth_users', JSON.stringify(users));
+  }
+  function saveSession(user) {
+    localStorage.setItem('clearauth_session', JSON.stringify(user));
+    currentUser = user;
+  }
+  function clearSession() {
+    localStorage.removeItem('clearauth_session');
+    currentUser = null;
+  }
+  function loadSession() {
+    const s = localStorage.getItem('clearauth_session');
+    return s ? JSON.parse(s) : null;
+  }
+
+  function doLogin() {
+    const email = document.getElementById('login-email').value.trim().toLowerCase();
+    const password = document.getElementById('login-password').value;
+    if (!email || !password) { showAuthError('Please enter your email and password.'); return; }
+
+    const users = getUsers();
+    const user = users[email];
+    if (!user || user.password !== btoa(password)) {
+      showAuthError('Incorrect email or password. Try again.');
+      return;
+    }
+    saveSession(user);
+    afterLogin(user);
+  }
+
+  function doRegister() {
+    const name = document.getElementById('reg-name').value.trim();
+    const email = document.getElementById('reg-email').value.trim().toLowerCase();
+    const company = document.getElementById('reg-company').value.trim();
+    const password = document.getElementById('reg-password').value;
+
+    if (!name || !email || !password) { showAuthError('Please fill in all required fields.'); return; }
+    if (password.length < 8) { showAuthError('Password must be at least 8 characters.'); return; }
+    if (!email.includes('@')) { showAuthError('Please enter a valid email address.'); return; }
+
+    const users = getUsers();
+    if (users[email]) { showAuthError('An account with this email already exists. Sign in instead.'); return; }
+
+    const user = { name, email, company, role: selectedRole, password: btoa(password), createdAt: new Date().toISOString() };
+    users[email] = user;
+    saveUsers(users);
+    saveSession(user);
+    afterLogin(user);
+  }
+
+  function afterLogin(user) {
+    currentUser = user;
+    if (user.role === 'approver') {
+      showView('approver-dashboard');
+      loadDashboard();
+    } else {
+      // Pre-fill driver name and company
+      showView('driver');
+      setTimeout(() => {
+        const nameEl = document.getElementById('driver-name');
+        const compEl = document.getElementById('driver-company');
+        if (nameEl && !nameEl.value) nameEl.value = user.name || '';
+        if (compEl && !compEl.value) compEl.value = user.company || '';
+      }, 100);
+    }
+  }
+
+  function logout() {
+    clearSession();
+    // Clear pin fields if they exist
+    ['p1','p2','p3','p4'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+    showView('landing');
+  }
+
+  // Check for existing session on load
+  window.addEventListener('DOMContentLoaded', () => {
+    const session = loadSession();
+    if (session) {
+      currentUser = session;
+      afterLogin(session);
+    }
+  });
+
 </script>
 </body>
 </html>
