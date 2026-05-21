@@ -13,7 +13,7 @@ Deno.serve(async (req) => {
 
     let records = [];
 
-    if (role === 'driver') {
+    if (role === 'employee' || role === 'driver') {
       records = await base44.asServiceRole.entities.ApprovalRequest.filter({
         driver_user_id: user_id
       });
