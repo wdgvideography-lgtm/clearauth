@@ -1023,9 +1023,14 @@
   }
 
   function resetDriverForm() {
-    ['req-type','driver-name','vehicle-reg','site-name','location','details','approver-name','approver-role','approver-email'].forEach(id => {
+    ['req-type','driver-name','vehicle-reg','site-name','location','details'].forEach(id => {
       const el = document.getElementById(id); if (el) el.value = '';
     });
+    // Reset approver dropdown (not text input)
+    const approverSel = document.getElementById('approver-select');
+    if (approverSel) { approverSel.innerHTML = '<option value="">Loading approvers...</option>'; }
+    const noMsg = document.getElementById('no-approvers-msg');
+    if (noMsg) noMsg.style.display = 'none';
     document.getElementById('submit-btn').disabled = false;
     document.getElementById('submit-btn').textContent = 'Send Authorisation Request →';
     urgency = 'Standard';
@@ -1125,7 +1130,16 @@
 
   // ===== LOAD DRIVER APPROVERS DROPDOWN =====
   async function loadDriverApprovers(user) {
-    const sel = document.getElementById('approver-select');
+    // Safety: ensure the element is a <select>; if it got replaced, recreate it
+    let sel = document.getElementById('approver-select');
+    if (!sel || sel.tagName !== 'SELECT') {
+      const parent = sel ? sel.parentNode : document.querySelector('.form-group');
+      const newSel = document.createElement('select');
+      newSel.id = 'approver-select';
+      newSel.onchange = handleApproverSelect;
+      if (sel) parent.replaceChild(newSel, sel);
+      sel = newSel;
+    }
     const noMsg = document.getElementById('no-approvers-msg');
     if (!sel) return;
     sel.innerHTML = '<option value="">Loading...</option>';
