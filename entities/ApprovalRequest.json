@@ -1,0 +1,86 @@
+{
+  "type": "object",
+  "properties": {
+    "request_type": {
+      "type": "string",
+      "enum": [
+        "Loading Bay Allocation",
+        "Unloading Permission",
+        "After-Hours Delivery",
+        "Site Entry Approval",
+        "Paperwork Validation",
+        "Trailer Swap",
+        "Hazardous Cargo Approval",
+        "Restricted Area Access",
+        "Other"
+      ]
+    },
+    "custom_type": {
+      "type": "string"
+    },
+    "driver_name": {
+      "type": "string"
+    },
+    "driver_company": {
+      "type": "string"
+    },
+    "driver_phone": {
+      "type": "string"
+    },
+    "vehicle_reg": {
+      "type": "string"
+    },
+    "site_name": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "details": {
+      "type": "string"
+    },
+    "urgency": {
+      "type": "string",
+      "enum": [
+        "Standard",
+        "Urgent",
+        "Critical"
+      ]
+    },
+    "approver_name": {
+      "type": "string"
+    },
+    "approver_role": {
+      "type": "string"
+    },
+    "approver_email": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Pending",
+        "Approved",
+        "Denied"
+      ],
+      "default": "Pending"
+    },
+    "denial_reason": {
+      "type": "string"
+    },
+    "approval_token": {
+      "type": "string"
+    },
+    "expires_at": {
+      "type": "string"
+    },
+    "approved_at": {
+      "type": "string"
+    },
+    "qr_code": {
+      "type": "string"
+    }
+  },
+  "required": [],
+  "name": "ApprovalRequest"
+}

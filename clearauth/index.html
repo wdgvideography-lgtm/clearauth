@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ClearAuth — Instant Ops Authorisation</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #2563EB;
+    --blue-dark: #1D4ED8;
+    --blue-light: #EFF6FF;
+    --green: #16A34A;
+    --green-light: #DCFCE7;
+    --red: #DC2626;
+    --red-light: #FEE2E2;
+    --amber: #D97706;
+    --amber-light: #FEF3C7;
+    --dark: #0F172A;
+    --dark2: #1E293B;
+    --grey: #64748B;
+    --grey-light: #F1F5F9;
+    --border: #E2E8F0;
+    --text: #0F172A;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--grey-light);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ===== VIEWS ===== */
+  .view { display: none; min-height: 100vh; }
+  .view.active { display: flex; flex-direction: column; }
+
+  /* ===== LANDING ===== */
+  #view-landing {
+    background: var(--dark);
+    align-items: center; justify-content: center;
+    padding: 40px 24px;
+    text-align: center;
+  }
+  .landing-badge {
+    display: inline-block;
+    background: rgba(37,99,235,0.15);
+    border: 1px solid rgba(37,99,235,0.3);
+    color: #93C5FD;
+    font-size: 0.7rem; font-weight: 600;
+    letter-spacing: 3px; text-transform: uppercase;
+    padding: 6px 16px; border-radius: 100px;
+    margin-bottom: 32px;
+  }
+  .landing-logo {
+    font-size: 3rem; font-weight: 900;
+    color: white; letter-spacing: -2px;
+    margin-bottom: 4px;
+  }
+  .landing-logo span { color: var(--blue); }
+  .landing-tagline {
+    font-size: 0.85rem; color: #94A3B8;
+    letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 48px;
+  }
+  .landing-desc {
+    font-size: 1.05rem; color: #CBD5E1;
+    line-height: 1.7; max-width: 400px;
+    margin: 0 auto 56px;
+  }
+  .landing-buttons { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 360px; margin: 0 auto 48px; }
+  .btn-primary {
+    background: var(--blue); color: white;
+    border: none; padding: 18px 32px;
+    font-size: 1rem; font-weight: 700;
+    border-radius: 12px; cursor: pointer;
+    transition: all 0.2s; width: 100%;
+  }
+  .btn-primary:hover { background: var(--blue-dark); transform: translateY(-1px); }
+  .btn-secondary {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: white; padding: 18px 32px;
+    font-size: 1rem; font-weight: 600;
+    border-radius: 12px; cursor: pointer;
+    transition: all 0.2s; width: 100%;
+  }
+  .btn-secondary:hover { background: rgba(255,255,255,0.1); }
+  .landing-features {
+    display: flex; flex-direction: column; gap: 12px;
+    max-width: 360px; margin: 0 auto;
+  }
+  .feature-pill {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    padding: 12px 16px; border-radius: 10px;
+    font-size: 0.85rem; color: #94A3B8; text-align: left;
+  }
+  .feature-pill .icon { font-size: 1rem; flex-shrink: 0; }
+
+  /* ===== SHARED HEADER ===== */
+  .app-header {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 16px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 50;
+  }
+  .app-logo { font-size: 1.3rem; font-weight: 900; color: var(--dark); letter-spacing: -1px; }
+  .app-logo span { color: var(--blue); }
+  .header-badge {
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; padding: 4px 10px;
+    border-radius: 6px;
+  }
+  .badge-driver { background: #DBEAFE; color: #1D4ED8; }
+  .badge-approver { background: #D1FAE5; color: #065F46; }
+
+  /* ===== DRIVER FORM ===== */
+  #view-driver { background: var(--grey-light); }
+  .form-body { flex: 1; padding: 24px 20px 100px; max-width: 600px; margin: 0 auto; width: 100%; }
+
+  .section-title {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--grey);
+    margin-bottom: 12px; margin-top: 24px;
+  }
+  .section-title:first-child { margin-top: 0; }
+
+  .form-group { margin-bottom: 14px; }
+  .form-group label {
+    display: block; font-size: 0.8rem; font-weight: 600;
+    color: var(--dark2); margin-bottom: 6px;
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%; padding: 14px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px; font-size: 0.95rem;
+    font-family: 'Inter', sans-serif;
+    background: white; color: var(--text);
+    transition: border-color 0.2s;
+    appearance: none;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none; border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+  }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+  .form-group input::placeholder,
+  .form-group textarea::placeholder { color: #CBD5E1; }
+
+  .urgency-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .urgency-btn {
+    padding: 12px 8px; border-radius: 10px;
+    border: 2px solid var(--border);
+    background: white; cursor: pointer;
+    text-align: center; font-size: 0.78rem;
+    font-weight: 600; transition: all 0.2s;
+    color: var(--grey);
+  }
+  .urgency-btn.active.standard { border-color: var(--blue); background: var(--blue-light); color: var(--blue); }
+  .urgency-btn.active.urgent { border-color: var(--amber); background: var(--amber-light); color: var(--amber); }
+  .urgency-btn.active.critical { border-color: var(--red); background: var(--red-light); color: var(--red); }
+  .urgency-icon { font-size: 1.2rem; display: block; margin-bottom: 4px; }
+
+  .form-footer {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: white; border-top: 1px solid var(--border);
+    padding: 16px 20px;
+  }
+  .btn-submit {
+    width: 100%; max-width: 600px; margin: 0 auto; display: block;
+    background: var(--blue); color: white;
+    border: none; padding: 18px;
+    font-size: 1rem; font-weight: 700;
+    border-radius: 12px; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-submit:hover { background: var(--blue-dark); }
+  .btn-submit:disabled { background: #94A3B8; cursor: not-allowed; }
+
+  /* ===== PENDING VIEW ===== */
+  #view-pending {
+    background: var(--dark);
+    align-items: center; justify-content: center;
+    padding: 40px 24px; text-align: center;
+  }
+  .pending-pulse {
+    width: 100px; height: 100px;
+    border-radius: 50%; background: rgba(37,99,235,0.15);
+    border: 3px solid var(--blue);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 32px;
+    font-size: 2.5rem;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(37,99,235,0.4); }
+    50% { box-shadow: 0 0 0 20px rgba(37,99,235,0); }
+  }
+  .pending-title { font-size: 1.6rem; font-weight: 800; color: white; margin-bottom: 12px; }
+  .pending-sub { font-size: 0.9rem; color: #64748B; margin-bottom: 40px; line-height: 1.6; }
+  .pending-ref {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px; padding: 20px 24px;
+    margin-bottom: 32px; max-width: 360px;
+  }
+  .ref-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #64748B; margin-bottom: 6px; }
+  .ref-id { font-size: 1.1rem; font-weight: 700; color: white; font-family: monospace; }
+  .pending-loader {
+    display: flex; align-items: center; gap: 8px;
+    justify-content: center; color: #64748B; font-size: 0.85rem;
+  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--blue); animation: bounce 1.4s infinite; }
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+
+  /* ===== APPROVAL CARD ===== */
+  #view-card { background: var(--dark); align-items: center; justify-content: flex-start; padding: 24px 20px; }
+  .card-container { width: 100%; max-width: 420px; margin: 0 auto; }
+
+  .approval-card {
+    border-radius: 20px; overflow: hidden;
+    box-shadow: 0 25px 80px rgba(0,0,0,0.6);
+    margin-bottom: 24px;
+  }
+  .card-status-bar {
+    padding: 28px 28px 24px;
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center;
+  }
+  .card-status-bar.approved { background: linear-gradient(135deg, #14532D, #16A34A); }
+  .card-status-bar.denied { background: linear-gradient(135deg, #7F1D1D, #DC2626); }
+  .card-status-bar.pending { background: linear-gradient(135deg, #1E3A5F, #2563EB); }
+
+  .card-status-icon { font-size: 3.5rem; margin-bottom: 12px; }
+  .card-status-word {
+    font-size: 2.2rem; font-weight: 900;
+    color: white; letter-spacing: -1px;
+    text-transform: uppercase; margin-bottom: 4px;
+  }
+  .card-status-sub { font-size: 0.8rem; color: rgba(255,255,255,0.65); }
+
+  .card-body { background: white; padding: 24px; }
+
+  .card-type-badge {
+    display: inline-block;
+    background: var(--blue-light); color: var(--blue);
+    font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+    padding: 5px 12px; border-radius: 6px;
+    margin-bottom: 20px;
+  }
+
+  .card-row {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+  }
+  .card-row:last-of-type { border-bottom: none; }
+  .card-row-label {
+    font-size: 0.72rem; font-weight: 600; color: var(--grey);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    flex-shrink: 0; margin-right: 12px;
+  }
+  .card-row-value { font-size: 0.88rem; font-weight: 600; color: var(--dark); text-align: right; }
+
+  .card-divider {
+    height: 1px; background: var(--border); margin: 4px 0;
+  }
+
+  .card-qr-section {
+    background: var(--grey-light);
+    margin: 0 -24px; padding: 20px 24px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .qr-placeholder {
+    width: 64px; height: 64px; background: white;
+    border-radius: 8px; border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; flex-shrink: 0;
+  }
+  .qr-info { flex: 1; }
+  .qr-label { font-size: 0.7rem; font-weight: 700; color: var(--grey); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .qr-value { font-size: 0.75rem; color: var(--dark2); font-family: monospace; word-break: break-all; }
+
+  .card-expiry {
+    background: var(--amber-light);
+    margin: 16px -24px -24px;
+    padding: 14px 24px;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.8rem; color: var(--amber); font-weight: 600;
+  }
+  .card-expiry.expired { background: var(--red-light); color: var(--red); }
+
+  .card-identities {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 1px; background: var(--border);
+    margin: 0 -24px; margin-top: 16px;
+  }
+  .identity-block { background: white; padding: 14px; }
+  .identity-role { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--grey); margin-bottom: 4px; }
+  .identity-name { font-size: 0.85rem; font-weight: 700; color: var(--dark); }
+  .identity-company { font-size: 0.75rem; color: var(--grey); }
+
+  .denial-reason-box {
+    background: var(--red-light); border-radius: 10px;
+    padding: 14px 16px; margin-top: 16px;
+  }
+  .denial-label { font-size: 0.7rem; font-weight: 700; color: var(--red); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .denial-text { font-size: 0.88rem; color: #7F1D1D; }
+
+  /* ===== APPROVER VIEW ===== */
+  #view-approver { background: var(--grey-light); }
+  .approver-body { flex: 1; padding: 24px 20px; max-width: 600px; margin: 0 auto; width: 100%; }
+
+  .request-card {
+    background: white; border-radius: 16px;
+    border: 1px solid var(--border);
+    overflow: hidden; margin-bottom: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .request-card-header {
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: flex-start; justify-content: space-between;
+  }
+  .request-type {
+    font-size: 1.15rem; font-weight: 800; color: var(--dark); margin-bottom: 4px;
+  }
+  .urgency-tag {
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; padding: 4px 10px; border-radius: 6px;
+    flex-shrink: 0;
+  }
+  .urgency-tag.Standard { background: var(--blue-light); color: var(--blue); }
+  .urgency-tag.Urgent { background: var(--amber-light); color: var(--amber); }
+  .urgency-tag.Critical { background: var(--red-light); color: var(--red); }
+
+  .request-card-body { padding: 16px 20px; }
+  .detail-row { display: flex; gap: 12px; margin-bottom: 10px; font-size: 0.85rem; }
+  .detail-label { color: var(--grey); font-weight: 500; flex-shrink: 0; width: 100px; }
+  .detail-value { color: var(--dark); font-weight: 600; }
+  .details-box {
+    background: var(--grey-light); border-radius: 8px;
+    padding: 12px 14px; margin-top: 12px;
+    font-size: 0.85rem; color: var(--dark2); line-height: 1.6;
+  }
+
+  .approver-actions { display: flex; flex-direction: column; gap: 12px; }
+  .btn-approve {
+    width: 100%; padding: 18px;
+    background: var(--green); color: white;
+    border: none; border-radius: 12px;
+    font-size: 1.05rem; font-weight: 800;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-approve:hover { background: #15803D; transform: translateY(-1px); }
+  .btn-deny {
+    width: 100%; padding: 18px;
+    background: white; color: var(--red);
+    border: 2px solid var(--red); border-radius: 12px;
+    font-size: 1.05rem; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-deny:hover { background: var(--red-light); }
+
+  .deny-reason-area {
+    display: none; margin-top: 12px;
+  }
+  .deny-reason-area textarea {
+    width: 100%; padding: 14px 16px;
+    border: 2px solid var(--red); border-radius: 10px;
+    font-size: 0.9rem; font-family: 'Inter', sans-serif;
+    resize: vertical; min-height: 80px;
+  }
+  .deny-reason-area textarea:focus { outline: none; }
+  .btn-confirm-deny {
+    width: 100%; padding: 16px; margin-top: 8px;
+    background: var(--red); color: white;
+    border: none; border-radius: 10px;
+    font-size: 0.95rem; font-weight: 700;
+    cursor: pointer;
+  }
+
+  /* ===== LOADING STATE ===== */
+  .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid rgba(37,99,235,0.2);
+    border-top-color: var(--blue);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 60px auto;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error-state {
+    text-align: center; padding: 60px 24px; color: var(--grey);
+  }
+  .error-icon { font-size: 3rem; margin-bottom: 16px; }
+  .error-title { font-size: 1.2rem; font-weight: 700; color: var(--dark); margin-bottom: 8px; }
+  .error-sub { font-size: 0.88rem; line-height: 1.6; }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--dark); color: white;
+    padding: 12px 20px; border-radius: 10px;
+    font-size: 0.85rem; font-weight: 600;
+    opacity: 0; transition: opacity 0.3s;
+    z-index: 200; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; }
+
+  @media (min-width: 600px) {
+    .form-body { padding: 32px 24px 100px; }
+    .card-container { padding: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LANDING -->
+<div id="view-landing" class="view active">
+  <div class="landing-badge">Instant Ops Authorisation</div>
+  <div class="landing-logo">Clear<span>Auth</span></div>
+  <div class="landing-tagline">No calls. No waiting. No chaos.</div>
+  <p class="landing-desc">Send a request, get an instant approval. Secure, traceable, and timestamped — every time.</p>
+  <div class="landing-buttons">
+    <button class="btn-primary" onclick="showView('driver')">🚛 I'm a Driver / Operator</button>
+    <button class="btn-secondary" onclick="showView('approver-entry')">✅ I'm an Approver</button>
+  </div>
+  <div class="landing-features">
+    <div class="feature-pill"><span class="icon">⚡</span> Instant push to the right person</div>
+    <div class="feature-pill"><span class="icon">🔐</span> Secure QR-verified approval cards</div>
+    <div class="feature-pill"><span class="icon">⏱️</span> Time-stamped & auto-expiring</div>
+    <div class="feature-pill"><span class="icon">📋</span> Full audit trail, no paper needed</div>
+  </div>
+</div>
+
+<!-- DRIVER FORM -->
+<div id="view-driver" class="view">
+  <div class="app-header">
+    <div class="app-logo">Clear<span>Auth</span></div>
+    <div class="header-badge badge-driver">Driver</div>
+  </div>
+  <div class="form-body">
+    <div class="section-title">Request Type</div>
+    <div class="form-group">
+      <label>What do you need authorisation for?</label>
+      <select id="req-type" onchange="handleTypeChange()">
+        <option value="">Select type...</option>
+        <option>Loading Bay Allocation</option>
+        <option>Unloading Permission</option>
+        <option>After-Hours Delivery</option>
+        <option>Site Entry Approval</option>
+        <option>Paperwork Validation</option>
+        <option>Trailer Swap</option>
+        <option>Hazardous Cargo Approval</option>
+        <option>Restricted Area Access</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="form-group" id="custom-type-group" style="display:none">
+      <label>Describe the authorisation needed</label>
+      <input type="text" id="custom-type" placeholder="e.g. Emergency bay access">
+    </div>
+
+    <div class="section-title">Your Details</div>
+    <div class="form-group">
+      <label>Your Full Name</label>
+      <input type="text" id="driver-name" placeholder="e.g. James Williams">
+    </div>
+    <div class="form-group">
+      <label>Company / Operator</label>
+      <input type="text" id="driver-company" placeholder="e.g. Russell Transport Ltd">
+    </div>
+    <div class="form-group">
+      <label>Vehicle Registration</label>
+      <input type="text" id="vehicle-reg" placeholder="e.g. PX21 ABC" style="text-transform:uppercase">
+    </div>
+
+    <div class="section-title">Location & Site</div>
+    <div class="form-group">
+      <label>Site Name</label>
+      <input type="text" id="site-name" placeholder="e.g. Tesco DC Daventry">
+    </div>
+    <div class="form-group">
+      <label>Location / Address</label>
+      <input type="text" id="location" placeholder="e.g. Gate 3, Bay 7, Daventry">
+    </div>
+    <div class="form-group">
+      <label>Additional Details</label>
+      <textarea id="details" placeholder="Any extra info the approver needs to know..."></textarea>
+    </div>
+
+    <div class="section-title">Urgency Level</div>
+    <div class="urgency-row">
+      <button class="urgency-btn active standard" onclick="setUrgency('Standard', this)">
+        <span class="urgency-icon">🟢</span>Standard
+      </button>
+      <button class="urgency-btn urgent" onclick="setUrgency('Urgent', this)">
+        <span class="urgency-icon">🟡</span>Urgent
+      </button>
+      <button class="urgency-btn critical" onclick="setUrgency('Critical', this)">
+        <span class="urgency-icon">🔴</span>Critical
+      </button>
+    </div>
+
+    <div class="section-title" style="margin-top:24px">Approver Details</div>
+    <div class="form-group">
+      <label>Approver Name</label>
+      <input type="text" id="approver-name" placeholder="e.g. Sarah Thompson">
+    </div>
+    <div class="form-group">
+      <label>Approver Role / Title</label>
+      <input type="text" id="approver-role" placeholder="e.g. Site Manager, Dispatcher">
+    </div>
+    <div class="form-group">
+      <label>Approver Email</label>
+      <input type="email" id="approver-email" placeholder="approver@company.com">
+    </div>
+  </div>
+  <div class="form-footer">
+    <button class="btn-submit" onclick="submitRequest()" id="submit-btn">Send Authorisation Request →</button>
+  </div>
+</div>
+
+<!-- PENDING -->
+<div id="view-pending" class="view">
+  <div class="pending-pulse">⏳</div>
+  <div class="pending-title">Request Sent</div>
+  <p class="pending-sub">Your request has been sent to the approver. You'll be notified the moment a decision is made.</p>
+  <div class="pending-ref">
+    <div class="ref-label">Reference ID</div>
+    <div class="ref-id" id="pending-ref-id">—</div>
+  </div>
+  <div class="pending-loader">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <span style="margin-left:4px">Waiting for approval...</span>
+  </div>
+</div>
+
+<!-- APPROVAL CARD -->
+<div id="view-card" class="view">
+  <div class="card-container" id="approval-card-container">
+    <div class="spinner"></div>
+  </div>
+</div>
+
+<!-- APPROVER ENTRY -->
+<div id="view-approver-entry" class="view" style="background:var(--dark);align-items:center;justify-content:center;padding:40px 24px;">
+  <div style="text-align:center;max-width:360px;width:100%">
+    <div style="font-size:3rem;margin-bottom:20px">✅</div>
+    <div class="landing-logo" style="margin-bottom:8px">Clear<span style="color:var(--blue)">Auth</span></div>
+    <p style="color:#64748B;margin-bottom:32px;font-size:0.9rem">Enter the approval code sent to your email to review the request.</p>
+    <div class="form-group" style="text-align:left;margin-bottom:16px">
+      <label style="color:#94A3B8;font-size:0.8rem;font-weight:600;margin-bottom:6px;display:block">Approval Token</label>
+      <input type="text" id="approver-token-input" placeholder="e.g. AUTH-XXXXXXXX"
+        style="width:100%;padding:16px;border:2px solid rgba(255,255,255,0.1);border-radius:10px;background:rgba(255,255,255,0.06);color:white;font-size:1rem;font-family:monospace"
+        oninput="this.value=this.value.toUpperCase()">
+    </div>
+    <button class="btn-primary" style="width:100%" onclick="loadApproverView()">Load Request</button>
+    <p style="color:#475569;font-size:0.78rem;margin-top:20px">Token is sent to your registered email when a driver submits a request.</p>
+  </div>
+</div>
+
+<!-- APPROVER DECISION -->
+<div id="view-approver" class="view">
+  <div class="app-header">
+    <div class="app-logo">Clear<span>Auth</span></div>
+    <div class="header-badge badge-approver">Approver</div>
+  </div>
+  <div class="approver-body" id="approver-body">
+    <div class="spinner"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  const API_BASE = 'https://assistant-36b1ac32.base44.app/functions';
+  let currentToken = null;
+  let currentRecord = null;
+  let pollingInterval = null;
+  let urgency = 'Standard';
+
+  // ===== NAVIGATION =====
+  function showView(name) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + name).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  function handleTypeChange() {
+    const val = document.getElementById('req-type').value;
+    document.getElementById('custom-type-group').style.display = val === 'Other' ? 'block' : 'none';
+  }
+
+  function setUrgency(level, btn) {
+    urgency = level;
+    document.querySelectorAll('.urgency-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  // ===== SUBMIT REQUEST =====
+  async function submitRequest() {
+    const type = document.getElementById('req-type').value;
+    const driverName = document.getElementById('driver-name').value.trim();
+    const approverEmail = document.getElementById('approver-email').value.trim();
+
+    if (!type || !driverName || !approverEmail) {
+      showToast('Please fill in all required fields');
+      return;
+    }
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+
+    // Generate a secure token
+    const token = 'AUTH-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+    const expiresAt = new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(); // 4hr expiry
+
+    const payload = {
+      request_type: type === 'Other' ? 'Other' : type,
+      custom_type: type === 'Other' ? document.getElementById('custom-type').value : '',
+      driver_name: driverName,
+      driver_company: document.getElementById('driver-company').value.trim(),
+      vehicle_reg: document.getElementById('vehicle-reg').value.trim().toUpperCase(),
+      site_name: document.getElementById('site-name').value.trim(),
+      location: document.getElementById('location').value.trim(),
+      details: document.getElementById('details').value.trim(),
+      urgency: urgency,
+      approver_name: document.getElementById('approver-name').value.trim(),
+      approver_role: document.getElementById('approver-role').value.trim(),
+      approver_email: approverEmail,
+      status: 'Pending',
+      approval_token: token,
+      expires_at: expiresAt,
+    };
+
+    try {
+      // Save to Base44 entities via inline REST
+      const res = await fetch(`https://api.base44.com/api/apps/6a0c1534017166f536b1ac32/entities/ApprovalRequest`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': 'public' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) throw new Error('Failed to create request');
+      const record = await res.json();
+
+      currentToken = token;
+      currentRecord = record;
+
+      document.getElementById('pending-ref-id').textContent = token;
+      showView('pending');
+
+      // Start polling for decision
+      startPolling(token);
+
+    } catch (err) {
+      showToast('Error: ' + err.message);
+      btn.disabled = false;
+      btn.textContent = 'Send Authorisation Request →';
+    }
+  }
+
+  // ===== POLLING =====
+  function startPolling(token) {
+    if (pollingInterval) clearInterval(pollingInterval);
+    pollingInterval = setInterval(async () => {
+      try {
+        const res = await fetch(`${API_BASE}/getApprovalCard`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token })
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.record && data.record.status !== 'Pending') {
+          clearInterval(pollingInterval);
+          currentRecord = data.record;
+          renderApprovalCard(data.record);
+          showView('card');
+        }
+      } catch (e) {}
+    }, 3000);
+  }
+
+  // ===== RENDER APPROVAL CARD =====
+  function renderApprovalCard(r) {
+    const isApproved = r.status === 'Approved';
+    const isDenied = r.status === 'Denied';
+
+    const statusIcon = isApproved ? '✅' : isDenied ? '❌' : '⏳';
+    const statusWord = r.status.toUpperCase();
+    const statusClass = r.status.toLowerCase();
+
+    const approvedAt = r.approved_at ? new Date(r.approved_at) : null;
+    const expiresAt = r.expires_at ? new Date(r.expires_at) : null;
+    const now = new Date();
+    const isExpired = expiresAt && expiresAt < now;
+
+    const timeStr = approvedAt ? approvedAt.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit', second:'2-digit'}) : '—';
+    const dateStr = approvedAt ? approvedAt.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'}) : '—';
+    const expStr = expiresAt ? expiresAt.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'}) : '—';
+
+    const requestLabel = r.request_type === 'Other' ? r.custom_type : r.request_type;
+
+    document.getElementById('approval-card-container').innerHTML = `
+      <div class="approval-card">
+        <div class="card-status-bar ${statusClass}">
+          <div class="card-status-icon">${statusIcon}</div>
+          <div class="card-status-word">${statusWord}</div>
+          <div class="card-status-sub">${isApproved ? 'This request has been authorised' : isDenied ? 'This request has been declined' : 'Awaiting decision'}</div>
+        </div>
+        <div class="card-body">
+          <div class="card-type-badge">${requestLabel}</div>
+
+          <div class="card-identities">
+            <div class="identity-block">
+              <div class="identity-role">Driver</div>
+              <div class="identity-name">${r.driver_name || '—'}</div>
+              <div class="identity-company">${r.driver_company || ''}</div>
+            </div>
+            <div class="identity-block">
+              <div class="identity-role">Approver</div>
+              <div class="identity-name">${r.approver_name || '—'}</div>
+              <div class="identity-company">${r.approver_role || ''}</div>
+            </div>
+          </div>
+
+          <div style="height:16px"></div>
+
+          <div class="card-row">
+            <div class="card-row-label">Vehicle</div>
+            <div class="card-row-value">${r.vehicle_reg || '—'}</div>
+          </div>
+          <div class="card-row">
+            <div class="card-row-label">Site</div>
+            <div class="card-row-value">${r.site_name || '—'}</div>
+          </div>
+          <div class="card-row">
+            <div class="card-row-label">Location</div>
+            <div class="card-row-value">${r.location || '—'}</div>
+          </div>
+          <div class="card-row">
+            <div class="card-row-label">Urgency</div>
+            <div class="card-row-value">${r.urgency || 'Standard'}</div>
+          </div>
+          <div class="card-row">
+            <div class="card-row-label">Date</div>
+            <div class="card-row-value">${dateStr}</div>
+          </div>
+          <div class="card-row">
+            <div class="card-row-label">Time</div>
+            <div class="card-row-value">${timeStr}</div>
+          </div>
+
+          ${r.denial_reason ? `
+          <div class="denial-reason-box">
+            <div class="denial-label">Reason for Denial</div>
+            <div class="denial-text">${r.denial_reason}</div>
+          </div>` : ''}
+
+          <div class="card-qr-section" style="margin-top:16px">
+            <div class="qr-placeholder">🔲</div>
+            <div class="qr-info">
+              <div class="qr-label">Verification Token</div>
+              <div class="qr-value">${r.approval_token}</div>
+            </div>
+          </div>
+
+          <div class="card-expiry ${isExpired ? 'expired' : ''}">
+            ${isExpired ? '⛔ This authorisation has expired' : `⏱️ Valid until ${expStr} — present to site staff`}
+          </div>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="showView('landing')" style="margin-bottom:40px">New Request</button>
+    `;
+  }
+
+  // ===== APPROVER FLOW =====
+  function loadApproverView() {
+    const token = document.getElementById('approver-token-input').value.trim();
+    if (!token) { showToast('Please enter a token'); return; }
+    currentToken = token;
+    showView('approver');
+    loadApproverRequest(token);
+  }
+
+  async function loadApproverRequest(token) {
+    try {
+      const res = await fetch(`${API_BASE}/getApprovalCard`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token })
+      });
+      if (!res.ok) throw new Error('Request not found');
+      const data = await res.json();
+      currentRecord = data.record;
+      renderApproverDecision(data.record);
+    } catch (err) {
+      document.getElementById('approver-body').innerHTML = `
+        <div class="error-state">
+          <div class="error-icon">🔍</div>
+          <div class="error-title">Request Not Found</div>
+          <div class="error-sub">The token you entered doesn't match any active requests. Check the email and try again.</div>
+        </div>`;
+    }
+  }
+
+  function renderApproverDecision(r) {
+    const requestLabel = r.request_type === 'Other' ? r.custom_type : r.request_type;
+    const alreadyDone = r.status !== 'Pending';
+
+    document.getElementById('approver-body').innerHTML = `
+      <div class="request-card">
+        <div class="request-card-header">
+          <div>
+            <div class="request-type">${requestLabel}</div>
+            <div style="font-size:0.8rem;color:var(--grey)">${r.driver_name} · ${r.vehicle_reg || 'No reg'}</div>
+          </div>
+          <div class="urgency-tag ${r.urgency}">${r.urgency}</div>
+        </div>
+        <div class="request-card-body">
+          <div class="detail-row"><span class="detail-label">Driver</span><span class="detail-value">${r.driver_name}</span></div>
+          <div class="detail-row"><span class="detail-label">Company</span><span class="detail-value">${r.driver_company || '—'}</span></div>
+          <div class="detail-row"><span class="detail-label">Vehicle</span><span class="detail-value">${r.vehicle_reg || '—'}</span></div>
+          <div class="detail-row"><span class="detail-label">Site</span><span class="detail-value">${r.site_name || '—'}</span></div>
+          <div class="detail-row"><span class="detail-label">Location</span><span class="detail-value">${r.location || '—'}</span></div>
+          ${r.details ? `<div class="details-box">${r.details}</div>` : ''}
+        </div>
+      </div>
+
+      ${alreadyDone ? `
+        <div style="text-align:center;padding:32px;background:white;border-radius:16px;border:1px solid var(--border)">
+          <div style="font-size:2rem;margin-bottom:12px">${r.status === 'Approved' ? '✅' : '❌'}</div>
+          <div style="font-size:1.1rem;font-weight:800;color:var(--dark)">Already ${r.status}</div>
+          <div style="font-size:0.85rem;color:var(--grey);margin-top:6px">This request was already processed.</div>
+        </div>
+      ` : `
+        <div class="approver-actions">
+          <button class="btn-approve" onclick="processDecision('Approved')">✅ Approve Request</button>
+          <button class="btn-deny" onclick="showDenyReason()">❌ Deny Request</button>
+          <div class="deny-reason-area" id="deny-reason-area">
+            <textarea id="deny-reason-text" placeholder="Reason for denial (optional but recommended)..."></textarea>
+            <button class="btn-confirm-deny" onclick="processDecision('Denied')">Confirm Denial</button>
+          </div>
+        </div>
+      `}
+    `;
+  }
+
+  function showDenyReason() {
+    document.getElementById('deny-reason-area').style.display = 'block';
+  }
+
+  async function processDecision(action) {
+    try {
+      const reason = action === 'Denied' ? (document.getElementById('deny-reason-text')?.value || '') : '';
+
+      const res = await fetch(`${API_BASE}/handleApproval`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: currentToken, action, denial_reason: reason })
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Failed');
+      }
+
+      const data = await res.json();
+      currentRecord = data.record;
+      renderApprovalCard(data.record);
+      showView('card');
+    } catch (err) {
+      showToast('Error: ' + err.message);
+    }
+  }
+
+  // ===== TOAST =====
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // Handle token in URL (for approver email links)
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlToken = urlParams.get('token');
+  if (urlToken) {
+    currentToken = urlToken;
+    showView('approver');
+    loadApproverRequest(urlToken);
+  }
+</script>
+</body>
+</html>
