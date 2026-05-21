@@ -499,7 +499,7 @@
 
 <script>
   const API_BASE = 'https://assistant-36b1ac32.base44.app/functions';
-  const ENTITY_API = 'https://api.base44.com/api/apps/6a0c1534017166f536b1ac32/entities/ApprovalRequest';
+  
   const PASSCODE = '1234';
 
   let currentToken = null;
@@ -563,7 +563,7 @@
   async function loadDashboard() {
     document.getElementById('dashboard-list').innerHTML = '<div class="spinner"></div>';
     try {
-      const res = await fetch(ENTITY_API, { headers: { 'x-api-key': 'public' } });
+      const res = await fetch(`${API_BASE}/listApprovalRequests`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) });
       if (!res.ok) throw new Error('Failed to load');
       const data = await res.json();
       allRequests = (data.records || data || []).sort((a, b) => {
@@ -722,9 +722,9 @@
     };
 
     try {
-      const res = await fetch(ENTITY_API, {
+      const res = await fetch(`${API_BASE}/createApprovalRequest`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-api-key': 'public' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
       if (!res.ok) throw new Error('Failed to create request');
