@@ -1261,6 +1261,8 @@
   }
 
   async function deleteSite(siteName) {
+    try {
+
     const usersInSite = companyUsers.filter(u => u.department === siteName);
     const msg = usersInSite.length > 0
       ? `Delete site "${siteName}"? The ${usersInSite.length} member(s) will be moved to Unassigned.`
@@ -1273,6 +1275,11 @@
     await saveCompanySites();
     renderUserSections();
     showToast(`Site "${siteName}" deleted`);
+  
+    } catch(e) {
+      console.error('Delete site error:', e);
+      showToast('Delete site failed: ' + e.message);
+    }
   }
 
   function openSiteOptions(siteName) {
@@ -1303,6 +1310,8 @@
   }
 
   async async function confirmCreateSite() {
+    try {
+
     const name = document.getElementById('new-site-name').value.trim();
     const errEl = document.getElementById('create-site-error');
     if (!name) { errEl.textContent = 'Please enter a site name.'; errEl.classList.add('show'); return; }
@@ -1326,6 +1335,11 @@
     await saveCompanySites();
     closeCreateSiteModal();
     renderUserSections();
+  
+    } catch(e) {
+      console.error('Create site error:', e);
+      showToast('Create site failed: ' + e.message);
+    }
   }
 
   // ===== ASSIGN USER TO SITE =====
@@ -1436,6 +1450,8 @@
   }
 
   async function siteDropDrop(event, site, zoneKey) {
+    try {
+
     event.preventDefault();
     if (!dragUserId) return;
     const uid = dragUserId;
@@ -1448,6 +1464,11 @@
     if (user && user.role === 'approver' && site) await onApproverAssignedToSite(uid, site);
     renderUserSections();
     showToast(site ? `Moved to ${site}` : 'Removed from site');
+  
+    } catch(e) {
+      console.error('Assign to site error:', e);
+      showToast('Assign to site failed: ' + e.message);
+    }
   }
 
   // ===== TOUCH DRAG (mobile) =====
@@ -1510,6 +1531,8 @@
   }
 
   async function handleTouchEnd(e) {
+    try {
+
     document.removeEventListener('touchmove', handleTouchMove);
     document.removeEventListener('touchend', handleTouchEnd);
     if (touchHoldTimer) { clearTimeout(touchHoldTimer); touchHoldTimer = null; }
@@ -1550,6 +1573,11 @@
 
     touchDragUserId = null;
     touchDragEl = null;
+  
+    } catch(e) {
+      console.error('Touch assign error:', e);
+      showToast('Touch assign failed: ' + e.message);
+    }
   }
 
   function renderUserList(users, role) {
@@ -2215,6 +2243,8 @@
   }
 
   async function openUserProfile(userId) {
+    try {
+
     profileUser = companyUsers.find(u => u.id === userId);
     if (!profileUser) return;
     profileOpenedBy = currentUser ? currentUser.role : null;
@@ -2264,6 +2294,11 @@
     loadProfileRequests(profileUser.id, profileUser.role);
 
     showView('profile');
+  
+    } catch(e) {
+      console.error('Load profile error:', e);
+      showToast('Failed to load profile: ' + e.message);
+    }
   }
 
   function buildDeptDropdown(currentDept) {
