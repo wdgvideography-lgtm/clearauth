@@ -1315,7 +1315,7 @@ Choose:
     try {
       await fetch(`${API}/clearauthManageUser`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'update', id: userId, company_id: currentUser.company_id, department: siteName || '' })
+        body: JSON.stringify({ action: 'update', user_id: userId, company_id: currentUser.company_id, department: siteName || '' })
       });
     } catch(e) { console.error('Failed to save site assignment', e); }
   }
