@@ -1736,11 +1736,11 @@ Choose:
 
   function openDenyModal(token) { denyTargetToken=token; document.getElementById('deny-reason-text').value=''; document.getElementById('deny-modal').classList.add('open'); }
   function closeDenyModal() { document.getElementById('deny-modal').classList.remove('open'); denyTargetToken=null; }
-  function confirmDeny() { const r=document.getElementById('deny-reason-text').value.trim(); closeDenyModal(); processDecision(denyTargetToken,'Denied',r,''); }
+  function confirmDeny() { const r=document.getElementById('deny-reason-text').value.trim(); const tok=denyTargetToken; closeDenyModal(); processDecision(tok,'Denied',r,''); }
 
   function openApproveModal(token) { approveTargetToken=token; document.getElementById('approve-note-text').value=''; document.getElementById('approve-modal').classList.add('open'); }
   function closeApproveModal() { document.getElementById('approve-modal').classList.remove('open'); approveTargetToken=null; }
-  function confirmApprove() { const note=document.getElementById('approve-note-text').value.trim(); closeApproveModal(); processDecision(approveTargetToken,'Approved','',note); }
+  function confirmApprove() { const note=document.getElementById('approve-note-text').value.trim(); const tok=approveTargetToken; closeApproveModal(); processDecision(tok,'Approved','',note); }
 
   async function processDecision(token, action, reason, note) {
     try {
