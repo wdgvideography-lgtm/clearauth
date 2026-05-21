@@ -1,0 +1,2221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>RE-Quest — Instant Ops Authorisation</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --blue: #3B7DD8; --blue-dark: #2563EB; --blue-light: #EBF3FF;
+    --green: #0F9D6B; --green-light: #D6F5EC;
+    --red: #E03E3E; --red-light: #FEE8E8;
+    --amber: #E07B2A; --amber-light: #FEF0E0;
+    --purple: #7C3AED; --purple-light: #EDE9FE;
+    --dark: #1A2233; --dark2: #2D3A4F;
+    --grey: #7A8A9E; --grey-light: #F4F7FA;
+    --border: #E4EAF2; --text: #1A2233;
+    --card-shadow: 0 2px 16px rgba(30,50,90,0.08);
+    --card-radius: 16px;
+    --accent: #3B7DD8;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; background: #F0F4FA; color: var(--text); min-height: 100vh; }
+  .view { display: none; min-height: 100vh; }
+  .view.active { display: flex; flex-direction: column; }
+
+  /* ===== LOGIN ===== */
+  #view-login { background: linear-gradient(160deg, #1A2E50 0%, #2B4B8C 60%, #3B7DD8 100%); align-items: center; justify-content: center; padding: 32px 20px; }
+  .login-card { width: 100%; max-width: 400px; background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 24px 64px rgba(20,40,90,0.35); }
+  .login-header { background: linear-gradient(135deg, #1A2E50, #2B4B8C); padding: 32px 32px 28px; text-align: center; position: relative; overflow: hidden; }
+  .login-header::before { content: ''; position: absolute; width: 200px; height: 200px; background: rgba(255,255,255,0.04); border-radius: 50%; top: -80px; right: -60px; }
+  .login-logo { font-size: 2.4rem; font-weight: 900; color: white; letter-spacing: -1px; margin-bottom: 6px; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; gap: 0; }
+  .login-logo .re { color: #7AB8FF; font-style: italic; font-weight: 900; }
+  .login-logo .dash { color: rgba(255,255,255,0.5); font-weight: 300; margin: 0 2px; }
+  .login-tagline { font-size: 0.7rem; color: rgba(255,255,255,0.45); letter-spacing: 3px; text-transform: uppercase; }
+  .login-body { padding: 30px 28px 26px; }
+  .login-title { font-size: 1.2rem; font-weight: 800; color: var(--dark); margin-bottom: 4px; }
+  .login-sub { font-size: 0.84rem; color: var(--grey); margin-bottom: 24px; line-height: 1.5; }
+  .field-group { margin-bottom: 16px; }
+  .field-group label { display: block; font-size: 0.74rem; font-weight: 700; color: var(--dark2); margin-bottom: 7px; text-transform: uppercase; letter-spacing: 0.8px; }
+  .field-input { width: 100%; padding: 13px 16px; border: 1.5px solid var(--border); border-radius: 11px; font-size: 0.95rem; font-family: 'Inter', sans-serif; color: var(--text); transition: all 0.2s; background: var(--grey-light); }
+  .field-input:focus { outline: none; border-color: var(--blue); background: white; box-shadow: 0 0 0 3px rgba(59,125,216,0.12); }
+  .field-input::placeholder { color: #B0BEC8; }
+  .form-error { background: var(--red-light); color: var(--red); border-radius: 10px; padding: 11px 14px; font-size: 0.83rem; font-weight: 600; margin-bottom: 14px; display: none; border-left: 3px solid var(--red); }
+  .form-error.show { display: block; }
+  .btn-main { width: 100%; padding: 15px; background: linear-gradient(135deg, #3B7DD8, #2B4B8C); color: white; border: none; border-radius: 12px; font-size: 0.96rem; font-weight: 700; cursor: pointer; transition: all 0.2s; letter-spacing: 0.3px; }
+  .btn-main:hover { background: linear-gradient(135deg, #2563EB, #1A3A7A); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(59,125,216,0.35); }
+  .btn-main:active { transform: translateY(0); }
+  .btn-main:disabled { background: #B0BEC8; cursor: not-allowed; transform: none; box-shadow: none; }
+  .login-footer-note { text-align: center; font-size: 0.74rem; color: #A0AFBF; margin-top: 18px; line-height: 1.5; }
+
+  /* ===== SHARED HEADER ===== */
+  .app-header { background: white; border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; box-shadow: 0 1px 8px rgba(30,50,90,0.06); }
+  .app-logo { font-size: 1.35rem; font-weight: 900; color: var(--dark); letter-spacing: -0.5px; display: flex; align-items: center; gap: 0; }
+  .app-logo .re { color: var(--blue); font-style: italic; font-weight: 900; }
+  .app-logo .dash { color: #C0CCDA; font-weight: 300; margin: 0 2px; }
+  .header-right { display: flex; align-items: center; gap: 10px; }
+  .header-badge { font-size: 0.63rem; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; padding: 5px 11px; border-radius: 20px; }
+  .badge-employee { background: #E0EEFF; color: #2563EB; }
+  .badge-approver { background: #D6F5EC; color: #0F9D6B; }
+  .badge-company { background: #EDE9FE; color: #6D28D9; }
+  .btn-logout { background: none; border: 1.5px solid var(--border); color: var(--grey); padding: 6px 13px; border-radius: 8px; font-size: 0.73rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .btn-logout:hover { border-color: var(--red); color: var(--red); background: var(--red-light); }
+
+  /* ===== EMPLOYEE FORM ===== */
+  #view-employee { background: #F0F4FA; }
+  .form-body { flex: 1; padding: 20px 16px 100px; max-width: 600px; margin: 0 auto; width: 100%; }
+  .section-title { font-size: 0.67rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--grey); margin-bottom: 10px; margin-top: 22px; }
+  .section-title:first-child { margin-top: 0; }
+  .form-group { margin-bottom: 12px; }
+  .form-group label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--dark2); margin-bottom: 6px; }
+  .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 13px 16px; border: 1.5px solid var(--border); border-radius: 11px; font-size: 0.95rem; font-family: 'Inter', sans-serif; background: white; color: var(--text); transition: all 0.2s; appearance: none; box-shadow: 0 1px 3px rgba(30,50,90,0.04); }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(59,125,216,0.12); }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+  .form-group input::placeholder, .form-group textarea::placeholder { color: #B8C7D6; }
+  .urgency-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .urgency-btn { padding: 14px 8px; border-radius: 12px; border: 2px solid var(--border); background: white; cursor: pointer; text-align: center; font-size: 0.78rem; font-weight: 600; transition: all 0.2s; color: var(--grey); box-shadow: 0 1px 4px rgba(30,50,90,0.05); }
+  .urgency-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(30,50,90,0.1); }
+  .urgency-btn.active.standard { border-color: var(--blue); background: var(--blue-light); color: var(--blue); }
+  .urgency-btn.active.urgent { border-color: var(--amber); background: var(--amber-light); color: var(--amber); }
+  .urgency-btn.active.critical { border-color: var(--red); background: var(--red-light); color: var(--red); }
+  .urgency-icon { font-size: 1.3rem; display: block; margin-bottom: 5px; }
+  .form-footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--border); padding: 14px 20px; z-index: 40; box-shadow: 0 -4px 16px rgba(30,50,90,0.08); }
+  .btn-submit { width: 100%; max-width: 600px; margin: 0 auto; display: block; background: linear-gradient(135deg, #3B7DD8, #2B4B8C); color: white; border: none; padding: 16px; font-size: 1rem; font-weight: 700; border-radius: 13px; cursor: pointer; transition: all 0.2s; letter-spacing: 0.2px; }
+  .btn-submit:hover { background: linear-gradient(135deg, #2563EB, #1A3A7A); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(59,125,216,0.3); }
+  .btn-submit:disabled { background: #B0BEC8; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  /* ===== PENDING ===== */
+  #view-pending { background: linear-gradient(160deg, #1A2E50 0%, #2B4B8C 60%, #3B7DD8 100%); align-items: center; justify-content: center; padding: 40px 24px; text-align: center; }
+  .pending-pulse { width: 100px; height: 100px; border-radius: 50%; background: rgba(122,184,255,0.15); border: 3px solid rgba(122,184,255,0.6); display: flex; align-items: center; justify-content: center; margin: 0 auto 32px; font-size: 2.5rem; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(122,184,255,0.4); } 50% { box-shadow: 0 0 0 20px rgba(122,184,255,0); } }
+  .pending-title { font-size: 1.6rem; font-weight: 800; color: white; margin-bottom: 12px; }
+  .pending-sub { font-size: 0.9rem; color: rgba(255,255,255,0.55); margin-bottom: 40px; line-height: 1.6; }
+  .pending-ref { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 14px; padding: 20px 24px; margin-bottom: 32px; max-width: 360px; }
+  .ref-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 6px; }
+  .ref-id { font-size: 1.1rem; font-weight: 700; color: white; font-family: monospace; }
+  .pending-loader { display: flex; align-items: center; gap: 8px; justify-content: center; color: rgba(255,255,255,0.5); font-size: 0.85rem; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: #7AB8FF; animation: bounce 1.4s infinite; }
+  .dot:nth-child(2) { animation-delay: 0.2s; } .dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+
+  /* ===== APPROVAL CARD ===== */
+  #view-card { background: var(--dark); overflow-y: auto; }
+  .card-container { width: 100%; max-width: 420px; margin: 0 auto; padding: 24px 20px 40px; }
+  .approval-card { border-radius: 20px; overflow: hidden; box-shadow: 0 25px 80px rgba(0,0,0,0.6); margin-bottom: 24px; }
+  .card-status-bar { padding: 28px 28px 24px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .card-status-bar.approved { background: linear-gradient(135deg, #14532D, #16A34A); }
+  .card-status-bar.denied { background: linear-gradient(135deg, #7F1D1D, #DC2626); }
+  .card-status-icon { font-size: 3.5rem; margin-bottom: 12px; }
+  .card-status-word { font-size: 2.2rem; font-weight: 900; color: white; letter-spacing: -1px; text-transform: uppercase; margin-bottom: 4px; }
+  .card-status-sub { font-size: 0.8rem; color: rgba(255,255,255,0.65); }
+  .card-body { background: white; padding: 24px; }
+  .card-type-badge { display: inline-block; background: var(--blue-light); color: var(--blue); font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 5px 12px; border-radius: 6px; margin-bottom: 20px; }
+  .card-identities { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); margin: 0 -24px; margin-top: 16px; }
+  .identity-block { background: white; padding: 14px; }
+  .identity-role { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--grey); margin-bottom: 4px; }
+  .identity-name { font-size: 0.85rem; font-weight: 700; color: var(--dark); }
+  .identity-company { font-size: 0.75rem; color: var(--grey); }
+  .card-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 11px 0; border-bottom: 1px solid var(--border); }
+  .card-row:last-of-type { border-bottom: none; }
+  .card-row-label { font-size: 0.72rem; font-weight: 600; color: var(--grey); text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; margin-right: 12px; }
+  .card-row-value { font-size: 0.88rem; font-weight: 600; color: var(--dark); text-align: right; }
+  .card-qr-section { background: var(--grey-light); margin: 0 -24px; padding: 18px 24px; display: flex; align-items: center; gap: 16px; }
+  .qr-placeholder { width: 60px; height: 60px; background: white; border-radius: 8px; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
+  .qr-info .qr-label { font-size: 0.7rem; font-weight: 700; color: var(--grey); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .qr-info .qr-value { font-size: 0.72rem; color: var(--dark2); font-family: monospace; word-break: break-all; }
+  .card-expiry { background: var(--amber-light); margin: 16px -24px -24px; padding: 14px 24px; display: flex; align-items: center; gap: 10px; font-size: 0.8rem; color: var(--amber); font-weight: 600; }
+  .card-expiry.expired { background: var(--red-light); color: var(--red); }
+  .denial-reason-box { background: var(--red-light); border-radius: 10px; padding: 14px 16px; margin-top: 16px; }
+  .approval-note-box { background: linear-gradient(135deg, #e8f5ee, #d4edd9); border-left: 4px solid #0f9d6b; border-radius: 10px; padding: 12px 16px; margin: 12px 0; }
+  .approval-note-label { font-size: 0.7rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #0a7a55; margin-bottom: 5px; }
+  .approval-note-text { font-size: 0.95rem; font-weight: 600; color: #1a4d35; }
+  .denial-label { font-size: 0.7rem; font-weight: 700; color: var(--red); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .denial-text { font-size: 0.88rem; color: #7F1D1D; }
+  .btn-new-req { width: 100%; padding: 15px; background: var(--blue); color: white; border: none; border-radius: 12px; font-size: 0.95rem; font-weight: 700; cursor: pointer; }
+
+  /* ===== APPROVER DASHBOARD ===== */
+  #view-approver { background: #F0F4FA; }
+  .dashboard-body { flex: 1; padding: 20px 16px; max-width: 700px; margin: 0 auto; width: 100%; }
+  .dash-top-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .dash-heading { font-size: 1.15rem; font-weight: 800; color: var(--dark); }
+  .refresh-btn { background: white; border: 1.5px solid var(--border); color: var(--grey); padding: 7px 14px; border-radius: 9px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .refresh-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+  .dash-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+  .tab-btn { padding: 9px 18px; border-radius: 22px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.2s; background: white; color: var(--grey); border: 1.5px solid var(--border); }
+  .tab-btn.active { background: var(--blue); color: white; border-color: var(--blue); box-shadow: 0 3px 10px rgba(59,125,216,0.25); }
+  .tab-count { display: inline-block; background: var(--red); color: white; border-radius: 100px; font-size: 0.65rem; font-weight: 800; padding: 1px 7px; margin-left: 6px; vertical-align: middle; }
+  .tab-count.zero { background: #C8D5E0; }
+  .requests-list { display: flex; flex-direction: column; gap: 12px; }
+  .empty-state { text-align: center; padding: 60px 24px; color: var(--grey); }
+  .empty-icon { font-size: 3rem; margin-bottom: 12px; }
+  .empty-title { font-size: 1rem; font-weight: 700; color: var(--dark); margin-bottom: 6px; }
+    .req-card { background: white; border-radius: 16px; border: 1px solid var(--border); overflow: hidden; box-shadow: var(--card-shadow); transition: transform 0.15s, box-shadow 0.15s; }
+  .req-card:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(30,50,90,0.12); }
+  .req-card-header { padding: 16px 18px 12px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 12px; }
+  .req-type-badge { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; background: var(--blue-light); color: var(--blue); flex-shrink: 0; }
+  .req-title { font-size: 0.95rem; font-weight: 800; color: var(--dark); line-height: 1.3; flex: 1; }
+  .urgency-badge { font-size: 0.68rem; font-weight: 700; padding: 3px 9px; border-radius: 20px; flex-shrink: 0; }
+  .urgency-badge.Standard { background: #E0EEFF; color: #2563EB; }
+  .urgency-badge.Urgent { background: var(--amber-light); color: var(--amber); }
+  .urgency-badge.Critical { background: var(--red-light); color: var(--red); }
+  .req-card-body { padding: 14px 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .req-field { }
+  .req-field-label { font-size: 0.67rem; font-weight: 700; color: var(--grey); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+  .req-field-value { font-size: 0.85rem; font-weight: 600; color: var(--dark); }
+  .req-card-footer { padding: 12px 18px; background: var(--grey-light); display: flex; gap: 10px; border-top: 1px solid var(--border); }
+  .btn-approve { flex: 1; padding: 11px; background: linear-gradient(135deg, #0F9D6B, #0A7A52); color: white; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+  .btn-approve:hover { box-shadow: 0 3px 12px rgba(15,157,107,0.35); transform: translateY(-1px); }
+  .btn-deny { flex: 1; padding: 11px; background: white; color: var(--red); border: 1.5px solid #FFCDD2; border-radius: 10px; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+  .btn-deny:hover { background: var(--red-light); border-color: var(--red); }
+  .req-time { font-size: 0.74rem; color: var(--grey); padding: 10px 18px 12px; }
+
+  /* ===== COMPANY DASHBOARD ===== */
+  #view-company { background: var(--grey-light); }
+  .company-body { flex: 1; padding: 20px; max-width: 700px; margin: 0 auto; width: 100%; }
+  .company-welcome { background: linear-gradient(135deg, #0F172A, #1E3A5F); border-radius: 14px; padding: 20px 22px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; }
+  .company-welcome-text h2 { font-size: 1.1rem; font-weight: 800; color: white; margin-bottom: 3px; }
+  .company-welcome-text p { font-size: 0.82rem; color: #64748B; }
+  .company-welcome-icon { font-size: 2rem; }
+  .invite-section { background: white; border-radius: 16px; border: 1px solid var(--border); padding: 20px; margin-bottom: 20px; box-shadow: var(--card-shadow); }
+  .invite-section-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--grey); margin-bottom: 14px; }
+  .invite-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .btn-invite-employee { padding: 14px; background: var(--blue-light); color: var(--blue); border: 1.5px solid #C5DEFF; border-radius: 12px; font-size: 0.88rem; font-weight: 700; cursor: pointer; text-align: center; transition: all 0.2s; }
+  .btn-invite-employee:hover { background: var(--blue); color: white; border-color: var(--blue); box-shadow: 0 3px 12px rgba(59,125,216,0.25); }
+  .btn-invite-approver { padding: 14px; background: var(--green-light); color: var(--green); border: 1.5px solid #B0EDD8; border-radius: 12px; font-size: 0.88rem; font-weight: 700; cursor: pointer; text-align: center; transition: all 0.2s; }
+  .btn-invite-approver:hover { background: var(--green); color: white; border-color: var(--green); box-shadow: 0 3px 12px rgba(15,157,107,0.25); }
+  .invite-link-box { margin-top: 14px; background: var(--grey-light); border-radius: 12px; padding: 14px; display: none; border: 1px solid var(--border); }
+  .invite-link-box.show { display: block; }
+  .invite-link-label { font-size: 0.72rem; font-weight: 700; color: var(--grey); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .invite-link-row { display: flex; gap: 8px; align-items: center; }
+  .invite-link-url { flex: 1; padding: 10px 12px; background: white; border: 1px solid var(--border); border-radius: 9px; font-size: 0.78rem; color: var(--dark2); font-family: monospace; word-break: break-all; }
+  .btn-copy { padding: 10px 14px; background: var(--blue); color: white; border: none; border-radius: 8px; font-size: 0.78rem; font-weight: 700; cursor: pointer; white-space: nowrap; transition: background 0.2s; }
+  .btn-copy:hover { background: var(--blue-dark); }
+  .btn-copy.copied { background: var(--green); }
+
+  /* User dropdowns */
+  .user-section { background: white; border-radius: 16px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 14px; box-shadow: var(--card-shadow); }
+  .user-section-header { padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; border-bottom: 1px solid transparent; transition: all 0.2s; }
+  .user-section-header:hover { background: #F7FAFF; }
+  .user-section-header.open { border-bottom-color: var(--border); background: #F7FAFF; }
+  .user-section-left { display: flex; align-items: center; gap: 12px; }
+  .user-section-icon { width: 38px; height: 38px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+  .user-section-icon.employee { background: var(--blue-light); }
+  .user-section-icon.approver { background: var(--green-light); }
+  .user-section-name { font-size: 0.95rem; font-weight: 800; color: var(--dark); }
+  .user-section-count { font-size: 0.78rem; color: var(--grey); margin-top: 1px; }
+  .user-section-chevron { font-size: 0.9rem; color: var(--grey); transition: transform 0.2s; }
+  .user-section-header.open .user-section-chevron { transform: rotate(180deg); }
+  .user-section-body { display: none; }
+  .user-section-body.open { display: block; }
+  .user-row { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .user-row:last-child { border-bottom: none; }
+  .user-row-info { flex: 1; min-width: 0; }
+  .user-row-name { font-size: 0.88rem; font-weight: 700; color: var(--dark); }
+  .user-row-username { font-size: 0.78rem; color: var(--grey); font-family: monospace; }
+  .user-status-pill { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; padding: 3px 8px; border-radius: 6px; flex-shrink: 0; }
+  .user-status-pill.active { background: var(--green-light); color: var(--green); }
+  .user-status-pill.invited { background: var(--amber-light); color: var(--amber); }
+  .user-row-actions { display: flex; gap: 8px; }
+  .btn-edit-user { padding: 6px 12px; background: var(--grey-light); color: var(--dark); border: 1px solid var(--border); border-radius: 7px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
+  .btn-edit-user:hover { background: var(--blue-light); border-color: var(--blue); color: var(--blue); }
+  .btn-delete-user { padding: 6px 10px; background: none; color: var(--grey); border: 1px solid var(--border); border-radius: 7px; font-size: 0.75rem; cursor: pointer; }
+  .btn-delete-user:hover { background: var(--red-light); border-color: var(--red); color: var(--red); }
+  .empty-users { padding: 20px 18px; font-size: 0.85rem; color: var(--grey); font-style: italic; }
+
+  /* ===== EDIT USER MODAL ===== */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; align-items: flex-end; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal-box { background: white; border-radius: 20px 20px 0 0; padding: 24px 24px 36px; width: 100%; max-width: 500px; }
+  .modal-title { font-size: 1.05rem; font-weight: 800; color: var(--dark); margin-bottom: 16px; }
+  .modal-field { margin-bottom: 14px; }
+  .modal-field label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--dark2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .modal-field input { width: 100%; padding: 13px 16px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 0.92rem; font-family: 'Inter', sans-serif; }
+  .modal-field input:focus { outline: none; border-color: var(--blue); }
+  .modal-field .hint { font-size: 0.73rem; color: var(--grey); margin-top: 4px; }
+  .modal-error { background: var(--red-light); color: var(--red); border-radius: 8px; padding: 10px 14px; font-size: 0.82rem; font-weight: 600; margin-bottom: 12px; display: none; }
+  .modal-error.show { display: block; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 4px; }
+  .btn-modal-save { flex: 1; padding: 13px; background: var(--blue); color: white; border: none; border-radius: 10px; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
+  .btn-modal-save:hover { background: var(--blue-dark); }
+  .btn-modal-cancel { flex: 1; padding: 13px; background: var(--grey-light); color: var(--dark); border: none; border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+
+  /* ===== DENY MODAL ===== */
+  #deny-modal .modal-box textarea, #approve-modal .modal-box textarea { width: 100%; padding: 13px; border: 2px solid var(--border); border-radius: 10px; font-size: 0.9rem; font-family: 'Inter', sans-serif; resize: vertical; min-height: 80px; margin-bottom: 12px; box-sizing: border-box; }
+  #deny-modal .modal-box textarea:focus { outline: none; border-color: var(--red); }
+  #approve-modal .modal-box textarea:focus { outline: none; border-color: var(--green); }
+  .btn-confirm-approve { background: var(--green); color: white; border: none; padding: 11px 22px; border-radius: 10px; font-weight: 700; font-size: 0.9rem; cursor: pointer; }
+  .btn-confirm-approve:hover { background: #0a8a5c; }
+  .btn-confirm-deny { flex: 1; padding: 13px; background: var(--red); color: white; border: none; border-radius: 10px; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
+
+  /* ===== INVITE SETUP PAGE ===== */
+  #view-invite-setup { background: var(--dark); align-items: center; justify-content: center; padding: 32px 20px; }
+  .setup-card { width: 100%; max-width: 420px; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,0.4); }
+  .setup-header { padding: 24px 28px 20px; }
+  .setup-header.employee { background: linear-gradient(135deg, #1E3A5F, var(--blue)); }
+  .setup-header.approver { background: linear-gradient(135deg, #14532D, var(--green)); }
+  .setup-header-role { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 6px; }
+  .setup-header-title { font-size: 1.5rem; font-weight: 900; color: white; margin-bottom: 4px; }
+  .setup-header-sub { font-size: 0.82rem; color: rgba(255,255,255,0.6); }
+  .setup-body { padding: 24px 28px 28px; }
+  .setup-company-badge { display: inline-block; background: var(--grey-light); border-radius: 8px; padding: 6px 12px; font-size: 0.8rem; font-weight: 700; color: var(--dark2); margin-bottom: 20px; }
+  .setup-error { background: var(--red-light); color: var(--red); border-radius: 8px; padding: 10px 14px; font-size: 0.82rem; font-weight: 600; margin-bottom: 14px; display: none; }
+  .setup-error.show { display: block; }
+  .setup-success { text-align: center; padding: 20px 0; }
+  .setup-success-icon { font-size: 3rem; margin-bottom: 12px; }
+  .setup-success-title { font-size: 1.2rem; font-weight: 800; color: var(--dark); margin-bottom: 8px; }
+  .setup-success-sub { font-size: 0.85rem; color: var(--grey); line-height: 1.6; }
+
+  /* ===== PERMISSIONS ===== */
+  .user-card { border-bottom: 1px solid var(--border); }
+  .user-card:last-child { border-bottom: none; }
+  .user-card .user-row { border-bottom: none; }
+  .perm-section { border-top: 1px solid var(--border); background: var(--grey-light); }
+  .perm-header { display: flex; align-items: center; gap: 10px; padding: 10px 18px; cursor: pointer; user-select: none; }
+  .perm-header:hover { background: #E8EDF2; }
+  .perm-label { font-size: 0.78rem; font-weight: 700; color: var(--dark2); flex-shrink: 0; }
+  .perm-summary { font-size: 0.75rem; color: var(--grey); flex: 1; }
+  .perm-chevron { font-size: 0.75rem; color: var(--grey); transition: transform 0.2s; }
+  .perm-body { padding: 12px 18px 14px; border-top: 1px solid var(--border); background: white; }
+  .allow-all-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); margin-bottom: 10px; cursor: pointer; }
+  .allow-all-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--blue); cursor: pointer; flex-shrink: 0; }
+  .perm-check-label { font-size: 0.85rem; color: var(--dark); }
+  .approver-checks { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+  .approver-check-row { display: flex; align-items: center; gap: 10px; padding: 8px 10px; background: var(--grey-light); border-radius: 8px; cursor: pointer; }
+  .approver-check-row input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--blue); cursor: pointer; flex-shrink: 0; }
+  .approver-check-name { font-size: 0.83rem; font-weight: 600; color: var(--dark); }
+  .approver-check-username { font-size: 0.75rem; color: var(--grey); }
+  .btn-save-perms { width: 100%; padding: 10px; background: var(--blue); color: white; border: none; border-radius: 8px; font-size: 0.82rem; font-weight: 700; cursor: pointer; margin-top: 4px; }
+  .btn-save-perms:hover { background: var(--blue-dark); }
+  .no-approvers-note { font-size: 0.78rem; color: var(--grey); font-style: italic; padding: 8px 0; }
+
+  /* ===== UTILS ===== */
+  .spinner { width: 36px; height: 36px; border: 3px solid rgba(37,99,235,0.2); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 40px auto; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--dark2); color: white; padding: 13px 22px; border-radius: 24px; font-size: 0.85rem; font-weight: 600; opacity: 0; transition: opacity 0.3s; z-index: 400; white-space: nowrap; pointer-events: none; box-shadow: 0 4px 20px rgba(0,0,0,0.25); }
+  .toast.show { opacity: 1; }
+
+  /* ===== USER PROFILE PAGE ===== */
+  #view-profile { background: #F0F4FA; flex-direction: column; }
+  #view-profile .app-header { background: white; }
+
+  .profile-hero { background: linear-gradient(135deg, #1A2E50, #2B4B8C); padding: 24px 20px 32px; position: relative; overflow: hidden; }
+  .profile-hero::before { content: ''; position: absolute; width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 50%; top: -80px; right: -60px; }
+  .profile-hero::after { content: ''; position: absolute; width: 120px; height: 120px; background: rgba(255,255,255,0.04); border-radius: 50%; bottom: -40px; left: -30px; }
+
+  .profile-back { display: inline-flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.55); font-size: 0.82rem; font-weight: 600; cursor: pointer; margin-bottom: 22px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); padding: 7px 14px; border-radius: 20px; transition: all 0.2s; }
+  .profile-back:hover { color: white; background: rgba(255,255,255,0.15); }
+
+  .profile-avatar { width: 68px; height: 68px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.7rem; font-weight: 900; color: white; margin-bottom: 14px; position: relative; z-index: 1; }
+  .profile-avatar.employee { background: rgba(59,125,216,0.35); border: 2.5px solid rgba(122,184,255,0.6); }
+  .profile-avatar.approver { background: rgba(15,157,107,0.35); border: 2.5px solid rgba(100,220,170,0.6); }
+
+  .profile-name { font-size: 1.45rem; font-weight: 900; color: white; margin-bottom: 3px; position: relative; z-index: 1; }
+  .profile-username { font-size: 0.82rem; color: rgba(255,255,255,0.45); font-family: monospace; margin-bottom: 12px; position: relative; z-index: 1; }
+
+  .profile-meta-row { display: flex; align-items: center; gap: 10px; position: relative; z-index: 1; flex-wrap: wrap; }
+  .profile-role-badge { display: inline-block; padding: 5px 13px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+  .profile-role-badge.employee { background: rgba(59,125,216,0.3); color: #A8D0FF; border: 1px solid rgba(122,184,255,0.4); }
+  .profile-role-badge.approver { background: rgba(15,157,107,0.3); color: #90EDD0; border: 1px solid rgba(100,220,170,0.4); }
+  .profile-status-pill { display: inline-flex; align-items: center; gap: 5px; padding: 5px 11px; border-radius: 20px; background: rgba(255,255,255,0.1); font-size: 0.72rem; font-weight: 600; color: rgba(255,255,255,0.6); }
+  .profile-status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .profile-status-dot.active { background: #4ADE80; box-shadow: 0 0 6px rgba(74,222,128,0.6); }
+  .profile-status-dot.invited { background: #FCD34D; }
+
+  .profile-body { padding: 0 16px 50px; max-width: 600px; margin: 0 auto; width: 100%; }
+
+  .profile-section { background: white; border-radius: 16px; margin-top: 14px; overflow: hidden; box-shadow: 0 2px 12px rgba(30,50,90,0.07); border: 1px solid var(--border); }
+  .profile-section-header { padding: 15px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; background: #FAFCFF; }
+  .profile-section-icon { font-size: 1rem; }
+  .profile-section-title { font-size: 0.75rem; font-weight: 800; color: var(--dark); text-transform: uppercase; letter-spacing: 0.8px; }
+
+  .profile-field { padding: 14px 18px; border-bottom: 1px solid var(--border); }
+  .profile-field:last-child { border-bottom: none; }
+  .profile-field-label { font-size: 0.7rem; font-weight: 700; color: var(--grey); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 7px; }
+  .profile-field select { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 0.9rem; font-family: 'Inter', sans-serif; background: var(--grey-light); color: var(--text); appearance: none; cursor: pointer; transition: all 0.2s; }
+  .profile-field select:focus { outline: none; border-color: var(--blue); background: white; box-shadow: 0 0 0 3px rgba(59,125,216,0.1); }
+  .profile-field-value { font-size: 0.92rem; font-weight: 600; color: var(--dark); }
+
+  .profile-allow-all { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--border); background: #F0F7FF; cursor: pointer; transition: background 0.2s; }
+  .profile-allow-all:hover { background: #E4F0FF; }
+  .profile-allow-all input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--blue); cursor: pointer; flex-shrink: 0; }
+  .profile-allow-all-label { font-size: 0.88rem; font-weight: 700; color: var(--blue); }
+
+  .profile-approver-list { padding: 10px 14px 14px; display: flex; flex-direction: column; gap: 8px; }
+  .profile-approver-item { display: flex; align-items: center; gap: 12px; padding: 11px 13px; background: var(--grey-light); border-radius: 11px; border: 1px solid var(--border); transition: background 0.15s; cursor: pointer; }
+  .profile-approver-item:hover { background: #EEF4FF; border-color: #C5DEFF; }
+  .profile-approver-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--green-light); display: flex; align-items: center; justify-content: center; font-size: 0.82rem; font-weight: 800; color: var(--green); flex-shrink: 0; border: 1.5px solid #B0EDD8; }
+  .profile-approver-name { font-size: 0.87rem; font-weight: 700; color: var(--dark); }
+  .profile-approver-username { font-size: 0.74rem; color: var(--grey); font-family: monospace; margin-top: 1px; }
+  .profile-approver-check { margin-left: auto; }
+  .profile-approver-check input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--blue); cursor: pointer; }
+
+  .profile-save-btn { margin: 14px 16px 0; width: calc(100% - 32px); padding: 14px; background: linear-gradient(135deg, #3B7DD8, #2B4B8C); color: white; border: none; border-radius: 12px; font-size: 0.95rem; font-weight: 700; cursor: pointer; display: block; transition: all 0.2s; letter-spacing: 0.2px; }
+  .profile-save-btn:hover { box-shadow: 0 4px 16px rgba(59,125,216,0.35); transform: translateY(-1px); }
+
+  .profile-empty-approvers { padding: 20px 18px; font-size: 0.85rem; color: var(--grey); font-style: italic; text-align: center; }
+
+  .profile-danger-zone { border-color: #FFE0E0; }
+  .profile-danger-zone .profile-section-header { background: #FFF5F5; border-bottom-color: #FFE0E0; }
+  .btn-profile-delete { margin: 0 16px 16px; width: calc(100% - 32px); padding: 12px; background: none; color: var(--red); border: 1.5px solid #FFCDD2; border-radius: 11px; font-size: 0.88rem; font-weight: 700; cursor: pointer; display: block; transition: all 0.2s; }
+  .btn-profile-delete:hover { background: var(--red-light); border-color: var(--red); }
+
+  .profile-new-dept-input { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 0.9rem; font-family: 'Inter', sans-serif; background: var(--grey-light); color: var(--text); transition: all 0.2s; }
+  .profile-new-dept-input:focus { outline: none; border-color: var(--blue); background: white; box-shadow: 0 0 0 3px rgba(59,125,216,0.1); }
+
+
+  /* ===== SITE GROUPING ===== */
+  .site-section { background: white; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 14px; overflow: hidden; box-shadow: var(--card-shadow); }
+  .site-section-header { padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; transition: all 0.2s; background: linear-gradient(135deg, #F7FAFF, #EEF3FF); border-bottom: 1px solid transparent; }
+  .site-section-header:hover { background: linear-gradient(135deg, #EEF3FF, #E4ECFF); }
+  .site-section-header.open { border-bottom-color: var(--border); background: linear-gradient(135deg, #EEF3FF, #E4ECFF); }
+  .site-section-icon { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #3B7DD8, #2B4B8C); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+  .site-section-name { font-size: 0.98rem; font-weight: 800; color: var(--dark); }
+  .site-section-meta { font-size: 0.76rem; color: var(--grey); margin-top: 2px; }
+  .site-section-chevron { font-size: 0.85rem; color: var(--grey); transition: transform 0.25s; flex-shrink: 0; }
+  .site-section-header.open .site-section-chevron { transform: rotate(180deg); }
+  .site-body { display: none; }
+  .site-body.open { display: block; }
+
+  .role-subsection { border-bottom: 1px solid var(--border); }
+  .role-subsection:last-child { border-bottom: none; }
+  .role-subsection-header { padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; background: #FAFCFF; border-bottom: 1px solid transparent; transition: background 0.15s; }
+  .role-subsection-header:hover { background: #F2F6FF; }
+  .role-subsection-header.open { border-bottom-color: var(--border); background: #F2F6FF; }
+  .role-subsection-left { display: flex; align-items: center; gap: 10px; }
+  .role-subsection-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; flex-shrink: 0; }
+  .role-subsection-icon.employee { background: var(--blue-light); }
+  .role-subsection-icon.approver { background: var(--green-light); }
+  .role-subsection-title { font-size: 0.82rem; font-weight: 800; color: var(--dark); text-transform: uppercase; letter-spacing: 0.5px; }
+  .role-subsection-count { font-size: 0.72rem; color: var(--grey); margin-left: 6px; }
+  .role-subsection-chevron { font-size: 0.75rem; color: var(--grey); transition: transform 0.2s; }
+  .role-subsection-header.open .role-subsection-chevron { transform: rotate(180deg); }
+  .role-subsection-body { display: none; }
+  .role-subsection-body.open { display: block; }
+
+  /* ===== CREATE SITE BUTTON ===== */
+  .btn-create-site { padding: 9px 16px; background: linear-gradient(135deg, #3B7DD8, #2B4B8C); color: white; border: none; border-radius: 22px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.2s; letter-spacing: 0.2px; }
+  .btn-create-site:hover { box-shadow: 0 3px 12px rgba(59,125,216,0.35); transform: translateY(-1px); }
+
+  /* ===== SITE OPTIONS (rename/delete) ===== */
+  .site-options-btn { background: none; border: none; color: rgba(255,255,255,0.0); font-size: 1rem; cursor: pointer; padding: 4px 8px; border-radius: 7px; transition: all 0.2s; flex-shrink: 0; }
+  .site-section-header:hover .site-options-btn { color: rgba(59,125,216,0.7); background: rgba(59,125,216,0.08); }
+
+  /* ===== DRAG & DROP ===== */
+  .user-row.dragging { opacity: 0.4; }
+  .user-card.drag-over { background: #EEF5FF; border: 2px dashed var(--blue); border-radius: 10px; }
+  .site-drop-zone { min-height: 52px; border: 2px dashed transparent; border-radius: 12px; transition: all 0.2s; margin: 6px 12px; }
+  .site-drop-zone.drag-active { border-color: var(--blue); background: rgba(59,125,216,0.05); }
+  .site-drop-zone-label { text-align: center; padding: 14px; font-size: 0.78rem; color: var(--grey); font-style: italic; display: none; }
+  .site-drop-zone.drag-active .site-drop-zone-label { display: block; }
+  .user-card { cursor: grab; }
+  .user-card:active { cursor: grabbing; }
+
+  /* Drag handle indicator */
+  .drag-handle { color: #C8D5E4; font-size: 0.9rem; margin-right: 8px; cursor: grab; flex-shrink: 0; }
+  .user-card:hover .drag-handle { color: var(--blue); }
+
+  /* ===== REQUEST HISTORY ON PROFILE ===== */
+  .req-history-section { background: white; border-radius: 16px; margin-top: 14px; overflow: hidden; box-shadow: 0 2px 12px rgba(30,50,90,0.07); border: 1px solid var(--border); }
+  .req-history-tab-row { display: flex; border-bottom: 1px solid var(--border); }
+  .req-history-tab { flex: 1; padding: 11px 8px; text-align: center; font-size: 0.75rem; font-weight: 700; color: var(--grey); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.5px; }
+  .req-history-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+  .req-history-list { max-height: 340px; overflow-y: auto; }
+  .req-history-item { padding: 13px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 12px; }
+  .req-history-item:last-child { border-bottom: none; }
+  .req-status-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+  .req-status-dot.Pending { background: #F59E0B; box-shadow: 0 0 5px rgba(245,158,11,0.4); }
+  .req-status-dot.Approved { background: #10B981; box-shadow: 0 0 5px rgba(16,185,129,0.4); }
+  .req-status-dot.Denied { background: #EF4444; box-shadow: 0 0 5px rgba(239,68,68,0.3); }
+  .req-history-type { font-size: 0.85rem; font-weight: 700; color: var(--dark); margin-bottom: 2px; }
+  .req-history-meta { font-size: 0.74rem; color: var(--grey); }
+  .req-history-badge { margin-left: auto; font-size: 0.65rem; font-weight: 700; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.4px; flex-shrink: 0; }
+  .req-history-badge.Pending { background: #FEF3C7; color: #D97706; }
+  .req-history-badge.Approved { background: #D1FAE5; color: #059669; }
+  .req-history-badge.Denied { background: #FEE2E2; color: #DC2626; }
+  .req-history-empty { padding: 24px 16px; text-align: center; font-size: 0.82rem; color: var(--grey); font-style: italic; }
+  .req-history-loading { padding: 20px; display: flex; justify-content: center; }
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div id="view-login" class="view active">
+  <div style="margin:auto;width:100%;max-width:420px;padding:20px">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-logo"><span class="re">RE</span><span class="dash">-</span>Quest</div>
+        <div class="login-tagline">Instant Ops Authorisation</div>
+      </div>
+      <div class="login-body">
+        <div class="login-title">Sign in</div>
+        <div class="login-sub">Enter your credentials provided by your company.</div>
+        <div class="form-error" id="login-error"></div>
+        <div class="field-group">
+          <label>Username</label>
+          <input type="text" class="field-input" id="login-username" placeholder="Your username" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+        <div class="field-group">
+          <label>Password</label>
+          <input type="password" class="field-input" id="login-password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+        <button class="btn-main" id="login-btn" onclick="doLogin()">Sign In →</button>
+        <div class="login-footer-note">Contact your operations manager for login details.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== EMPLOYEE VIEW ===== -->
+<div id="view-employee" class="view">
+  <div class="app-header">
+    <div class="app-logo"><span class="re">RE</span><span class="dash">-</span>Quest</div>
+    <div class="header-right">
+      <span class="header-badge badge-employee">Employee</span>
+      <button class="btn-logout" onclick="logout()">Sign Out</button>
+    </div>
+  </div>
+  <div class="form-body">
+    <div class="section-title">Request Type</div>
+    <div class="form-group">
+      <label>What do you need authorisation for?</label>
+      <select id="req-type" onchange="handleTypeChange()">
+        <option value="">Select type...</option>
+        <option>Loading Bay Allocation</option>
+        <option>Unloading Permission</option>
+        <option>After-Hours Delivery</option>
+        <option>Site Entry Approval</option>
+        <option>Paperwork Validation</option>
+        <option>Trailer Swap</option>
+        <option>Hazardous Cargo Approval</option>
+        <option>Restricted Area Access</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="form-group" id="custom-type-group" style="display:none">
+      <label>Describe the authorisation needed</label>
+      <input type="text" id="custom-type" placeholder="e.g. Emergency bay access">
+    </div>
+    <div class="section-title">Your Details</div>
+    <div class="form-group"><label>Your Full Name</label><input type="text" id="employee-name" placeholder="e.g. James Williams"></div>
+    <div class="form-group"><label>Company / Operator</label><input type="text" id="employee-company" placeholder="e.g. Russell Transport Ltd"></div>
+    <div class="form-group"><label>Vehicle Registration</label><input type="text" id="vehicle-reg" placeholder="e.g. PX21 ABC" style="text-transform:uppercase"></div>
+    <div class="section-title">Location & Site</div>
+    <div class="form-group"><label>Site Name</label><input type="text" id="site-name" placeholder="e.g. Tesco DC Daventry"></div>
+    <div class="form-group"><label>Location / Address</label><input type="text" id="location" placeholder="e.g. Gate 3, Bay 7"></div>
+    <div class="form-group"><label>Additional Details</label><textarea id="details" placeholder="Any extra info the approver needs..."></textarea></div>
+    <div class="section-title">Urgency Level</div>
+    <div class="urgency-row">
+      <button class="urgency-btn active standard" onclick="setUrgency('Standard',this)"><span class="urgency-icon">🟢</span>Standard</button>
+      <button class="urgency-btn urgent" onclick="setUrgency('Urgent',this)"><span class="urgency-icon">🟡</span>Urgent</button>
+      <button class="urgency-btn critical" onclick="setUrgency('Critical',this)"><span class="urgency-icon">🔴</span>Critical</button>
+    </div>
+    <div class="section-title" style="margin-top:24px">Select Approver</div>
+    <div class="form-group">
+      <label>Who should approve this request?</label>
+      <select id="approver-select" onchange="handleApproverSelect()">
+        <option value="">Loading approvers...</option>
+      </select>
+      <div id="no-approvers-msg" style="display:none;font-size:0.8rem;color:var(--red);margin-top:6px;font-weight:600">No approvers available. Contact your company admin.</div>
+    </div>
+  </div>
+  <!-- Hidden approver fields populated by dropdown -->
+  <input type="hidden" id="approver-name">
+  <input type="hidden" id="approver-role">
+  <input type="hidden" id="approver-email">
+  <div class="form-footer">
+    <button class="btn-submit" onclick="submitRequest()" id="submit-btn">Send Authorisation Request →</button>
+  </div>
+</div>
+
+<!-- ===== PENDING ===== -->
+<div id="view-pending" class="view">
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;background:var(--dark)">
+    <div class="pending-pulse">⏳</div>
+    <div class="pending-title">Request Sent</div>
+    <p class="pending-sub">Waiting for an approver to action your request.<br>This screen will update automatically.</p>
+    <div class="pending-ref"><div class="ref-label">Reference</div><div class="ref-id" id="pending-ref-id">—</div></div>
+    <div class="pending-loader"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span style="margin-left:4px">Waiting...</span></div>
+  </div>
+</div>
+
+<!-- ===== APPROVAL CARD ===== -->
+<div id="view-card" class="view" style="background:var(--dark);overflow-y:auto">
+  <div class="card-container" id="approval-card-container"><div class="spinner"></div></div>
+</div>
+
+<!-- ===== APPROVER DASHBOARD ===== -->
+<div id="view-approver" class="view">
+  <div class="app-header">
+    <div class="app-logo"><span class="re">RE</span><span class="dash">-</span>Quest</div>
+    <div class="header-right">
+      <span class="header-badge badge-approver">Approver</span>
+      <button class="btn-logout" onclick="logout()">Sign Out</button>
+    </div>
+  </div>
+  <div class="dashboard-body">
+    <div class="dash-top-row">
+      <div class="dash-heading">Requests</div>
+      <button class="refresh-btn" onclick="loadApproverDashboard()">↻ Refresh</button>
+    </div>
+    <div class="dash-tabs">
+      <button class="tab-btn active" id="tab-pending-btn" onclick="switchTab('pending',this)">Pending <span class="tab-count" id="count-pending">0</span></button>
+      <button class="tab-btn" onclick="switchTab('all',this)">All Requests</button>
+    </div>
+    <div id="dashboard-list" class="requests-list"><div class="spinner"></div></div>
+  </div>
+</div>
+
+<!-- ===== COMPANY DASHBOARD ===== -->
+<div id="view-company" class="view">
+  <div class="app-header">
+    <div class="app-logo"><span class="re">RE</span><span class="dash">-</span>Quest</div>
+    <div class="header-right">
+      <span class="header-badge badge-company" id="company-badge-name">Company</span>
+      <button class="btn-logout" onclick="logout()">Sign Out</button>
+    </div>
+  </div>
+  <div class="company-body">
+    <div class="company-welcome">
+      <div class="company-welcome-text">
+        <h2 id="company-welcome-title">Welcome</h2>
+        <p>Manage your employees and approvers below</p>
+      </div>
+      <div class="company-welcome-icon">🏢</div>
+    </div>
+
+    <!-- Invite section -->
+    <div class="invite-section">
+      <div class="invite-section-title">Send Invite Link</div>
+      <div class="invite-btns">
+        <button class="btn-invite-employee" onclick="generateInvite('employee')">👤 Invite a Employee</button>
+        <button class="btn-invite-approver" onclick="generateInvite('approver')">✅ Invite an Approver</button>
+      </div>
+      <div class="invite-link-box" id="invite-link-box">
+        <div class="invite-link-label" id="invite-link-label">Employee Invite Link</div>
+        <div class="invite-link-row">
+          <div class="invite-link-url" id="invite-link-url"></div>
+          <button class="btn-copy" id="copy-btn" onclick="copyInviteLink()">Copy</button>
+        </div>
+        <div style="font-size:0.75rem;color:var(--grey);margin-top:8px">Share this link with the person. They set their own username and password.</div>
+      </div>
+    </div>
+
+    <!-- Sites header row -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div style="font-size:0.68rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--grey)">Sites</div>
+      <button class="btn-create-site" onclick="openCreateSiteModal()">+ New Site</button>
+    </div>
+
+    <!-- Sites container -->
+    <div id="sites-container">
+      <div class="spinner"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CREATE SITE MODAL ===== -->
+<div class="modal-overlay" id="create-site-modal">
+  <div class="modal-box">
+    <div class="modal-title" id="create-site-modal-title">Create New Site</div>
+    <div class="modal-field">
+      <label>Site Name</label>
+      <input type="text" id="new-site-name" placeholder="e.g. Birmingham Depot, Site A, Night Shift" onkeydown="if(event.key==='Enter')confirmCreateSite()">
+    </div>
+    <div class="modal-error" id="create-site-error"></div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeCreateSiteModal()">Cancel</button>
+      <button class="btn-modal-save" id="confirm-site-btn" onclick="confirmCreateSite()">Create Site</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== INVITE SETUP PAGE ===== -->
+<div id="view-invite-setup" class="view">
+  <div style="margin:auto;width:100%;max-width:420px;padding:20px">
+    <div class="setup-card">
+      <div class="setup-header" id="setup-header">
+        <div class="setup-header-role" id="setup-role-label">Role</div>
+        <div class="setup-header-title">Set Up Your Account</div>
+        <div class="setup-header-sub">Create your username and password to get started.</div>
+      </div>
+      <div class="setup-body">
+        <div id="setup-company-badge" class="setup-company-badge"></div>
+        <div class="setup-error" id="setup-error"></div>
+        <div id="setup-form">
+          <div class="field-group">
+            <label>Your Full Name</label>
+            <input type="text" class="field-input" id="setup-name" placeholder="e.g. James Williams" autocomplete="name">
+          </div>
+          <div class="field-group">
+            <label>Choose a Username</label>
+            <input type="text" class="field-input" id="setup-username" placeholder="e.g. james.williams" autocomplete="username">
+          </div>
+          <div class="field-group">
+            <label>Choose a Password</label>
+            <input type="password" class="field-input" id="setup-password" placeholder="Min. 4 characters" autocomplete="new-password" onkeydown="if(event.key==='Enter')completeSetup()">
+          </div>
+          <button class="btn-main" onclick="completeSetup()" id="setup-btn" style="margin-top:4px">Create My Account →</button>
+        </div>
+        <div class="setup-success" id="setup-success" style="display:none">
+          <div class="setup-success-icon">🎉</div>
+          <div class="setup-success-title">You're all set!</div>
+          <div class="setup-success-sub">Your account has been created.<br>You can now sign in using your username and password.</div>
+          <button class="btn-main" onclick="showView('login')" style="margin-top:20px">Go to Sign In →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== EDIT USER MODAL ===== -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal-box">
+    <div class="modal-title">✏️ Edit User</div>
+    <input type="hidden" id="edit-user-id">
+    <div class="modal-error" id="edit-error"></div>
+    <div class="modal-field">
+      <label>Full Name</label>
+      <input type="text" id="edit-name" placeholder="Full name">
+    </div>
+    <div class="modal-field">
+      <label>Username</label>
+      <input type="text" id="edit-username" placeholder="Username">
+    </div>
+    <div class="modal-field">
+      <label>New Password <span style="font-weight:400;text-transform:none;letter-spacing:0">(leave blank to keep current)</span></label>
+      <input type="password" id="edit-password" placeholder="Enter new password">
+      <div class="hint">Min. 4 characters</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeEditModal()">Cancel</button>
+      <button class="btn-modal-save" onclick="saveUserEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DENY MODAL ===== -->
+<div class="modal-overlay" id="deny-modal">
+  <div class="modal-box">
+    <div class="modal-title">❌ Deny Request</div>
+    <textarea id="deny-reason-text" placeholder="Reason for denial (recommended)..."></textarea>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeDenyModal()">Cancel</button>
+      <button class="btn-confirm-deny" onclick="confirmDeny()">Confirm Denial</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="approve-modal">
+  <div class="modal-box">
+    <div class="modal-title">✅ Approve Request</div>
+    <p style="font-size:0.85rem;color:#666;margin:0 0 10px 0">Add a note for the employee (optional) — e.g. bay allocation, instructions.</p>
+    <textarea id="approve-note-text" placeholder="e.g. Bay 9, report to gate B..."></textarea>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeApproveModal()">Cancel</button>
+      <button class="btn-confirm-approve" onclick="confirmApprove()">Confirm Approval</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ===== USER PROFILE VIEW ===== -->
+<div id="view-profile" class="view">
+  <div class="app-header">
+    <div class="app-logo"><span class="re">RE</span><span class="dash">-</span>Quest</div>
+    <div class="header-right">
+      <span class="header-badge badge-company" id="profile-company-badge"></span>
+      <button class="btn-logout" onclick="logout()">Sign out</button>
+    </div>
+  </div>
+  <div class="profile-hero">
+    <button class="profile-back" onclick="backToCompany()">← Back to Dashboard</button>
+    <div class="profile-avatar" id="profile-avatar"></div>
+    <div class="profile-name" id="profile-name"></div>
+    <div class="profile-username" id="profile-username"></div>
+    <div class="profile-meta-row">
+      <span class="profile-role-badge" id="profile-role-badge"></span>
+      <span class="profile-status-pill">
+        <span class="profile-status-dot" id="profile-status-dot"></span>
+        <span id="profile-status-text"></span>
+      </span>
+    </div>
+  </div>
+  <div class="profile-body">
+
+    <!-- Department section -->
+    <div class="profile-section">
+      <div class="profile-section-header">
+        <span class="profile-section-icon">🏢</span>
+        <span class="profile-section-title">Department</span>
+      </div>
+      <div class="profile-field">
+        <div class="profile-field-label">Assign to department</div>
+        <select id="profile-dept-select" onchange="profileDeptChanged()">
+          <option value="">— No department assigned —</option>
+        </select>
+      </div>
+      <div class="profile-field" id="profile-new-dept-field" style="display:none">
+        <div class="profile-field-label">New department name</div>
+        <input type="text" id="profile-new-dept-input" class="profile-new-dept-input" placeholder="e.g. Night Shift, Site A, HGV Team">
+      </div>
+    </div>
+
+    <!-- Approver access section (employees only) -->
+    <div class="profile-section" id="profile-access-section">
+      <div class="profile-section-header">
+        <span class="profile-section-icon">🔑</span>
+        <span class="profile-section-title">Approver Access</span>
+      </div>
+      <label class="profile-allow-all" id="profile-allow-all-row">
+        <input type="checkbox" id="profile-allow-all-chk" onchange="profileToggleAllowAll()">
+        <span class="profile-allow-all-label">Allow access to all approvers</span>
+      </label>
+      <div id="profile-approvers-list" class="profile-approver-list">
+        <div class="profile-empty-approvers">Loading approvers...</div>
+      </div>
+    </div>
+
+    <!-- Save button -->
+    <button class="profile-save-btn" onclick="saveProfile()">Save Changes</button>
+
+    <!-- Request History -->
+    <div class="req-history-section" id="profile-requests-section">
+      <div class="profile-section-header" onclick="toggleProfileRequests()" style="cursor:pointer;user-select:none">
+        <span class="profile-section-icon" id="profile-req-icon">📋</span>
+        <span class="profile-section-title" id="profile-req-title">Request History</span>
+        <span style="margin-left:auto;font-size:0.8rem;color:var(--grey)" id="profile-req-chevron">▼</span>
+      </div>
+      <div id="profile-requests-body" style="display:none">
+        <div class="req-history-tab-row" id="profile-req-tab-row">
+          <!-- tabs injected by JS per role -->
+        </div>
+        <div class="req-history-list" id="profile-req-list">
+          <div class="req-history-loading"><div class="spinner" style="margin:12px auto"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Danger zone -->
+    <div class="profile-section profile-danger-zone" style="margin-top:14px">
+      <div class="profile-section-header">
+        <span class="profile-section-icon">⚠️</span>
+        <span class="profile-section-title">Danger Zone</span>
+      </div>
+      <button class="btn-profile-delete" id="profile-delete-btn" onclick="deleteProfileUser()">Remove this user</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const API = 'https://assistant-36b1ac32.base44.app/functions';
+  const APP_URL = window.location.origin + window.location.pathname;
+
+  let currentUser = null;
+  let urgency = 'Standard';
+  let currentTab = 'pending';
+  let allRequests = [];
+  let pollingInterval = null;
+  let denyTargetToken = null;
+  let approveTargetToken = null;
+  let companyUsers = [];
+  let companySites = []; // list of site name strings
+  let inviteToken = null;
+  let dragUserId = null;
+
+  // ===== NAVIGATION =====
+  function showView(name) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + name).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  // ===== LOGIN =====
+  async function doLogin() {
+    const username = document.getElementById('login-username').value.trim();
+    const password = document.getElementById('login-password').value;
+    const errEl = document.getElementById('login-error');
+    const btn = document.getElementById('login-btn');
+    errEl.classList.remove('show');
+    if (!username || !password) { errEl.textContent = 'Please enter your username and password.'; errEl.classList.add('show'); return; }
+
+    btn.disabled = true; btn.textContent = 'Signing in...';
+    try {
+      const res = await fetch(`${API}/clearauthLogin`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Login failed');
+      currentUser = data.user;
+      sessionStorage.setItem('ca_user', JSON.stringify(data.user));
+      routeUser(data.user);
+    } catch (err) {
+      errEl.textContent = err.message;
+      errEl.classList.add('show');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Sign In →';
+    }
+  }
+
+  function routeUser(user) {
+    if (user.role === 'employee') {
+      showView('employee');
+      setTimeout(() => {
+        const c = document.getElementById('employee-company');
+        if (c && !c.value) c.value = user.company_name || '';
+        const n = document.getElementById('employee-name');
+        if (n && !n.value) n.value = user.full_name || '';
+      }, 50);
+      loadEmployeeApprovers(user);
+    } else if (user.role === 'approver') {
+      showView('approver');
+      loadApproverDashboard();
+    } else if (user.role === 'company') {
+      document.getElementById('company-badge-name').textContent = user.company_name || 'Company';
+      document.getElementById('company-welcome-title').textContent = `Welcome, ${user.company_name}`;
+      showView('company');
+      loadCompanyUsers();
+    }
+  }
+
+  function logout() {
+    currentUser = null;
+    sessionStorage.removeItem('ca_user');
+    if (pollingInterval) clearInterval(pollingInterval);
+    document.getElementById('login-username').value = '';
+    document.getElementById('login-password').value = '';
+    document.getElementById('login-error').classList.remove('show');
+    showView('login');
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    // Check for invite token in URL
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('invite');
+    if (token) { loadInviteSetup(token); return; }
+
+    // Restore session
+    const stored = sessionStorage.getItem('ca_user');
+    if (stored) { currentUser = JSON.parse(stored); routeUser(currentUser); }
+  });
+
+  // ===== INVITE SETUP =====
+  async function loadInviteSetup(token) {
+    inviteToken = token;
+    // Peek at the invite to get company + role
+    try {
+      const res = await fetch(`${API}/clearauthRegister`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ invite_token: token, full_name: '__peek__', username: '__peek__', password: '__peek__' })
+      });
+      // We expect a "username taken" or success — but really we just want to see if token is valid
+      // Instead, just show the form and validate on submit
+    } catch(e) {}
+
+    // We'll validate on submit. Just show the form.
+    showView('invite-setup');
+    // We don't know role yet without a separate lookup — show generic until submit reveals it
+    document.getElementById('setup-header').className = 'setup-header employee';
+    document.getElementById('setup-role-label').textContent = 'New Account Setup';
+    document.getElementById('setup-company-badge').textContent = 'Setting up your RE-Quest account';
+  }
+
+  async function completeSetup() {
+    const name = document.getElementById('setup-name').value.trim();
+    const username = document.getElementById('setup-username').value.trim();
+    const password = document.getElementById('setup-password').value;
+    const errEl = document.getElementById('setup-error');
+    const btn = document.getElementById('setup-btn');
+    errEl.classList.remove('show');
+
+    if (!name || !username || !password) { errEl.textContent = 'Please fill in all fields.'; errEl.classList.add('show'); return; }
+    if (password.length < 4) { errEl.textContent = 'Password must be at least 4 characters.'; errEl.classList.add('show'); return; }
+
+    btn.disabled = true; btn.textContent = 'Creating account...';
+    try {
+      const res = await fetch(`${API}/clearauthRegister`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ invite_token: inviteToken, full_name: name, username, password })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Setup failed');
+
+      // Show success + update header based on role
+      const role = data.user?.role || 'employee';
+      document.getElementById('setup-header').className = `setup-header ${role}`;
+      document.getElementById('setup-role-label').textContent = role === 'approver' ? 'Approver Account' : 'Employee Account';
+      document.getElementById('setup-company-badge').textContent = data.user?.company_name || '';
+      document.getElementById('setup-form').style.display = 'none';
+      document.getElementById('setup-success').style.display = 'block';
+
+      // Clean URL
+      window.history.replaceState({}, '', window.location.pathname);
+    } catch (err) {
+      errEl.textContent = err.message;
+      errEl.classList.add('show');
+      btn.disabled = false; btn.textContent = 'Create My Account →';
+    }
+  }
+
+  // ===== COMPANY DASHBOARD =====
+  async function loadCompanyUsers() {
+    if (!currentUser) return;
+    try {
+      const res = await fetch(`${API}/clearauthGetUsers`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ company_id: currentUser.company_id })
+      });
+      const data = await res.json();
+      companyUsers = data.users || [];
+      renderUserSections();
+    } catch(err) {
+      showToast('Failed to load users');
+    }
+  }
+
+  // ===== SITE MANAGEMENT =====
+  function buildCompanySites() {
+    // companySites = explicit list. Also discover any from user departments.
+    const fromUsers = new Set(companyUsers.map(u => u.department).filter(Boolean));
+    fromUsers.forEach(s => { if (!companySites.includes(s)) companySites.push(s); });
+  }
+
+  function renderUserSections() {
+    buildCompanySites();
+    const employees = companyUsers.filter(u => u.role === 'employee');
+    const approvers = companyUsers.filter(u => u.role === 'approver');
+    const allUsers = [...employees, ...approvers];
+    const container = document.getElementById('sites-container');
+
+    // Build list: named sites first (from companySites), then unassigned if needed
+    const unassigned = allUsers.filter(u => !u.department);
+    const sitesToRender = [...companySites]; // ordered
+
+    let html = '';
+
+    sitesToRender.forEach((site, si) => {
+      const siteKey = 'site_' + si;
+      const siteEmployees = employees.filter(u => u.department === site);
+      const siteApprovers = approvers.filter(u => u.department === site);
+      const total = siteEmployees.length + siteApprovers.length;
+
+      html += `
+      <div class="site-section" id="site-section-${si}"
+           ondragover="event.preventDefault();siteDropOver(event,'${site}')"
+           ondragleave="siteDropLeave(event,'${site}')"
+           ondrop="siteDropDrop(event,'${site}','${siteKey}')">
+        <div class="site-section-header" onclick="toggleSiteSection(${si})">
+          <div style="display:flex;align-items:center;gap:13px;flex:1;min-width:0">
+            <div class="site-section-icon">📍</div>
+            <div style="min-width:0">
+              <div class="site-section-name">${site}</div>
+              <div class="site-section-meta">${total} member${total !== 1 ? 's' : ''} &middot; ${siteEmployees.length} employee${siteEmployees.length !== 1 ? 's' : ''} &middot; ${siteApprovers.length} approver${siteApprovers.length !== 1 ? 's' : ''}</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <button class="site-options-btn" onclick="event.stopPropagation();openSiteOptions('${site}',${si})" title="Site options">⚙️</button>
+            <div class="site-section-chevron">▼</div>
+          </div>
+        </div>
+        <div class="site-body" id="site-body-${si}">
+          <div class="site-drop-zone" id="drop-zone-${siteKey}">
+            <div class="site-drop-zone-label">Drop here to assign to ${site}</div>
+          </div>
+          ${renderRoleSubsection(siteEmployees, 'employee', siteKey + '-employees')}
+          ${renderRoleSubsection(siteApprovers, 'approver', siteKey + '-approvers')}
+          ${total === 0 ? '<div class="empty-users" style="padding:12px 18px 16px;font-size:0.83rem;color:var(--grey);font-style:italic">No members yet — drag someone in or assign from their profile.</div>' : ''}
+        </div>
+      </div>`;
+    });
+
+    // Unassigned group
+    if (unassigned.length > 0 || sitesToRender.length === 0) {
+      const uEmployees = employees.filter(u => !u.department);
+      const uApprovers = approvers.filter(u => !u.department);
+      const uTotal = uEmployees.length + uApprovers.length;
+      html += `
+      <div class="site-section" id="site-section-unassigned"
+           ondragover="event.preventDefault();siteDropOver(event,null)"
+           ondragleave="siteDropLeave(event,null)"
+           ondrop="siteDropDrop(event,null,'unassigned')">
+        <div class="site-section-header" onclick="toggleSiteSection('unassigned')" style="background:linear-gradient(135deg,#F4F7FA,#EBF0F7)">
+          <div style="display:flex;align-items:center;gap:13px;flex:1;min-width:0">
+            <div class="site-section-icon" style="background:linear-gradient(135deg,#7A8A9E,#64748B)">📋</div>
+            <div>
+              <div class="site-section-name">Unassigned</div>
+              <div class="site-section-meta">${uTotal} member${uTotal !== 1 ? 's' : ''} not yet in a site</div>
+            </div>
+          </div>
+          <div class="site-section-chevron">▼</div>
+        </div>
+        <div class="site-body open" id="site-body-unassigned">
+          <div class="site-drop-zone" id="drop-zone-unassigned">
+            <div class="site-drop-zone-label">Drop here to remove from site</div>
+          </div>
+          ${renderRoleSubsection(uEmployees, 'employee', 'unassigned-employees')}
+          ${renderRoleSubsection(uApprovers, 'approver', 'unassigned-approvers')}
+          ${uTotal === 0 ? '<div class="empty-users" style="padding:12px 18px 16px;font-size:0.83rem;color:var(--grey);font-style:italic">Everyone is assigned to a site.</div>' : ''}
+        </div>
+      </div>`;
+    }
+
+    if (!html) html = `<div style="text-align:center;padding:40px 24px;color:var(--grey);font-size:0.88rem">No sites yet. Create your first site above.</div>`;
+    container.innerHTML = html;
+
+    // Load approver permission checks for employees
+    employees.forEach(d => { if (d.status === 'active') loadApproverChecks(d.id, d.allowed_approvers || [], d.allow_all_approvers); });
+    // Bind touch drag events
+    bindTouchDrag();
+  }
+
+  function renderRoleSubsection(users, role, key) {
+    if (!users.length) return '';
+    const icon = role === 'employee' ? '👤' : '✅';
+    return `
+    <div class="role-subsection">
+      <div class="role-subsection-header open" onclick="toggleRoleSubsection('${key}')">
+        <div class="role-subsection-left">
+          <div class="role-subsection-icon ${role}">${icon}</div>
+          <span class="role-subsection-title">${role === 'employee' ? 'Employees' : 'Approvers'}</span>
+          <span class="role-subsection-count">${users.length}</span>
+        </div>
+        <span class="role-subsection-chevron" style="transform:rotate(180deg)">▼</span>
+      </div>
+      <div class="role-subsection-body open" id="rsb-${key}">
+        ${renderUserList(users, role)}
+      </div>
+    </div>`;
+  }
+
+  function toggleSiteSection(si) {
+    const header = document.querySelector(`#site-section-${si} .site-section-header`);
+    const body = document.getElementById(`site-body-${si}`);
+    if (!header || !body) return;
+    const isOpen = body.classList.contains('open');
+    header.classList.toggle('open', !isOpen);
+    body.classList.toggle('open', !isOpen);
+  }
+
+  function toggleRoleSubsection(key) {
+    const body = document.getElementById(`rsb-${key}`);
+    const header = body ? body.previousElementSibling : null;
+    if (!body || !header) return;
+    const isOpen = body.classList.contains('open');
+    header.classList.toggle('open', !isOpen);
+    body.classList.toggle('open', !isOpen);
+    const chev = header.querySelector('.role-subsection-chevron');
+    if (chev) chev.style.transform = isOpen ? '' : 'rotate(180deg)';
+  }
+
+  // ===== CREATE / RENAME / DELETE SITE =====
+  let editingSite = null;
+
+  function openCreateSiteModal() {
+    editingSite = null;
+    document.getElementById('create-site-modal-title').textContent = 'Create New Site';
+    document.getElementById('confirm-site-btn').textContent = 'Create Site';
+    document.getElementById('new-site-name').value = '';
+    document.getElementById('create-site-error').textContent = '';
+    document.getElementById('create-site-error').classList.remove('show');
+    document.getElementById('create-site-modal').classList.add('open');
+    setTimeout(() => document.getElementById('new-site-name').focus(), 100);
+  }
+
+  function openSiteOptions(siteName, si) {
+    if (confirm(`Site: "${siteName}"
+
+Choose:
+• OK = Rename this site
+• Cancel = keep as is
+
+(To delete, rename it first then use the delete option)`)) {
+      editingSite = siteName;
+      document.getElementById('create-site-modal-title').textContent = 'Rename Site';
+      document.getElementById('confirm-site-btn').textContent = 'Save';
+      document.getElementById('new-site-name').value = siteName;
+      document.getElementById('create-site-error').textContent = '';
+      document.getElementById('create-site-error').classList.remove('show');
+      document.getElementById('create-site-modal').classList.add('open');
+      setTimeout(() => document.getElementById('new-site-name').focus(), 100);
+    }
+  }
+
+  function closeCreateSiteModal() {
+    document.getElementById('create-site-modal').classList.remove('open');
+  }
+
+  async function confirmCreateSite() {
+    const name = document.getElementById('new-site-name').value.trim();
+    const errEl = document.getElementById('create-site-error');
+    if (!name) { errEl.textContent = 'Please enter a site name.'; errEl.classList.add('show'); return; }
+    if (!editingSite && companySites.includes(name)) { errEl.textContent = 'A site with this name already exists.'; errEl.classList.add('show'); return; }
+
+    if (editingSite) {
+      // Rename — update all users in this site
+      const oldName = editingSite;
+      companySites = companySites.map(s => s === oldName ? name : s);
+      const usersInSite = companyUsers.filter(u => u.department === oldName);
+      for (const u of usersInSite) {
+        await assignUserToSite(u.id, name);
+      }
+      showToast(`Site renamed to "${name}"`);
+    } else {
+      companySites.push(name);
+      showToast(`Site "${name}" created`);
+    }
+
+    closeCreateSiteModal();
+    renderUserSections();
+  }
+
+  // ===== ASSIGN USER TO SITE =====
+  async function assignUserToSite(userId, siteName) {
+    const user = companyUsers.find(u => u.id === userId);
+    if (!user) return;
+
+    // Update locally
+    user.department = siteName || '';
+
+    // If this is a employee being assigned to a named site, auto-grant access
+    // to all approvers currently in that site
+    if (user.role === 'employee' && siteName) {
+      const siteApproverIds = companyUsers
+        .filter(u => u.role === 'approver' && u.department === siteName)
+        .map(u => u.id);
+
+      if (siteApproverIds.length > 0) {
+        // Merge with any existing allowed approvers (don't remove previous access)
+        const existingIds = user.allowed_approvers || [];
+        const mergedIds = Array.from(new Set([...existingIds, ...siteApproverIds]));
+        user.allowed_approvers = mergedIds;
+        user.allow_all_approvers = false;
+
+        // Persist permissions
+        try {
+          await fetch(`${API}/clearauthSetPermissions`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              employee_id: userId,
+              allow_all_approvers: false,
+              allowed_approvers: mergedIds
+            })
+          });
+        } catch(e) { console.error('Failed to save auto-permissions', e); }
+      }
+    }
+
+    // If employee moved to a new site, also auto-grant access to that site's approvers
+    // AND auto-add this employee to any approver who has allow_all_approvers in new site
+    // Persist department change
+    try {
+      await fetch(`${API}/clearauthManageUser`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'update', id: userId, company_id: currentUser.company_id, department: siteName || '' })
+      });
+    } catch(e) { console.error('Failed to save site assignment', e); }
+  }
+
+  // Also called when an approver is moved to a site — auto-grant that approver
+  // access to all employees already in that site
+  async function onApproverAssignedToSite(approverId, siteName) {
+    if (!siteName) return;
+    const siteEmployees = companyUsers.filter(u => u.role === 'employee' && u.department === siteName);
+    for (const employee of siteEmployees) {
+      const existingIds = employee.allowed_approvers || [];
+      if (!existingIds.includes(approverId)) {
+        const mergedIds = [...existingIds, approverId];
+        employee.allowed_approvers = mergedIds;
+        try {
+          await fetch(`${API}/clearauthSetPermissions`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              employee_id: employee.id,
+              allow_all_approvers: employee.allow_all_approvers || false,
+              allowed_approvers: mergedIds
+            })
+          });
+        } catch(e) { console.error('Failed to auto-grant approver to employee', e); }
+      }
+    }
+  }
+
+  // ===== DRAG & DROP (desktop) =====
+  let dragOverSite = null;
+
+  function startDrag(event, userId) {
+    dragUserId = userId;
+    event.dataTransfer.effectAllowed = 'move';
+    setTimeout(() => {
+      const card = document.getElementById('ucard-' + userId);
+      if (card) card.classList.add('dragging');
+    }, 0);
+  }
+
+  function endDrag(userId) {
+    dragUserId = null;
+    const card = document.getElementById('ucard-' + userId);
+    if (card) card.classList.remove('dragging');
+    document.querySelectorAll('.site-drop-zone').forEach(z => z.classList.remove('drag-active'));
+  }
+
+  function siteDropOver(event, site) {
+    event.preventDefault();
+    dragOverSite = site;
+    // find the zone inside this site-section
+    const section = event.currentTarget;
+    const zone = section.querySelector('.site-drop-zone');
+    if (zone) zone.classList.add('drag-active');
+  }
+
+  function siteDropLeave(event, site) {
+    const section = event.currentTarget;
+    if (!section.contains(event.relatedTarget)) {
+      const zone = section.querySelector('.site-drop-zone');
+      if (zone) zone.classList.remove('drag-active');
+    }
+  }
+
+  async function siteDropDrop(event, site, zoneKey) {
+    event.preventDefault();
+    if (!dragUserId) return;
+    const uid = dragUserId;
+    dragUserId = null;
+    document.querySelectorAll('.site-drop-zone').forEach(z => z.classList.remove('drag-active'));
+    const card = document.getElementById('ucard-' + uid);
+    if (card) card.classList.remove('dragging');
+    const user = companyUsers.find(u => u.id === uid);
+    await assignUserToSite(uid, site);
+    if (user && user.role === 'approver' && site) await onApproverAssignedToSite(uid, site);
+    renderUserSections();
+    showToast(site ? `Moved to ${site}` : 'Removed from site');
+  }
+
+  // ===== TOUCH DRAG (mobile) =====
+  let touchDragUserId = null;
+  let touchDragEl = null;
+  let touchClone = null;
+
+  function bindTouchDrag() {
+    document.querySelectorAll('.user-card[data-uid]').forEach(card => {
+      card.addEventListener('touchstart', handleTouchStart, { passive: true });
+    });
+  }
+
+  function handleTouchStart(e) {
+    const card = e.currentTarget;
+    touchDragUserId = card.dataset.uid;
+    touchDragEl = card;
+
+    // Create a visual clone
+    touchClone = card.cloneNode(true);
+    touchClone.style.cssText = `position:fixed;z-index:9999;opacity:0.85;width:${card.offsetWidth}px;pointer-events:none;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,0.2);`;
+    document.body.appendChild(touchClone);
+    card.style.opacity = '0.3';
+
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd);
+  }
+
+  function handleTouchMove(e) {
+    if (!touchClone) return;
+    e.preventDefault();
+    const t = e.touches[0];
+    touchClone.style.left = (t.clientX - touchClone.offsetWidth / 2) + 'px';
+    touchClone.style.top = (t.clientY - 30) + 'px';
+
+    // Highlight the site section under finger
+    document.querySelectorAll('.site-drop-zone').forEach(z => z.classList.remove('drag-active'));
+    touchClone.style.display = 'none';
+    const el = document.elementFromPoint(t.clientX, t.clientY);
+    touchClone.style.display = '';
+    const siteSection = el ? el.closest('.site-section') : null;
+    if (siteSection) {
+      const zone = siteSection.querySelector('.site-drop-zone');
+      if (zone) zone.classList.add('drag-active');
+    }
+  }
+
+  async function handleTouchEnd(e) {
+    document.removeEventListener('touchmove', handleTouchMove);
+    document.removeEventListener('touchend', handleTouchEnd);
+    if (!touchClone) return;
+
+    const t = e.changedTouches[0];
+    touchClone.style.display = 'none';
+    const el = document.elementFromPoint(t.clientX, t.clientY);
+    touchClone.style.display = '';
+
+    const siteSection = el ? el.closest('.site-section') : null;
+    let targetSite = null;
+    if (siteSection) {
+      const nameEl = siteSection.querySelector('.site-section-name');
+      const siteLabel = nameEl ? nameEl.textContent.trim() : null;
+      targetSite = (siteLabel && siteLabel !== 'Unassigned') ? siteLabel : null;
+    }
+
+    // Clean up
+    document.querySelectorAll('.site-drop-zone').forEach(z => z.classList.remove('drag-active'));
+    document.body.removeChild(touchClone);
+    touchClone = null;
+    if (touchDragEl) touchDragEl.style.opacity = '';
+
+    if (siteSection && touchDragUserId) {
+      const tUser = companyUsers.find(u => u.id === touchDragUserId);
+      await assignUserToSite(touchDragUserId, targetSite);
+      if (tUser && tUser.role === 'approver' && targetSite) await onApproverAssignedToSite(touchDragUserId, targetSite);
+      renderUserSections();
+      showToast(targetSite ? `Moved to ${targetSite}` : 'Removed from site');
+    }
+
+    touchDragUserId = null;
+    touchDragEl = null;
+  }
+
+  function renderUserList(users, role) {
+    if (!users.length) return `<div class="empty-users">No members yet — send an invite link to add someone.</div>`;
+    return users.map(u => {
+      const isEmployee = role === 'employee';
+      const allowAll = u.allow_all_approvers;
+      const allowedIds = u.allowed_approvers || [];
+      const permSection = isEmployee ? `
+        <div class="perm-section" id="perm-${u.id}">
+          <div class="perm-header" onclick="togglePermSection('${u.id}')">
+            <span class="perm-label">🔑 Approver Access</span>
+            <span class="perm-summary" id="perm-summary-${u.id}">${allowAll ? 'All approvers' : (allowedIds.length === 0 ? 'None set' : allowedIds.length + ' approver(s)')}</span>
+            <span class="perm-chevron" id="perm-chevron-${u.id}">▼</span>
+          </div>
+          <div class="perm-body" id="perm-body-${u.id}" style="display:none">
+            <label class="perm-check-row allow-all-row">
+              <input type="checkbox" id="allow-all-${u.id}" ${allowAll ? 'checked' : ''} onchange="toggleAllowAll('${u.id}')">
+              <span class="perm-check-label">✅ Allow access to <strong>all approvers</strong></span>
+            </label>
+            <div id="individual-perms-${u.id}" style="${allowAll ? 'opacity:0.4;pointer-events:none' : ''}">
+              <div id="approver-checks-${u.id}" class="approver-checks">
+                <div style="font-size:0.78rem;color:var(--grey);padding:8px 0">Loading approvers...</div>
+              </div>
+            </div>
+            <button class="btn-save-perms" onclick="savePermissions('${u.id}')">Save Access</button>
+          </div>
+        </div>` : '';
+      return `<div class="user-card" id="ucard-${u.id}" data-uid="${u.id}"
+        draggable="true"
+        ondragstart="startDrag(event,'${u.id}')"
+        ondragend="endDrag('${u.id}')"
+        onclick="openUserProfile('${u.id}')">
+        <div class="user-row">
+          <span class="drag-handle" title="Drag to move site">⠿</span>
+          <div class="user-row-info">
+            <div class="user-row-name" style="color:var(--blue)">${u.full_name || '(Pending setup)'}</div>
+            <div class="user-row-username">${u.username ? '@' + u.username : 'Awaiting registration'}</div>
+          </div>
+          <span class="user-status-pill ${u.status}">${u.status}</span>
+          <div class="user-row-actions" onclick="event.stopPropagation()">
+            <button class="btn-delete-user" onclick="event.stopPropagation();deleteUser('${u.id}','${(u.full_name||'Pending')}')" >🗑</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // toggleUserSection removed — site-based layout now handles this
+
+  // ===== INVITE =====
+  async function generateInvite(role) {
+    if (!currentUser) return;
+    const box = document.getElementById('invite-link-box');
+    const urlEl = document.getElementById('invite-link-url');
+    const labelEl = document.getElementById('invite-link-label');
+    const copyBtn = document.getElementById('copy-btn');
+
+    urlEl.textContent = 'Generating...';
+    box.classList.add('show');
+    copyBtn.textContent = 'Copy';
+    copyBtn.classList.remove('copied');
+
+    try {
+      const res = await fetch(`${API}/clearauthInvite`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ company_id: currentUser.company_id, company_name: currentUser.company_name, role })
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error);
+
+      const link = `${APP_URL}?invite=${data.token}`;
+      urlEl.textContent = link;
+      labelEl.textContent = role === 'employee' ? '👤 Employee Invite Link' : '✅ Approver Invite Link';
+      showToast(`${role === 'employee' ? 'Employee' : 'Approver'} invite link generated`);
+
+      // Refresh user list after a short delay (new pending record created)
+      setTimeout(loadCompanyUsers, 1000);
+    } catch(err) {
+      urlEl.textContent = 'Error generating link';
+      showToast('Error: ' + err.message);
+    }
+  }
+
+  function copyInviteLink() {
+    const text = document.getElementById('invite-link-url').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copy-btn');
+      btn.textContent = 'Copied ✓';
+      btn.classList.add('copied');
+      showToast('Link copied to clipboard');
+    });
+  }
+
+  // ===== EDIT USER MODAL =====
+  function openEditModal(id, name, username) {
+    document.getElementById('edit-user-id').value = id;
+    document.getElementById('edit-name').value = name;
+    document.getElementById('edit-username').value = username;
+    document.getElementById('edit-password').value = '';
+    document.getElementById('edit-error').classList.remove('show');
+    document.getElementById('edit-modal').classList.add('open');
+  }
+  function closeEditModal() { document.getElementById('edit-modal').classList.remove('open'); }
+
+  async function saveUserEdit() {
+    const id = document.getElementById('edit-user-id').value;
+    const name = document.getElementById('edit-name').value.trim();
+    const username = document.getElementById('edit-username').value.trim();
+    const password = document.getElementById('edit-password').value;
+    const errEl = document.getElementById('edit-error');
+    errEl.classList.remove('show');
+
+    if (!name || !username) { errEl.textContent = 'Name and username are required.'; errEl.classList.add('show'); return; }
+
+    try {
+      const payload = { action: 'update', user_id: id, full_name: name, username };
+      if (password) payload.password = password;
+      const res = await fetch(`${API}/clearauthManageUser`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      closeEditModal();
+      showToast('User updated ✓');
+      loadCompanyUsers();
+    } catch(err) {
+      errEl.textContent = err.message;
+      errEl.classList.add('show');
+    }
+  }
+
+  async function deleteUser(id, name) {
+    if (!confirm(`Delete ${name}? This cannot be undone.`)) return;
+    try {
+      const res = await fetch(`${API}/clearauthManageUser`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'delete', user_id: id })
+      });
+      if (!res.ok) throw new Error('Delete failed');
+      showToast('User deleted');
+      loadCompanyUsers();
+    } catch(err) { showToast('Error: ' + err.message); }
+  }
+
+  // ===== EMPLOYEE FORM =====
+  function handleTypeChange() {
+    document.getElementById('custom-type-group').style.display =
+      document.getElementById('req-type').value === 'Other' ? 'block' : 'none';
+  }
+  function setUrgency(level, btn) {
+    urgency = level;
+    document.querySelectorAll('.urgency-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  async function submitRequest() {
+    const type = document.getElementById('req-type').value;
+    const employeeName = document.getElementById('employee-name').value.trim();
+    if (!type || !employeeName) { showToast('Please fill in request type and your name'); return; }
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true; btn.textContent = 'Sending...';
+
+    const token = 'AUTH-' + Math.random().toString(36).substring(2,10).toUpperCase();
+    const approverSelect = document.getElementById('approver-select');
+    const selectedApproverName = approverSelect.options[approverSelect.selectedIndex]?.text || '';
+    if (!approverSelect.value) { showToast('Please select an approver'); btn.disabled = false; btn.textContent = 'Send Authorisation Request →'; return; }
+    const approverUserId = approverSelect.value || '';
+    const payload = {
+      request_type: type,
+      custom_type: type === 'Other' ? document.getElementById('custom-type').value : '',
+      employee_name: employeeName,
+      employee_company: document.getElementById('employee-company').value.trim(),
+      vehicle_reg: document.getElementById('vehicle-reg').value.trim().toUpperCase(),
+      site_name: document.getElementById('site-name').value.trim(),
+      location: document.getElementById('location').value.trim(),
+      details: document.getElementById('details').value.trim(),
+      urgency,
+      approver_name: selectedApproverName,
+      approver_role: '',
+      approver_email: '',
+      status: 'Pending',
+      approval_token: token,
+      expires_at: new Date(Date.now() + 4*60*60*1000).toISOString(),
+      employee_user_id: currentUser ? currentUser.id : '',
+      approver_user_id: approverUserId,
+    };
+
+    try {
+      const res = await fetch(`${API}/createApprovalRequest`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error('Failed to submit');
+      document.getElementById('pending-ref-id').textContent = token;
+      showView('pending');
+      startPolling(token);
+    } catch(err) {
+      showToast('Error: ' + err.message);
+      btn.disabled = false; btn.textContent = 'Send Authorisation Request →';
+    }
+  }
+
+  // ===== POLLING =====
+  function startPolling(token) {
+    if (pollingInterval) clearInterval(pollingInterval);
+    pollingInterval = setInterval(async () => {
+      try {
+        const res = await fetch(`${API}/getApprovalCard`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token })
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.record && data.record.status !== 'Pending') {
+          clearInterval(pollingInterval);
+          renderApprovalCard(data.record);
+          showView('card');
+        }
+      } catch(e) {}
+    }, 3000);
+  }
+
+  // ===== APPROVAL CARD =====
+  function renderApprovalCard(r) {
+    const isApproved = r.status === 'Approved';
+    const approvedAt = r.approved_at ? new Date(r.approved_at) : null;
+    const expiresAt = r.expires_at ? new Date(r.expires_at) : null;
+    const isExpired = expiresAt && expiresAt < new Date();
+    const timeStr = approvedAt ? approvedAt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'}) : '—';
+    const dateStr = approvedAt ? approvedAt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) : '—';
+    const expStr = expiresAt ? expiresAt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) : '—';
+    const label = r.request_type === 'Other' ? r.custom_type : r.request_type;
+
+    document.getElementById('approval-card-container').innerHTML = `
+      <div class="approval-card">
+        <div class="card-status-bar ${r.status.toLowerCase()}">
+          <div class="card-status-icon">${isApproved?'✅':'❌'}</div>
+          <div class="card-status-word">${r.status.toUpperCase()}</div>
+          <div class="card-status-sub">${isApproved?'This request has been authorised':'This request has been declined'}</div>
+        </div>
+        <div class="card-body">
+          <div class="card-type-badge">${label}</div>
+          <div class="card-identities">
+            <div class="identity-block"><div class="identity-role">Employee</div><div class="identity-name">${r.employee_name||'—'}</div><div class="identity-company">${r.employee_company||''}</div></div>
+            <div class="identity-block"><div class="identity-role">Approver</div><div class="identity-name">${r.approver_name||'—'}</div><div class="identity-company">${r.approver_role||''}</div></div>
+          </div>
+          <div style="height:14px"></div>
+          <div class="card-row"><div class="card-row-label">Vehicle</div><div class="card-row-value">${r.vehicle_reg||'—'}</div></div>
+          <div class="card-row"><div class="card-row-label">Site</div><div class="card-row-value">${r.site_name||'—'}</div></div>
+          <div class="card-row"><div class="card-row-label">Location</div><div class="card-row-value">${r.location||'—'}</div></div>
+          <div class="card-row"><div class="card-row-label">Urgency</div><div class="card-row-value">${r.urgency||'Standard'}</div></div>
+          <div class="card-row"><div class="card-row-label">Date</div><div class="card-row-value">${dateStr}</div></div>
+          <div class="card-row"><div class="card-row-label">Time</div><div class="card-row-value">${timeStr}</div></div>
+          ${r.denial_reason?`<div class="denial-reason-box"><div class="denial-label">Reason for Denial</div><div class="denial-text">${r.denial_reason}</div></div>`:''}
+          ${r.approver_note?`<div class="approval-note-box"><div class="approval-note-label">📋 Approver Note</div><div class="approval-note-text">${r.approver_note}</div></div>`:''}
+          <div class="card-qr-section" style="margin-top:14px">
+            <div class="qr-placeholder">🔲</div>
+            <div class="qr-info"><div class="qr-label">Verification Token</div><div class="qr-value">${r.approval_token}</div></div>
+          </div>
+          <div class="card-expiry ${isExpired?'expired':''}">
+            ${isExpired?'⛔ This authorisation has expired':`⏱️ Valid until ${expStr} — present to site staff`}
+          </div>
+        </div>
+      </div>
+      <button class="btn-new-req" onclick="resetEmployeeForm()">+ New Request</button>
+    `;
+  }
+
+  function resetEmployeeForm() {
+    ['req-type','employee-name','vehicle-reg','site-name','location','details'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.value = '';
+    });
+    // Reset approver dropdown (not text input)
+    const approverSel = document.getElementById('approver-select');
+    if (approverSel) { approverSel.innerHTML = '<option value="">Loading approvers...</option>'; }
+    const noMsg = document.getElementById('no-approvers-msg');
+    if (noMsg) noMsg.style.display = 'none';
+    document.getElementById('submit-btn').disabled = false;
+    document.getElementById('submit-btn').textContent = 'Send Authorisation Request →';
+    urgency = 'Standard';
+    document.querySelectorAll('.urgency-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.urgency-btn.standard').classList.add('active');
+    if (currentUser) {
+      setTimeout(() => {
+        const c = document.getElementById('employee-company'); if (c) c.value = currentUser.company_name || '';
+        const n = document.getElementById('employee-name'); if (n) n.value = currentUser.full_name || '';
+      }, 50);
+      loadEmployeeApprovers(currentUser);
+    }
+    showView('employee');
+  }
+
+  // ===== APPROVER DASHBOARD =====
+  async function loadApproverDashboard() {
+    document.getElementById('dashboard-list').innerHTML = '<div class="spinner"></div>';
+    try {
+      const res = await fetch(`${API}/listApprovalRequests`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({})
+      });
+      const data = await res.json();
+      const order = { Critical:0, Urgent:1, Standard:2 };
+      allRequests = (data.records||[]).sort((a,b)=> {
+        if (order[a.urgency] !== order[b.urgency]) return order[a.urgency]-order[b.urgency];
+        return new Date(b.created_date)-new Date(a.created_date);
+      });
+      updatePendingCount();
+      renderList();
+    } catch(err) {
+      document.getElementById('dashboard-list').innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Failed to load</div></div>`;
+    }
+  }
+
+  function updatePendingCount() {
+    const n = allRequests.filter(r=>r.status==='Pending').length;
+    const el = document.getElementById('count-pending');
+    el.textContent = n;
+    el.className = 'tab-count' + (n===0?' zero':'');
+  }
+
+  function switchTab(tab, btn) {
+    currentTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderList();
+  }
+
+  function renderList() {
+    const filtered = currentTab==='pending' ? allRequests.filter(r=>r.status==='Pending') : allRequests;
+    if (!filtered.length) {
+      document.getElementById('dashboard-list').innerHTML = `<div class="empty-state"><div class="empty-icon">${currentTab==='pending'?'✅':'📋'}</div><div class="empty-title">${currentTab==='pending'?'No pending requests':'No requests yet'}</div></div>`;
+      return;
+    }
+    document.getElementById('dashboard-list').innerHTML = filtered.map(r => {
+      const label = r.request_type==='Other'?(r.custom_type||'Other'):r.request_type;
+      const isPending = r.status==='Pending';
+      const created = r.created_date ? new Date(r.created_date).toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '—';
+      return `<div class="req-card">
+        <div class="req-card-header ${(r.urgency||'standard').toLowerCase()}">
+          <div><div class="req-type-label">${label}</div><div class="req-meta">${r.employee_name||'—'} · ${r.vehicle_reg||'No reg'} · ${created}</div></div>
+          <div class="urgency-tag ${r.urgency||'Standard'}">${r.urgency||'Standard'}</div>
+        </div>
+        <div class="req-card-body">
+          <div class="req-details-row">
+            <div><div class="req-detail-label">Company</div><div class="req-detail-value">${r.employee_company||'—'}</div></div>
+            <div><div class="req-detail-label">Site</div><div class="req-detail-value">${r.site_name||'—'}</div></div>
+            <div><div class="req-detail-label">Location</div><div class="req-detail-value">${r.location||'—'}</div></div>
+          </div>
+          ${r.details?`<div class="req-notes">${r.details}</div>`:''}
+          ${!isPending?`<div class="done-badge ${r.status.toLowerCase()}">${r.status==='Approved'?'✅':'❌'} ${r.status}${r.denial_reason?' — '+r.denial_reason:''}</div>`:''}
+        </div>
+        ${isPending?`<div class="req-card-actions">
+          <button class="btn-approve-sm" onclick="openApproveModal('${r.approval_token}')">✅ Approve</button>
+          <button class="btn-deny-sm" onclick="openDenyModal('${r.approval_token}')">❌ Deny</button>
+        </div>`:''}
+      </div>`;
+    }).join('');
+  }
+
+  function openDenyModal(token) { denyTargetToken=token; document.getElementById('deny-reason-text').value=''; document.getElementById('deny-modal').classList.add('open'); }
+  function closeDenyModal() { document.getElementById('deny-modal').classList.remove('open'); denyTargetToken=null; }
+  function confirmDeny() { const r=document.getElementById('deny-reason-text').value.trim(); closeDenyModal(); processDecision(denyTargetToken,'Denied',r,''); }
+
+  function openApproveModal(token) { approveTargetToken=token; document.getElementById('approve-note-text').value=''; document.getElementById('approve-modal').classList.add('open'); }
+  function closeApproveModal() { document.getElementById('approve-modal').classList.remove('open'); approveTargetToken=null; }
+  function confirmApprove() { const note=document.getElementById('approve-note-text').value.trim(); closeApproveModal(); processDecision(approveTargetToken,'Approved','',note); }
+
+  async function processDecision(token, action, reason, note) {
+    try {
+      const res = await fetch(`${API}/handleApproval`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({token, action, denial_reason: reason||'', approver_note: note||''})
+      });
+      if (!res.ok) { const e=await res.json(); throw new Error(e.error||'Failed'); }
+      showToast(action==='Approved'?'✅ Approved':'❌ Denied');
+      loadApproverDashboard();
+    } catch(err) { showToast('Error: '+err.message); }
+  }
+
+  // ===== LOAD EMPLOYEE APPROVERS DROPDOWN =====
+  async function loadEmployeeApprovers(user) {
+    // Safety: ensure the element is a <select>; if it got replaced, recreate it
+    let sel = document.getElementById('approver-select');
+    if (!sel || sel.tagName !== 'SELECT') {
+      const parent = sel ? sel.parentNode : document.querySelector('.form-group');
+      const newSel = document.createElement('select');
+      newSel.id = 'approver-select';
+      newSel.onchange = handleApproverSelect;
+      if (sel) parent.replaceChild(newSel, sel);
+      sel = newSel;
+    }
+    const noMsg = document.getElementById('no-approvers-msg');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">Loading...</option>';
+    try {
+      const res = await fetch(`${API}/clearauthGetApprovers`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ employee_id: user.id, company_id: user.company_id })
+      });
+      const data = await res.json();
+      const approvers = data.approvers || [];
+      if (!approvers.length) {
+        sel.innerHTML = '<option value="">No approvers available</option>';
+        noMsg.style.display = 'block';
+      } else {
+        sel.innerHTML = '<option value="">Select an approver...</option>' +
+          approvers.map(a => `<option value="${a.id}" data-name="${a.full_name}">${a.full_name}</option>`).join('');
+        noMsg.style.display = 'none';
+      }
+    } catch(e) {
+      sel.innerHTML = '<option value="">Failed to load</option>';
+    }
+  }
+
+  function handleApproverSelect() {}
+
+  // ===== PERMISSIONS (COMPANY DASHBOARD) =====
+  let allCompanyApprovers = [];
+
+  async function loadApproverChecks(employeeId, allowedIds, allowAll) {
+    const container = document.getElementById(`approver-checks-${employeeId}`);
+    if (!container || !currentUser) return;
+
+    // Use cached approvers if available
+    if (!allCompanyApprovers.length) {
+      try {
+        const res = await fetch(`${API}/clearauthGetApprovers`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ company_id: currentUser.company_id })
+        });
+        const data = await res.json();
+        allCompanyApprovers = data.approvers || [];
+      } catch(e) {
+        container.innerHTML = '<div class="no-approvers-note">Failed to load approvers</div>';
+        return;
+      }
+    }
+
+    if (!allCompanyApprovers.length) {
+      container.innerHTML = '<div class="no-approvers-note">No approvers in your company yet. Invite approvers first.</div>';
+      return;
+    }
+
+    container.innerHTML = allCompanyApprovers.map(a => `
+      <label class="approver-check-row">
+        <input type="checkbox" id="chk-${employeeId}-${a.id}" ${allowedIds.includes(a.id) ? 'checked' : ''}>
+        <div>
+          <div class="approver-check-name">${a.full_name}</div>
+          <div class="approver-check-username">@${a.username}</div>
+        </div>
+      </label>
+    `).join('');
+  }
+
+  function togglePermSection(employeeId) {
+    const body = document.getElementById(`perm-body-${employeeId}`);
+    const chevron = document.getElementById(`perm-chevron-${employeeId}`);
+    const isOpen = body.style.display !== 'none';
+    body.style.display = isOpen ? 'none' : 'block';
+    chevron.textContent = isOpen ? '▼' : '▲';
+    // Load checks when opened
+    if (!isOpen) {
+      const employee = companyUsers.find(u => u.id === employeeId);
+      if (employee) loadApproverChecks(employeeId, employee.allowed_approvers || [], employee.allow_all_approvers);
+    }
+  }
+
+  function toggleAllowAll(employeeId) {
+    const allowAllChk = document.getElementById(`allow-all-${employeeId}`);
+    const individualDiv = document.getElementById(`individual-perms-${employeeId}`);
+    if (allowAllChk.checked) {
+      individualDiv.style.opacity = '0.4';
+      individualDiv.style.pointerEvents = 'none';
+    } else {
+      individualDiv.style.opacity = '1';
+      individualDiv.style.pointerEvents = 'auto';
+    }
+  }
+
+  async function savePermissions(employeeId) {
+    const allowAllChk = document.getElementById(`allow-all-${employeeId}`);
+    const allowAll = allowAllChk ? allowAllChk.checked : false;
+    let allowedIds = [];
+    if (!allowAll && allCompanyApprovers.length) {
+      allCompanyApprovers.forEach(a => {
+        const chk = document.getElementById(`chk-${employeeId}-${a.id}`);
+        if (chk && chk.checked) allowedIds.push(a.id);
+      });
+    }
+    try {
+      const res = await fetch(`${API}/clearauthSetPermissions`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ employee_id: employeeId, allow_all_approvers: allowAll, allowed_approvers: allowedIds })
+      });
+      if (!res.ok) throw new Error('Failed');
+      // Update local data
+      const employee = companyUsers.find(u => u.id === employeeId);
+      if (employee) { employee.allow_all_approvers = allowAll; employee.allowed_approvers = allowedIds; }
+      // Update summary
+      const summary = document.getElementById(`perm-summary-${employeeId}`);
+      if (summary) summary.textContent = allowAll ? 'All approvers' : (allowedIds.length === 0 ? 'None set' : allowedIds.length + ' approver(s)');
+      showToast('Access saved ✓');
+    } catch(e) { showToast('Error saving permissions'); }
+  }
+
+  // ===== USER PROFILE =====
+  let profileUser = null;
+  let profileAllApprovers = [];
+  let companyDepartments = [];
+
+  function backToCompany() {
+    showView('company');
+  }
+
+  async function openUserProfile(userId) {
+    profileUser = companyUsers.find(u => u.id === userId);
+    if (!profileUser) return;
+
+    // Set company badge
+    document.getElementById('profile-company-badge').textContent = currentUser.company_name || 'Company';
+
+    // Hero section
+    const initials = (profileUser.full_name || '?').split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+    const av = document.getElementById('profile-avatar');
+    av.textContent = initials || '?';
+    av.className = `profile-avatar ${profileUser.role}`;
+    document.getElementById('profile-name').textContent = profileUser.full_name || '(Pending setup)';
+    document.getElementById('profile-username').textContent = profileUser.username ? '@' + profileUser.username : 'Not yet registered';
+    const roleBadge = document.getElementById('profile-role-badge');
+    roleBadge.textContent = profileUser.role.charAt(0).toUpperCase() + profileUser.role.slice(1);
+    roleBadge.className = `profile-role-badge ${profileUser.role}`;
+    const dot = document.getElementById('profile-status-dot');
+    dot.className = `profile-status-dot ${profileUser.status}`;
+    document.getElementById('profile-status-text').textContent = profileUser.status.charAt(0).toUpperCase() + profileUser.status.slice(1);
+
+    // Delete button label
+    document.getElementById('profile-delete-btn').textContent = `Remove ${profileUser.full_name || 'this user'}`;
+
+    // Department dropdown
+    buildDeptDropdown(profileUser.department || '');
+
+    // Show/hide approver access section
+    const accessSection = document.getElementById('profile-access-section');
+    if (profileUser.role === 'employee') {
+      accessSection.style.display = 'block';
+      await loadProfileApprovers();
+    } else {
+      accessSection.style.display = 'none';
+    }
+
+    showView('profile');
+  }
+
+  function buildDeptDropdown(currentDept) {
+    // Collect all unique departments from company users
+    const depts = [...new Set(companyUsers.map(u => u.department).filter(Boolean))];
+    if (currentDept && !depts.includes(currentDept)) depts.push(currentDept);
+    companyDepartments = depts;
+
+    const sel = document.getElementById('profile-dept-select');
+    sel.innerHTML = '<option value="">— No department assigned —</option>' +
+      depts.map(d => `<option value="${d}" ${d === currentDept ? 'selected' : ''}>${d}</option>`).join('') +
+      '<option value="__new__">+ Create new department...</option>';
+    document.getElementById('profile-new-dept-field').style.display = 'none';
+    document.getElementById('profile-new-dept-input').value = '';
+  }
+
+  function profileDeptChanged() {
+    const val = document.getElementById('profile-dept-select').value;
+    document.getElementById('profile-new-dept-field').style.display = val === '__new__' ? 'block' : 'none';
+  }
+
+  async function loadProfileApprovers() {
+    const listEl = document.getElementById('profile-approvers-list');
+    listEl.innerHTML = '<div class="profile-empty-approvers">Loading approvers...</div>';
+
+    // Load all company approvers
+    if (!allCompanyApprovers.length) {
+      try {
+        const res = await fetch(`${API}/clearauthGetApprovers`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ company_id: currentUser.company_id })
+        });
+        const data = await res.json();
+        allCompanyApprovers = data.approvers || [];
+      } catch(e) {
+        listEl.innerHTML = '<div class="profile-empty-approvers">Failed to load approvers</div>';
+        return;
+      }
+    }
+    profileAllApprovers = allCompanyApprovers;
+
+    if (!profileAllApprovers.length) {
+      listEl.innerHTML = '<div class="profile-empty-approvers">No approvers in your company yet. Invite approvers first.</div>';
+      return;
+    }
+
+    const allowAll = profileUser.allow_all_approvers === true;
+    const allowedIds = profileUser.allowed_approvers || [];
+
+    // Set allow-all checkbox
+    const allowAllChk = document.getElementById('profile-allow-all-chk');
+    allowAllChk.checked = allowAll;
+    const indivDiv = document.getElementById('profile-approvers-list');
+
+    listEl.innerHTML = profileAllApprovers.map(a => {
+      const checked = allowAll ? false : allowedIds.includes(a.id);
+      const initials = (a.full_name || '?').split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+      return `<label class="profile-approver-item" style="cursor:pointer">
+        <div class="profile-approver-avatar">${initials}</div>
+        <div style="flex:1">
+          <div class="profile-approver-name">${a.full_name}</div>
+          <div class="profile-approver-username">@${a.username}</div>
+        </div>
+        <div class="profile-approver-check">
+          <input type="checkbox" id="profile-chk-${a.id}" ${checked ? 'checked' : ''} ${allowAll ? 'disabled style="opacity:0.4"' : ''}>
+        </div>
+      </label>`;
+    }).join('');
+  }
+
+  function profileToggleAllowAll() {
+    const allowAll = document.getElementById('profile-allow-all-chk').checked;
+    profileAllApprovers.forEach(a => {
+      const chk = document.getElementById(`profile-chk-${a.id}`);
+      if (chk) {
+        chk.disabled = allowAll;
+        chk.style.opacity = allowAll ? '0.4' : '1';
+        if (allowAll) chk.checked = false;
+      }
+    });
+  }
+
+  async function saveProfile() {
+    if (!profileUser) return;
+    const btn = document.querySelector('.profile-save-btn');
+    btn.disabled = true; btn.textContent = 'Saving...';
+
+    try {
+      // Department
+      let deptVal = document.getElementById('profile-dept-select').value;
+      if (deptVal === '__new__') {
+        deptVal = document.getElementById('profile-new-dept-input').value.trim();
+      }
+
+      // Approver permissions (employees only)
+      let updatePayload = { department: deptVal };
+      if (profileUser.role === 'employee') {
+        const oldDept = profileUser.department || '';
+        const deptChanged = deptVal !== oldDept;
+
+        let allowAll = document.getElementById('profile-allow-all-chk').checked;
+        let allowedIds = [];
+
+        if (!allowAll) {
+          profileAllApprovers.forEach(a => {
+            const chk = document.getElementById(`profile-chk-${a.id}`);
+            if (chk && chk.checked) allowedIds.push(a.id);
+          });
+        }
+
+        // If the employee is being assigned to a new named site, auto-add all
+        // approvers in that site to their access list (on top of manual selections)
+        if (deptChanged && deptVal) {
+          const siteApproverIds = companyUsers
+            .filter(u => u.role === 'approver' && u.department === deptVal)
+            .map(u => u.id);
+          if (siteApproverIds.length > 0 && !allowAll) {
+            allowedIds = Array.from(new Set([...allowedIds, ...siteApproverIds]));
+            // Tick the checkboxes so the UI reflects it
+            siteApproverIds.forEach(aid => {
+              const chk = document.getElementById(`profile-chk-${aid}`);
+              if (chk) chk.checked = true;
+            });
+          }
+        }
+
+        updatePayload.allow_all_approvers = allowAll;
+        updatePayload.allowed_approvers = allowAll ? [] : allowedIds;
+
+        // Save permissions via backend
+        await fetch(`${API}/clearauthSetPermissions`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ employee_id: profileUser.id, allow_all_approvers: allowAll, allowed_approvers: allowedIds })
+        });
+      }
+
+      // If an approver is being moved to a new site, auto-grant them to all
+      // employees already in that site
+      if (profileUser.role === 'approver' && deptVal && deptVal !== (profileUser.department || '')) {
+        const siteEmployees = companyUsers.filter(u => u.role === 'employee' && u.department === deptVal);
+        for (const employee of siteEmployees) {
+          const existing = employee.allowed_approvers || [];
+          if (!existing.includes(profileUser.id) && !employee.allow_all_approvers) {
+            const merged = [...existing, profileUser.id];
+            employee.allowed_approvers = merged;
+            await fetch(`${API}/clearauthSetPermissions`, {
+              method: 'POST', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ employee_id: employee.id, allow_all_approvers: false, allowed_approvers: merged })
+            });
+          }
+        }
+      }
+
+      // Save department via manage user
+      await fetch(`${API}/clearauthManageUser`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'update', user_id: profileUser.id, full_name: profileUser.full_name, username: profileUser.username, department: deptVal })
+      });
+
+      // Update local data
+      Object.assign(profileUser, updatePayload);
+      showToast('Profile saved ✓');
+
+      // Rebuild dept dropdown with new dept included
+      buildDeptDropdown(deptVal);
+
+    } catch(e) {
+      showToast('Error saving: ' + e.message);
+    } finally {
+      btn.disabled = false; btn.textContent = 'Save Changes';
+    }
+  }
+
+
+  // ===== PROFILE REQUEST HISTORY =====
+  let profileReqData = [];
+  let profileReqTab = 'pending'; // 'pending' or 'past'
+  let profileReqOpen = false;
+
+  async function loadProfileRequests(userId, role) {
+    const listEl = document.getElementById('profile-req-list');
+    const tabRow = document.getElementById('profile-req-tab-row');
+
+    // Set tabs based on role
+    if (role === 'employee') {
+      tabRow.innerHTML = `
+        <div class="req-history-tab active" id="prt-pending" onclick="switchProfileReqTab('pending')">Pending</div>
+        <div class="req-history-tab" id="prt-past" onclick="switchProfileReqTab('past')">Past</div>`;
+    } else {
+      tabRow.innerHTML = `
+        <div class="req-history-tab active" id="prt-pending" onclick="switchProfileReqTab('pending')">Awaiting Approval</div>
+        <div class="req-history-tab" id="prt-past" onclick="switchProfileReqTab('past')">Actioned</div>`;
+    }
+
+    profileReqTab = 'pending';
+    listEl.innerHTML = '<div class="req-history-loading"><div class="spinner" style="margin:12px auto"></div></div>';
+
+    try {
+      const res = await fetch(`${API}/getUserRequests`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, role })
+      });
+      const data = await res.json();
+      profileReqData = data.records || [];
+      renderProfileReqList(role);
+    } catch(e) {
+      listEl.innerHTML = '<div class="req-history-empty">Failed to load requests.</div>';
+    }
+  }
+
+  function switchProfileReqTab(tab) {
+    profileReqTab = tab;
+    document.querySelectorAll('.req-history-tab').forEach(t => t.classList.remove('active'));
+    const active = document.getElementById('prt-' + tab);
+    if (active) active.classList.add('active');
+    renderProfileReqList(profileUser ? profileUser.role : 'employee');
+  }
+
+  function renderProfileReqList(role) {
+    const listEl = document.getElementById('profile-req-list');
+    let records;
+
+    if (role === 'employee') {
+      records = profileReqTab === 'pending'
+        ? profileReqData.filter(r => r.status === 'Pending')
+        : profileReqData.filter(r => r.status !== 'Pending');
+    } else {
+      records = profileReqTab === 'pending'
+        ? profileReqData.filter(r => r.status === 'Pending')
+        : profileReqData.filter(r => r.status !== 'Pending');
+    }
+
+    if (!records.length) {
+      listEl.innerHTML = `<div class="req-history-empty">${
+        profileReqTab === 'pending' ? 'No pending requests.' : 'No past requests in the last 2 weeks.'
+      }</div>`;
+      return;
+    }
+
+    listEl.innerHTML = records.map(r => {
+      const label = r.request_type === 'Other' ? (r.custom_type || 'Other') : r.request_type;
+      const created = r.created_date ? new Date(r.created_date).toLocaleDateString('en-GB', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }) : '—';
+      const meta = role === 'employee'
+        ? `${r.approver_name || 'Unknown approver'} · ${created}`
+        : `${r.employee_name || 'Unknown employee'} · ${r.vehicle_reg || ''} · ${created}`;
+      const denial = r.status === 'Denied' && r.denial_reason ? `<div style="font-size:0.72rem;color:#DC2626;margin-top:3px">Reason: ${r.denial_reason}</div>` : '';
+      return `<div class="req-history-item">
+        <div class="req-status-dot ${r.status}"></div>
+        <div style="flex:1;min-width:0">
+          <div class="req-history-type">${label}</div>
+          <div class="req-history-meta">${meta}</div>
+          ${denial}
+        </div>
+        <span class="req-history-badge ${r.status}">${r.status}</span>
+      </div>`;
+    }).join('');
+  }
+
+  function toggleProfileRequests() {
+    const body = document.getElementById('profile-requests-body');
+    const chevron = document.getElementById('profile-req-chevron');
+    profileReqOpen = !profileReqOpen;
+    body.style.display = profileReqOpen ? 'block' : 'none';
+    chevron.textContent = profileReqOpen ? '▲' : '▼';
+    if (profileReqOpen && profileUser) {
+      loadProfileRequests(profileUser.id, profileUser.role);
+    }
+  }
+
+  async function deleteProfileUser() {
+    if (!profileUser) return;
+    if (!confirm(`Remove ${profileUser.full_name || 'this user'}? This cannot be undone.`)) return;
+    try {
+      const res = await fetch(`${API}/clearauthManageUser`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'delete', user_id: profileUser.id })
+      });
+      if (!res.ok) throw new Error('Delete failed');
+      showToast('User removed');
+      backToCompany();
+      loadCompanyUsers();
+    } catch(e) { showToast('Error: ' + e.message); }
+  }
+
+  // ===== TOAST =====
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 3000);
+  }
+</script>
+</body>
+</html>
