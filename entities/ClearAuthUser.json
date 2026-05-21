@@ -43,11 +43,15 @@
       "items": {
         "type": "string"
       },
-      "description": "List of approver user IDs this driver can request from. Empty = all approvers allowed."
+      "description": "List of approver user IDs this driver can request from"
     },
     "allow_all_approvers": {
       "type": "boolean",
       "description": "If true, driver can request from any approver in the company"
+    },
+    "department": {
+      "type": "string",
+      "description": "Department or group this user belongs to, e.g. Night Shift, Site A, HGV Team"
     }
   },
   "required": [],

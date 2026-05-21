@@ -568,6 +568,74 @@
 
 <div class="toast" id="toast"></div>
 
+<!-- ===== USER PROFILE VIEW ===== -->
+<div id="view-profile" class="view">
+  <div class="app-header">
+    <div class="app-logo"><span class="re">RE</span><span class="dash">-</span>Quest</div>
+    <div class="header-right">
+      <span class="header-badge badge-company" id="profile-company-badge"></span>
+      <button class="btn-logout" onclick="logout()">Sign out</button>
+    </div>
+  </div>
+  <div class="profile-hero">
+    <button class="profile-back" onclick="backToCompany()">← Back to Dashboard</button>
+    <div class="profile-avatar" id="profile-avatar"></div>
+    <div class="profile-name" id="profile-name"></div>
+    <div class="profile-username" id="profile-username"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+      <span class="profile-role-badge" id="profile-role-badge"></span>
+      <span style="font-size:0.78rem;color:rgba(255,255,255,0.5)"><span class="profile-status-dot" id="profile-status-dot"></span><span id="profile-status-text"></span></span>
+    </div>
+  </div>
+  <div class="profile-body">
+
+    <!-- Department section -->
+    <div class="profile-section">
+      <div class="profile-section-header">
+        <span class="profile-section-icon">🏢</span>
+        <span class="profile-section-title">Department</span>
+      </div>
+      <div class="profile-field">
+        <div class="profile-field-label">Assign to department</div>
+        <select id="profile-dept-select" onchange="profileDeptChanged()">
+          <option value="">— No department assigned —</option>
+        </select>
+      </div>
+      <div class="profile-field" id="profile-new-dept-field" style="display:none">
+        <div class="profile-field-label">New department name</div>
+        <input type="text" id="profile-new-dept-input" placeholder="e.g. Night Shift, Site A, HGV Team" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:9px;font-size:0.9rem;font-family:Inter,sans-serif">
+      </div>
+    </div>
+
+    <!-- Approver access section (drivers only) -->
+    <div class="profile-section" id="profile-access-section">
+      <div class="profile-section-header">
+        <span class="profile-section-icon">🔑</span>
+        <span class="profile-section-title">Approver Access</span>
+      </div>
+      <label class="profile-allow-all" id="profile-allow-all-row">
+        <input type="checkbox" id="profile-allow-all-chk" onchange="profileToggleAllowAll()">
+        <span class="profile-allow-all-label">Allow access to all approvers</span>
+      </label>
+      <div id="profile-approvers-list" class="profile-approver-list">
+        <div class="profile-empty-approvers">Loading approvers...</div>
+      </div>
+    </div>
+
+    <!-- Save button -->
+    <button class="profile-save-btn" onclick="saveProfile()">Save Changes</button>
+
+    <!-- Danger zone -->
+    <div class="profile-section profile-danger-zone">
+      <div class="profile-section-header">
+        <span class="profile-section-icon">⚠️</span>
+        <span class="profile-section-title">Danger Zone</span>
+      </div>
+      <button class="btn-profile-delete" id="profile-delete-btn" onclick="deleteProfileUser()">Remove this user</button>
+    </div>
+  </div>
+</div>
+
 <script>
   const API = 'https://assistant-36b1ac32.base44.app/functions';
   const APP_URL = window.location.origin + window.location.pathname;
@@ -772,19 +840,17 @@
             <button class="btn-save-perms" onclick="savePermissions('${u.id}')">Save Access</button>
           </div>
         </div>` : '';
-      return `<div class="user-card">
+      return `<div class="user-card" onclick="openUserProfile('${u.id}')" style="cursor:pointer">
         <div class="user-row">
           <div class="user-row-info">
-            <div class="user-row-name">${u.full_name || '(Pending setup)'}</div>
+            <div class="user-row-name" style="color:var(--blue)">${u.full_name || '(Pending setup)'}</div>
             <div class="user-row-username">${u.username ? '@' + u.username : 'Awaiting registration'}</div>
           </div>
           <span class="user-status-pill ${u.status}">${u.status}</span>
-          <div class="user-row-actions">
-            <button class="btn-edit-user" onclick="openEditModal('${u.id}','${(u.full_name||'').replace(/'/g,"\\'")}','${(u.username||'').replace(/'/g,"\\'")}')">✏️</button>
-            <button class="btn-delete-user" onclick="deleteUser('${u.id}','${(u.full_name||'Pending').replace(/'/g,"\\'")}')">🗑</button>
+          <div class="user-row-actions" onclick="event.stopPropagation()">
+            <button class="btn-delete-user" onclick="deleteUser('${u.id}','${(u.full_name||'Pending').replace(/'/g,\"\\'\")}')">🗑</button>
           </div>
         </div>
-        ${permSection}
       </div>`;
     }).join('');
   }
@@ -1252,6 +1318,202 @@
       if (summary) summary.textContent = allowAll ? 'All approvers' : (allowedIds.length === 0 ? 'None set' : allowedIds.length + ' approver(s)');
       showToast('Access saved ✓');
     } catch(e) { showToast('Error saving permissions'); }
+  }
+
+  // ===== USER PROFILE =====
+  let profileUser = null;
+  let profileAllApprovers = [];
+  let companyDepartments = [];
+
+  function backToCompany() {
+    showView('company');
+  }
+
+  async function openUserProfile(userId) {
+    profileUser = companyUsers.find(u => u.id === userId);
+    if (!profileUser) return;
+
+    // Set company badge
+    document.getElementById('profile-company-badge').textContent = currentUser.company_name || 'Company';
+
+    // Hero section
+    const initials = (profileUser.full_name || '?').split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+    const av = document.getElementById('profile-avatar');
+    av.textContent = initials || '?';
+    av.className = `profile-avatar ${profileUser.role}`;
+    document.getElementById('profile-name').textContent = profileUser.full_name || '(Pending setup)';
+    document.getElementById('profile-username').textContent = profileUser.username ? '@' + profileUser.username : 'Not yet registered';
+    const roleBadge = document.getElementById('profile-role-badge');
+    roleBadge.textContent = profileUser.role.charAt(0).toUpperCase() + profileUser.role.slice(1);
+    roleBadge.className = `profile-role-badge ${profileUser.role}`;
+    const dot = document.getElementById('profile-status-dot');
+    dot.className = `profile-status-dot ${profileUser.status}`;
+    document.getElementById('profile-status-text').textContent = profileUser.status.charAt(0).toUpperCase() + profileUser.status.slice(1);
+
+    // Delete button label
+    document.getElementById('profile-delete-btn').textContent = `Remove ${profileUser.full_name || 'this user'}`;
+
+    // Department dropdown
+    buildDeptDropdown(profileUser.department || '');
+
+    // Show/hide approver access section
+    const accessSection = document.getElementById('profile-access-section');
+    if (profileUser.role === 'driver') {
+      accessSection.style.display = 'block';
+      await loadProfileApprovers();
+    } else {
+      accessSection.style.display = 'none';
+    }
+
+    showView('profile');
+  }
+
+  function buildDeptDropdown(currentDept) {
+    // Collect all unique departments from company users
+    const depts = [...new Set(companyUsers.map(u => u.department).filter(Boolean))];
+    if (currentDept && !depts.includes(currentDept)) depts.push(currentDept);
+    companyDepartments = depts;
+
+    const sel = document.getElementById('profile-dept-select');
+    sel.innerHTML = '<option value="">— No department assigned —</option>' +
+      depts.map(d => `<option value="${d}" ${d === currentDept ? 'selected' : ''}>${d}</option>`).join('') +
+      '<option value="__new__">+ Create new department...</option>';
+    document.getElementById('profile-new-dept-field').style.display = 'none';
+    document.getElementById('profile-new-dept-input').value = '';
+  }
+
+  function profileDeptChanged() {
+    const val = document.getElementById('profile-dept-select').value;
+    document.getElementById('profile-new-dept-field').style.display = val === '__new__' ? 'block' : 'none';
+  }
+
+  async function loadProfileApprovers() {
+    const listEl = document.getElementById('profile-approvers-list');
+    listEl.innerHTML = '<div class="profile-empty-approvers">Loading approvers...</div>';
+
+    // Load all company approvers
+    if (!allCompanyApprovers.length) {
+      try {
+        const res = await fetch(`${API}/clearauthGetApprovers`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ company_id: currentUser.company_id })
+        });
+        const data = await res.json();
+        allCompanyApprovers = data.approvers || [];
+      } catch(e) {
+        listEl.innerHTML = '<div class="profile-empty-approvers">Failed to load approvers</div>';
+        return;
+      }
+    }
+    profileAllApprovers = allCompanyApprovers;
+
+    if (!profileAllApprovers.length) {
+      listEl.innerHTML = '<div class="profile-empty-approvers">No approvers in your company yet. Invite approvers first.</div>';
+      return;
+    }
+
+    const allowAll = profileUser.allow_all_approvers === true;
+    const allowedIds = profileUser.allowed_approvers || [];
+
+    // Set allow-all checkbox
+    const allowAllChk = document.getElementById('profile-allow-all-chk');
+    allowAllChk.checked = allowAll;
+    const indivDiv = document.getElementById('profile-approvers-list');
+
+    listEl.innerHTML = profileAllApprovers.map(a => {
+      const checked = allowAll ? false : allowedIds.includes(a.id);
+      const initials = (a.full_name || '?').split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+      return `<label class="profile-approver-item" style="cursor:pointer">
+        <div class="profile-approver-avatar">${initials}</div>
+        <div style="flex:1">
+          <div class="profile-approver-name">${a.full_name}</div>
+          <div class="profile-approver-username">@${a.username}</div>
+        </div>
+        <div class="profile-approver-check">
+          <input type="checkbox" id="profile-chk-${a.id}" ${checked ? 'checked' : ''} ${allowAll ? 'disabled style="opacity:0.4"' : ''}>
+        </div>
+      </label>`;
+    }).join('');
+  }
+
+  function profileToggleAllowAll() {
+    const allowAll = document.getElementById('profile-allow-all-chk').checked;
+    profileAllApprovers.forEach(a => {
+      const chk = document.getElementById(`profile-chk-${a.id}`);
+      if (chk) {
+        chk.disabled = allowAll;
+        chk.style.opacity = allowAll ? '0.4' : '1';
+        if (allowAll) chk.checked = false;
+      }
+    });
+  }
+
+  async function saveProfile() {
+    if (!profileUser) return;
+    const btn = document.querySelector('.profile-save-btn');
+    btn.disabled = true; btn.textContent = 'Saving...';
+
+    try {
+      // Department
+      let deptVal = document.getElementById('profile-dept-select').value;
+      if (deptVal === '__new__') {
+        deptVal = document.getElementById('profile-new-dept-input').value.trim();
+      }
+
+      // Approver permissions (drivers only)
+      let updatePayload = { department: deptVal };
+      if (profileUser.role === 'driver') {
+        const allowAll = document.getElementById('profile-allow-all-chk').checked;
+        const allowedIds = [];
+        if (!allowAll) {
+          profileAllApprovers.forEach(a => {
+            const chk = document.getElementById(`profile-chk-${a.id}`);
+            if (chk && chk.checked) allowedIds.push(a.id);
+          });
+        }
+        updatePayload.allow_all_approvers = allowAll;
+        updatePayload.allowed_approvers = allowAll ? [] : allowedIds;
+
+        // Save permissions via backend
+        await fetch(`${API}/clearauthSetPermissions`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ driver_id: profileUser.id, allow_all_approvers: allowAll, allowed_approvers: allowedIds })
+        });
+      }
+
+      // Save department via manage user
+      await fetch(`${API}/clearauthManageUser`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'update', user_id: profileUser.id, full_name: profileUser.full_name, username: profileUser.username, department: deptVal })
+      });
+
+      // Update local data
+      Object.assign(profileUser, updatePayload);
+      showToast('Profile saved ✓');
+
+      // Rebuild dept dropdown with new dept included
+      buildDeptDropdown(deptVal);
+
+    } catch(e) {
+      showToast('Error saving: ' + e.message);
+    } finally {
+      btn.disabled = false; btn.textContent = 'Save Changes';
+    }
+  }
+
+  async function deleteProfileUser() {
+    if (!profileUser) return;
+    if (!confirm(`Remove ${profileUser.full_name || 'this user'}? This cannot be undone.`)) return;
+    try {
+      const res = await fetch(`${API}/clearauthManageUser`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'delete', user_id: profileUser.id })
+      });
+      if (!res.ok) throw new Error('Delete failed');
+      showToast('User removed');
+      backToCompany();
+      loadCompanyUsers();
+    } catch(e) { showToast('Error: ' + e.message); }
   }
 
   // ===== TOAST =====
