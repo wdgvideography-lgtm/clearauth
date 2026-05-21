@@ -289,6 +289,75 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--dark2); color: white; padding: 13px 22px; border-radius: 24px; font-size: 0.85rem; font-weight: 600; opacity: 0; transition: opacity 0.3s; z-index: 400; white-space: nowrap; pointer-events: none; box-shadow: 0 4px 20px rgba(0,0,0,0.25); }
   .toast.show { opacity: 1; }
+
+  /* ===== USER PROFILE PAGE ===== */
+  #view-profile { background: #F0F4FA; flex-direction: column; }
+  #view-profile .app-header { background: white; }
+
+  .profile-hero { background: linear-gradient(135deg, #1A2E50, #2B4B8C); padding: 24px 20px 32px; position: relative; overflow: hidden; }
+  .profile-hero::before { content: ''; position: absolute; width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 50%; top: -80px; right: -60px; }
+  .profile-hero::after { content: ''; position: absolute; width: 120px; height: 120px; background: rgba(255,255,255,0.04); border-radius: 50%; bottom: -40px; left: -30px; }
+
+  .profile-back { display: inline-flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.55); font-size: 0.82rem; font-weight: 600; cursor: pointer; margin-bottom: 22px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); padding: 7px 14px; border-radius: 20px; transition: all 0.2s; }
+  .profile-back:hover { color: white; background: rgba(255,255,255,0.15); }
+
+  .profile-avatar { width: 68px; height: 68px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.7rem; font-weight: 900; color: white; margin-bottom: 14px; position: relative; z-index: 1; }
+  .profile-avatar.driver { background: rgba(59,125,216,0.35); border: 2.5px solid rgba(122,184,255,0.6); }
+  .profile-avatar.approver { background: rgba(15,157,107,0.35); border: 2.5px solid rgba(100,220,170,0.6); }
+
+  .profile-name { font-size: 1.45rem; font-weight: 900; color: white; margin-bottom: 3px; position: relative; z-index: 1; }
+  .profile-username { font-size: 0.82rem; color: rgba(255,255,255,0.45); font-family: monospace; margin-bottom: 12px; position: relative; z-index: 1; }
+
+  .profile-meta-row { display: flex; align-items: center; gap: 10px; position: relative; z-index: 1; flex-wrap: wrap; }
+  .profile-role-badge { display: inline-block; padding: 5px 13px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+  .profile-role-badge.driver { background: rgba(59,125,216,0.3); color: #A8D0FF; border: 1px solid rgba(122,184,255,0.4); }
+  .profile-role-badge.approver { background: rgba(15,157,107,0.3); color: #90EDD0; border: 1px solid rgba(100,220,170,0.4); }
+  .profile-status-pill { display: inline-flex; align-items: center; gap: 5px; padding: 5px 11px; border-radius: 20px; background: rgba(255,255,255,0.1); font-size: 0.72rem; font-weight: 600; color: rgba(255,255,255,0.6); }
+  .profile-status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .profile-status-dot.active { background: #4ADE80; box-shadow: 0 0 6px rgba(74,222,128,0.6); }
+  .profile-status-dot.invited { background: #FCD34D; }
+
+  .profile-body { padding: 0 16px 50px; max-width: 600px; margin: 0 auto; width: 100%; }
+
+  .profile-section { background: white; border-radius: 16px; margin-top: 14px; overflow: hidden; box-shadow: 0 2px 12px rgba(30,50,90,0.07); border: 1px solid var(--border); }
+  .profile-section-header { padding: 15px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; background: #FAFCFF; }
+  .profile-section-icon { font-size: 1rem; }
+  .profile-section-title { font-size: 0.75rem; font-weight: 800; color: var(--dark); text-transform: uppercase; letter-spacing: 0.8px; }
+
+  .profile-field { padding: 14px 18px; border-bottom: 1px solid var(--border); }
+  .profile-field:last-child { border-bottom: none; }
+  .profile-field-label { font-size: 0.7rem; font-weight: 700; color: var(--grey); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 7px; }
+  .profile-field select { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 0.9rem; font-family: 'Inter', sans-serif; background: var(--grey-light); color: var(--text); appearance: none; cursor: pointer; transition: all 0.2s; }
+  .profile-field select:focus { outline: none; border-color: var(--blue); background: white; box-shadow: 0 0 0 3px rgba(59,125,216,0.1); }
+  .profile-field-value { font-size: 0.92rem; font-weight: 600; color: var(--dark); }
+
+  .profile-allow-all { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--border); background: #F0F7FF; cursor: pointer; transition: background 0.2s; }
+  .profile-allow-all:hover { background: #E4F0FF; }
+  .profile-allow-all input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--blue); cursor: pointer; flex-shrink: 0; }
+  .profile-allow-all-label { font-size: 0.88rem; font-weight: 700; color: var(--blue); }
+
+  .profile-approver-list { padding: 10px 14px 14px; display: flex; flex-direction: column; gap: 8px; }
+  .profile-approver-item { display: flex; align-items: center; gap: 12px; padding: 11px 13px; background: var(--grey-light); border-radius: 11px; border: 1px solid var(--border); transition: background 0.15s; cursor: pointer; }
+  .profile-approver-item:hover { background: #EEF4FF; border-color: #C5DEFF; }
+  .profile-approver-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--green-light); display: flex; align-items: center; justify-content: center; font-size: 0.82rem; font-weight: 800; color: var(--green); flex-shrink: 0; border: 1.5px solid #B0EDD8; }
+  .profile-approver-name { font-size: 0.87rem; font-weight: 700; color: var(--dark); }
+  .profile-approver-username { font-size: 0.74rem; color: var(--grey); font-family: monospace; margin-top: 1px; }
+  .profile-approver-check { margin-left: auto; }
+  .profile-approver-check input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--blue); cursor: pointer; }
+
+  .profile-save-btn { margin: 14px 16px 0; width: calc(100% - 32px); padding: 14px; background: linear-gradient(135deg, #3B7DD8, #2B4B8C); color: white; border: none; border-radius: 12px; font-size: 0.95rem; font-weight: 700; cursor: pointer; display: block; transition: all 0.2s; letter-spacing: 0.2px; }
+  .profile-save-btn:hover { box-shadow: 0 4px 16px rgba(59,125,216,0.35); transform: translateY(-1px); }
+
+  .profile-empty-approvers { padding: 20px 18px; font-size: 0.85rem; color: var(--grey); font-style: italic; text-align: center; }
+
+  .profile-danger-zone { border-color: #FFE0E0; }
+  .profile-danger-zone .profile-section-header { background: #FFF5F5; border-bottom-color: #FFE0E0; }
+  .btn-profile-delete { margin: 0 16px 16px; width: calc(100% - 32px); padding: 12px; background: none; color: var(--red); border: 1.5px solid #FFCDD2; border-radius: 11px; font-size: 0.88rem; font-weight: 700; cursor: pointer; display: block; transition: all 0.2s; }
+  .btn-profile-delete:hover { background: var(--red-light); border-color: var(--red); }
+
+  .profile-new-dept-input { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 0.9rem; font-family: 'Inter', sans-serif; background: var(--grey-light); color: var(--text); transition: all 0.2s; }
+  .profile-new-dept-input:focus { outline: none; border-color: var(--blue); background: white; box-shadow: 0 0 0 3px rgba(59,125,216,0.1); }
+
 </style>
 </head>
 <body>
@@ -583,9 +652,12 @@
     <div class="profile-avatar" id="profile-avatar"></div>
     <div class="profile-name" id="profile-name"></div>
     <div class="profile-username" id="profile-username"></div>
-    <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+    <div class="profile-meta-row">
       <span class="profile-role-badge" id="profile-role-badge"></span>
-      <span style="font-size:0.78rem;color:rgba(255,255,255,0.5)"><span class="profile-status-dot" id="profile-status-dot"></span><span id="profile-status-text"></span></span>
+      <span class="profile-status-pill">
+        <span class="profile-status-dot" id="profile-status-dot"></span>
+        <span id="profile-status-text"></span>
+      </span>
     </div>
   </div>
   <div class="profile-body">
@@ -604,7 +676,7 @@
       </div>
       <div class="profile-field" id="profile-new-dept-field" style="display:none">
         <div class="profile-field-label">New department name</div>
-        <input type="text" id="profile-new-dept-input" placeholder="e.g. Night Shift, Site A, HGV Team" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:9px;font-size:0.9rem;font-family:Inter,sans-serif">
+        <input type="text" id="profile-new-dept-input" class="profile-new-dept-input" placeholder="e.g. Night Shift, Site A, HGV Team">
       </div>
     </div>
 
@@ -627,13 +699,14 @@
     <button class="profile-save-btn" onclick="saveProfile()">Save Changes</button>
 
     <!-- Danger zone -->
-    <div class="profile-section profile-danger-zone">
+    <div class="profile-section profile-danger-zone" style="margin-top:14px">
       <div class="profile-section-header">
         <span class="profile-section-icon">⚠️</span>
         <span class="profile-section-title">Danger Zone</span>
       </div>
       <button class="btn-profile-delete" id="profile-delete-btn" onclick="deleteProfileUser()">Remove this user</button>
     </div>
+
   </div>
 </div>
 
