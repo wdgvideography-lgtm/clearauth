@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>ClearAuth — Instant Ops Authorisation</title>
+<title>RE-Quest — Instant Ops Authorisation</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -26,8 +26,9 @@
   #view-login { background: var(--dark); align-items: center; justify-content: center; padding: 32px 20px; }
   .login-card { width: 100%; max-width: 400px; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,0.4); }
   .login-header { background: linear-gradient(135deg, #0F172A, #1E3A5F); padding: 28px 32px 24px; text-align: center; }
-  .login-logo { font-size: 2rem; font-weight: 900; color: white; letter-spacing: -1px; margin-bottom: 4px; }
-  .login-logo span { color: var(--blue); }
+  .login-logo { font-size: 2.2rem; font-weight: 900; color: white; letter-spacing: -1px; margin-bottom: 4px; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; gap: 0; }
+  .login-logo .re { color: #2563EB; font-style: italic; font-weight: 900; }
+  .login-logo .dash { color: white; font-weight: 900; margin: 0 1px; }
   .login-tagline { font-size: 0.72rem; color: #64748B; letter-spacing: 2px; text-transform: uppercase; }
   .login-body { padding: 28px 28px 24px; }
   .login-title { font-size: 1.15rem; font-weight: 800; color: var(--dark); margin-bottom: 4px; }
@@ -46,8 +47,9 @@
 
   /* ===== SHARED HEADER ===== */
   .app-header { background: white; border-bottom: 1px solid var(--border); padding: 13px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
-  .app-logo { font-size: 1.2rem; font-weight: 900; color: var(--dark); letter-spacing: -1px; }
-  .app-logo span { color: var(--blue); }
+  .app-logo { font-size: 1.3rem; font-weight: 900; color: var(--dark); letter-spacing: -1px; display: flex; align-items: center; gap: 0; }
+  .app-logo .re { color: #2563EB; font-style: italic; font-weight: 900; }
+  .app-logo .dash { color: var(--dark); font-weight: 900; margin: 0 1px; }
   .header-right { display: flex; align-items: center; gap: 10px; }
   .header-badge { font-size: 0.62rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; }
   .badge-driver { background: #DBEAFE; color: #1D4ED8; }
@@ -272,7 +274,7 @@
   <div style="margin:auto;width:100%;max-width:420px;padding:20px">
     <div class="login-card">
       <div class="login-header">
-        <div class="login-logo">Clear<span>Auth</span></div>
+        <div class="login-logo"><span class="re">RE</span><span class="dash">-</span>Quest</div>
         <div class="login-tagline">Instant Ops Authorisation</div>
       </div>
       <div class="login-body">
@@ -297,7 +299,7 @@
 <!-- ===== DRIVER VIEW ===== -->
 <div id="view-driver" class="view">
   <div class="app-header">
-    <div class="app-logo">Clear<span>Auth</span></div>
+    <div class="app-logo"><span class="re">RE</span><span class="dash">-</span>Quest</div>
     <div class="header-right">
       <span class="header-badge badge-driver">Driver</span>
       <button class="btn-logout" onclick="logout()">Sign Out</button>
@@ -367,7 +369,7 @@
 <!-- ===== APPROVER DASHBOARD ===== -->
 <div id="view-approver" class="view">
   <div class="app-header">
-    <div class="app-logo">Clear<span>Auth</span></div>
+    <div class="app-logo"><span class="re">RE</span><span class="dash">-</span>Quest</div>
     <div class="header-right">
       <span class="header-badge badge-approver">Approver</span>
       <button class="btn-logout" onclick="logout()">Sign Out</button>
@@ -389,7 +391,7 @@
 <!-- ===== COMPANY DASHBOARD ===== -->
 <div id="view-company" class="view">
   <div class="app-header">
-    <div class="app-logo">Clear<span>Auth</span></div>
+    <div class="app-logo"><span class="re">RE</span><span class="dash">-</span>Quest</div>
     <div class="header-right">
       <span class="header-badge badge-company" id="company-badge-name">Company</span>
       <button class="btn-logout" onclick="logout()">Sign Out</button>
@@ -643,7 +645,7 @@
     // We don't know role yet without a separate lookup — show generic until submit reveals it
     document.getElementById('setup-header').className = 'setup-header driver';
     document.getElementById('setup-role-label').textContent = 'New Account Setup';
-    document.getElementById('setup-company-badge').textContent = 'Setting up your ClearAuth account';
+    document.getElementById('setup-company-badge').textContent = 'Setting up your RE-Quest account';
   }
 
   async function completeSetup() {
