@@ -3,7 +3,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const { invite_token, full_name, username, password } = await req.json();
+    const { invite_token, full_name, username, password, phone, photo_url } = await req.json();
 
     if (!invite_token) {
       return Response.json({ error: 'Invite token required' }, { status: 400 });
@@ -30,6 +30,9 @@ Deno.serve(async (req) => {
     if (password.length < 4) {
       return Response.json({ error: 'Password must be at least 4 characters' }, { status: 400 });
     }
+    if (!photo_url) {
+      return Response.json({ error: 'A profile photo is required' }, { status: 400 });
+    }
 
     // Check username not already taken in this company
     const taken = records.find((r: any) =>
@@ -55,6 +58,8 @@ Deno.serve(async (req) => {
       password_hash: passwordHash,
       invite_used: true,
       status: 'active',
+      phone: phone || '',
+      photo_url: photo_url || '',
     });
 
     const updatedUser = await base44.asServiceRole.entities.ClearAuthUser.get(inviteUser.id);
@@ -69,6 +74,8 @@ Deno.serve(async (req) => {
       department: updatedUser.department,
       allowed_approvers: updatedUser.allowed_approvers,
       allow_all_approvers: updatedUser.allow_all_approvers,
+      phone: updatedUser.phone,
+      photo_url: updatedUser.photo_url,
     };
 
     return Response.json({ success: true, user: safeUser });

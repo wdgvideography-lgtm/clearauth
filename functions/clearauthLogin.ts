@@ -43,6 +43,8 @@ Deno.serve(async (req) => {
       department: user.department,
       allowed_approvers: user.allowed_approvers,
       allow_all_approvers: user.allow_all_approvers,
+      phone: user.phone || '',
+      photo_url: user.photo_url || '',
     };
 
     return Response.json({ success: true, user: safeUser });
