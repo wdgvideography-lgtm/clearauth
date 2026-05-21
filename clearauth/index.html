@@ -872,64 +872,118 @@
 
   // ===== NAVIGATION =====
   function showView(name) {
+    // Safety: guard against missing views crashing the whole app
+    const targetView = document.getElementById('view-' + name);
+    if (!targetView) { console.error('showView: view-' + name + ' not found'); return; }
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById('view-' + name).classList.add('active');
+    targetView.classList.add('active');
     window.scrollTo(0, 0);
     // Stop polling if leaving pending/card view
     if (name !== 'pending' && name !== 'card' && pollingInterval) {
       clearInterval(pollingInterval);
       pollingInterval = null;
     }
-    // Only show nav for employee/approver views
+    // Nav visibility — keep nav for employee/approver/profile views
     const navEmp = document.getElementById('nav-employee');
     const navApp = document.getElementById('nav-approver');
-    if (navEmp) navEmp.classList.toggle('visible', name === 'employee' || name === 'pending' || name === 'card');
-    if (navApp) navApp.classList.toggle('visible', name === 'approver');
+    const empViews = ['employee', 'pending', 'card'];
+    const appViews = ['approver'];
+    if (navEmp) navEmp.classList.toggle('visible',
+      empViews.includes(name) || (name === 'profile' && profileOpenedBy === 'employee'));
+    if (navApp) navApp.classList.toggle('visible',
+      appViews.includes(name) || (name === 'profile' && profileOpenedBy === 'approver'));
   }
 
   // ===== LOGIN =====
   async function doLogin() {
-    const username = document.getElementById('login-username').value.trim();
-    const password = document.getElementById('login-password').value;
-    const errEl = document.getElementById('login-error');
-    const btn = document.getElementById('login-btn');
-    errEl.classList.remove('show');
-    if (!username || !password) { errEl.textContent = 'Please enter your username and password.'; errEl.classList.add('show'); return; }
+    const usernameEl = document.getElementById('login-username');
+    const passwordEl = document.getElementById('login-password');
+    const errEl      = document.getElementById('login-error');
+    const btn        = document.getElementById('login-btn');
+    if (!usernameEl || !passwordEl || !errEl || !btn) { console.error('Login DOM elements missing'); return; }
 
-    btn.disabled = true; btn.textContent = 'Signing in...';
+    const username = usernameEl.value.trim();
+    const password = passwordEl.value;
+    errEl.classList.remove('show');
+
+    if (!username || !password) {
+      errEl.textContent = 'Please enter your username and password.';
+      errEl.classList.add('show');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Signing in...';
+
     try {
+      // Timeout wrapper — fail gracefully after 12 seconds
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 12000);
+
       const res = await fetch(`${API}/clearauthLogin`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+        signal: controller.signal
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Login failed');
+      clearTimeout(timer);
+
+      let data;
+      try { data = await res.json(); }
+      catch(e) { throw new Error('Server returned an invalid response. Please try again.'); }
+
+      if (!res.ok) throw new Error(data.error || `Login failed (${res.status})`);
+      if (!data.user) throw new Error('No user data returned. Please contact your admin.');
+
+      // Validate essential user fields
+      if (!data.user.role || !data.user.id) throw new Error('Incomplete user record — contact your admin.');
+
       currentUser = data.user;
-      sessionStorage.setItem('ca_user', JSON.stringify(data.user));
+      try { sessionStorage.setItem('ca_user', JSON.stringify(data.user)); } catch(e) { /* storage blocked */ }
+
       routeUser(data.user);
+
     } catch (err) {
-      errEl.textContent = err.message;
+      let msg = err.message;
+      if (err.name === 'AbortError') msg = 'Connection timed out. Check your internet and try again.';
+      else if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) msg = 'Cannot reach server. Check your connection.';
+      errEl.textContent = msg;
       errEl.classList.add('show');
     } finally {
-      btn.disabled = false; btn.textContent = 'Sign In →';
+      btn.disabled = false;
+      btn.textContent = 'Sign In →';
     }
   }
 
   function routeUser(user) {
-    // Hide all bottom navs first
-    document.getElementById('nav-employee').classList.remove('visible');
-    document.getElementById('nav-approver').classList.remove('visible');
+    if (!user || !user.role) {
+      console.error('routeUser: invalid user object', user);
+      showToast('Login error: invalid user data. Please try again.');
+      showView('login');
+      return;
+    }
+
+    // Hide all navs first
+    const navEmp = document.getElementById('nav-employee');
+    const navApp = document.getElementById('nav-approver');
+    if (navEmp) navEmp.classList.remove('visible');
+    if (navApp) navApp.classList.remove('visible');
+
+    function setAvatar(elId, user) {
+      const el = document.getElementById(elId);
+      if (!el) return;
+      if (user.photo_url) {
+        el.innerHTML = `<img src="${user.photo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentElement.textContent='${(user.full_name||'?')[0].toUpperCase()}'">`;
+      } else {
+        el.textContent = (user.full_name || '?').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+      }
+    }
 
     if (user.role === 'employee') {
       showView('employee');
-      document.getElementById('nav-employee').classList.add('visible');
-      // Populate header avatar
-      const empAv = document.getElementById('emp-header-avatar');
+      if (navEmp) navEmp.classList.add('visible');
+      setAvatar('emp-header-avatar', user);
       const empName = document.getElementById('emp-header-name');
-      if (empAv) {
-        if (user.photo_url) { empAv.innerHTML = `<img src="${user.photo_url}" style="width:100%;height:100%;object-fit:cover">`; }
-        else { empAv.textContent = (user.full_name||'?').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
-      }
       if (empName) empName.textContent = user.full_name ? user.full_name.split(' ')[0] : '';
       setTimeout(() => {
         const c = document.getElementById('employee-company');
@@ -938,46 +992,95 @@
         if (n && !n.value) n.value = user.full_name || '';
       }, 50);
       loadEmployeeApprovers(user);
+
     } else if (user.role === 'approver') {
       showView('approver');
-      document.getElementById('nav-approver').classList.add('visible');
-      // Populate header avatar
-      const appAv = document.getElementById('app-header-avatar');
-      if (appAv) {
-        if (user.photo_url) { appAv.innerHTML = `<img src="${user.photo_url}" style="width:100%;height:100%;object-fit:cover">`; }
-        else { appAv.textContent = (user.full_name||'?').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
-      }
+      if (navApp) navApp.classList.add('visible');
+      setAvatar('app-header-avatar', user);
       loadApproverDashboard();
+
     } else if (user.role === 'company') {
-      document.getElementById('company-badge-name').textContent = user.company_name || 'Company';
-      document.getElementById('company-welcome-title').textContent = `Welcome, ${user.company_name}`;
+      const badge = document.getElementById('company-badge-name');
+      const title = document.getElementById('company-welcome-title');
+      if (badge) badge.textContent = user.company_name || 'Company';
+      if (title) title.textContent = `Welcome, ${user.company_name || 'Company'}`;
       showView('company');
       loadCompanyUsers();
+
+    } else {
+      // Unknown role — show a clear error instead of blank screen
+      console.error('routeUser: unknown role', user.role);
+      showToast(`Unknown role "${user.role}" — please contact your admin.`);
+      showView('login');
     }
   }
 
   function logout() {
+    // Clear all state
     currentUser = null;
-    sessionStorage.removeItem('ca_user');
-    if (pollingInterval) clearInterval(pollingInterval);
-    document.getElementById('login-username').value = '';
-    document.getElementById('login-password').value = '';
-    document.getElementById('login-error').classList.remove('show');
-    // Hide both bottom navs
-    document.getElementById('nav-employee').classList.remove('visible');
-    document.getElementById('nav-approver').classList.remove('visible');
+    currentPendingToken = null;
+    denyTargetToken = null;
+    approveTargetToken = null;
+    allRequests = [];
+    companyUsers = [];
+    companySites = [];
+    profileOpenedBy = null;
+    if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
+
+    // Clear storage safely
+    try { sessionStorage.removeItem('ca_user'); } catch(e) {}
+
+    // Reset login fields safely
+    const uEl = document.getElementById('login-username');
+    const pEl = document.getElementById('login-password');
+    const eEl = document.getElementById('login-error');
+    if (uEl) uEl.value = '';
+    if (pEl) pEl.value = '';
+    if (eEl) eEl.classList.remove('show');
+
+    // Hide all navs
+    document.querySelectorAll('.bottom-nav').forEach(n => n.classList.remove('visible'));
+
+    // Close any open modals
+    document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+
     showView('login');
   }
 
   window.addEventListener('DOMContentLoaded', () => {
-    // Check for invite token in URL
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get('invite');
-    if (token) { loadInviteSetup(token); return; }
+    try {
+      // Check for invite token in URL
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('invite');
+      if (token) {
+        // Clean the URL so refresh doesn't re-trigger invite
+        try { history.replaceState({}, '', window.location.pathname); } catch(e) {}
+        loadInviteSetup(token);
+        return;
+      }
 
-    // Restore session
-    const stored = sessionStorage.getItem('ca_user');
-    if (stored) { currentUser = JSON.parse(stored); routeUser(currentUser); }
+      // Restore session from sessionStorage safely
+      const stored = sessionStorage.getItem('ca_user');
+      if (stored) {
+        try {
+          const user = JSON.parse(stored);
+          if (user && user.id && user.role) {
+            currentUser = user;
+            routeUser(user);
+            return;
+          }
+        } catch(e) {
+          sessionStorage.removeItem('ca_user');
+          console.warn('Corrupt session cleared:', e);
+        }
+      }
+
+      // Default: show login
+      showView('login');
+    } catch(err) {
+      console.error('Init error:', err);
+      showView('login');
+    }
   });
 
   // ===== INVITE SETUP =====
@@ -1072,28 +1175,49 @@
 
   // ===== COMPANY DASHBOARD =====
   async function loadCompanyUsers() {
-    if (!currentUser) return;
+    if (!currentUser || !currentUser.company_id) return;
+    const bodyEl = document.getElementById('company-body');
+    if (bodyEl) bodyEl.innerHTML = '<div style="padding:40px;text-align:center;color:#8B949E">Loading...</div>';
     try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 12000);
       const res = await fetch(`${API}/clearauthGetUsers`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ company_id: currentUser.company_id })
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ company_id: currentUser.company_id }),
+        signal: controller.signal
       });
+      clearTimeout(timer);
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || `Server error ${res.status}`);
+      }
       const data = await res.json();
-      companyUsers = data.users || [];
+      companyUsers = Array.isArray(data.users) ? data.users : [];
 
-      // Load persisted site names from company record
-      if (data.company_sites && Array.isArray(data.company_sites)) {
-        companySites = data.company_sites;
-      } else if (currentUser.department) {
-        try {
-          const parsed = JSON.parse(currentUser.department);
-          if (Array.isArray(parsed)) companySites = parsed;
-        } catch(_) {}
+      // Load persisted site names from first user or fallback to extract from departments
+      const allDepts = companyUsers.map(u => u.department).filter(Boolean);
+      const uniqueDepts = [...new Set(allDepts)];
+      if (companySites.length === 0 && uniqueDepts.length > 0) {
+        companySites = uniqueDepts;
+      }
+
+      // Also try loading from first user's site data if stored
+      if (companyUsers.length > 0) {
+        const firstUser = companyUsers[0];
+        if (firstUser.company_sites) {
+          try {
+            const parsed = JSON.parse(firstUser.company_sites);
+            if (Array.isArray(parsed) && parsed.length > 0) companySites = parsed;
+          } catch(_) {}
+        }
       }
 
       renderUserSections();
     } catch(err) {
-      showToast('Failed to load users');
+      const msg = err.name === 'AbortError' ? 'Connection timed out' : (err.message || 'Unknown error');
+      if (bodyEl) bodyEl.innerHTML = `<div style="padding:40px;text-align:center;color:#8B949E"><div style="font-size:2rem;margin-bottom:12px">⚠️</div><div style="font-weight:700;margin-bottom:8px">Failed to load staff</div><div style="font-size:0.85rem;margin-bottom:16px">${msg}</div><button class="btn-main" style="max-width:160px;margin:0 auto" onclick="loadCompanyUsers()">Retry</button></div>`;
+      showToast('Failed to load users: ' + msg);
     }
   }
 
@@ -1758,72 +1882,125 @@
   }
 
     async function submitRequest() {
-    const type = document.getElementById('req-type').value;
-    const employeeName = document.getElementById('employee-name').value.trim();
-    if (!type || !employeeName) { showToast('Please fill in request type and your name'); return; }
+    if (!currentUser) { showToast('Not logged in — please sign in again.'); showView('login'); return; }
 
+    const typeEl = document.getElementById('req-type');
+    const nameEl = document.getElementById('employee-name');
+    const compEl = document.getElementById('employee-company');
+    const approverEl = document.getElementById('approver-select');
+    const approverNameEl = document.getElementById('approver-name');
+    const approverRoleEl = document.getElementById('approver-role');
+    const approverEmailEl = document.getElementById('approver-email');
+    const siteEl = document.getElementById('employee-site');
+    const vehicleEl = document.getElementById('employee-vehicle');
+    const detailsEl = document.getElementById('employee-details');
     const btn = document.getElementById('submit-btn');
-    btn.disabled = true; btn.textContent = 'Sending...';
 
-    const token = 'AUTH-' + Math.random().toString(36).substring(2,10).toUpperCase();
-    const approverSelect = document.getElementById('approver-select');
-    const selectedApproverName = approverSelect.options[approverSelect.selectedIndex]?.text || '';
-    if (!approverSelect.value) { showToast('Please select an approver'); btn.disabled = false; btn.textContent = 'Send Authorisation Request →'; return; }
-    const approverUserId = approverSelect.value || '';
-    const payload = {
-      request_type: type,
-      custom_type: type === 'Other' ? document.getElementById('custom-type').value : '',
-      employee_name: employeeName,
-      employee_company: document.getElementById('employee-company').value.trim(),
-      vehicle_reg: document.getElementById('vehicle-reg').value.trim().toUpperCase(),
-      site_name: document.getElementById('site-name').value.trim(),
-      location: document.getElementById('location').value.trim(),
-      details: document.getElementById('details').value.trim(),
-      urgency,
-      approver_name: selectedApproverName,
-      approver_role: '',
-      approver_email: '',
-      status: 'Pending',
-      approval_token: token,
-      expires_at: new Date(Date.now() + 4*60*60*1000).toISOString(),
-      driver_user_id: currentUser ? currentUser.id : '',
-      approver_user_id: approverUserId,
-    };
+    if (!typeEl || !nameEl || !btn) { showToast('Form elements missing — try refreshing the page.'); return; }
+
+    const type = typeEl.value;
+    const employeeName = nameEl.value.trim();
+
+    if (!type) { showToast('Please select a request type.'); return; }
+    if (!employeeName) { showToast('Please enter your name.'); return; }
+
+    const approverName = approverNameEl ? approverNameEl.value : '';
+    if (!approverName) { showToast('Please select an approver.'); return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
 
     try {
+      const payload = {
+        request_type: type,
+        driver_name: employeeName,
+        driver_company: compEl ? compEl.value : (currentUser.company_name || ''),
+        driver_phone: currentUser.phone || '',
+        vehicle_reg: vehicleEl ? vehicleEl.value.trim() : '',
+        site_name: siteEl ? siteEl.value.trim() : '',
+        location: '',
+        details: detailsEl ? detailsEl.value.trim() : '',
+        urgency: urgency || 'Standard',
+        approver_name: approverName,
+        approver_role: approverRoleEl ? approverRoleEl.value : '',
+        approver_email: approverEmailEl ? approverEmailEl.value : '',
+        driver_user_id: currentUser.id,
+        approver_user_id: approverEl ? approverEl.value : ''
+      };
+
+      // Timeout after 15s
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 15000);
+
       const res = await fetch(`${API}/createApprovalRequest`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: controller.signal
       });
-      if (!res.ok) throw new Error('Failed to submit');
-      currentPendingToken = token;
-      document.getElementById('pending-ref-id').textContent = token;
+      clearTimeout(timer);
+
+      let data;
+      try { data = await res.json(); }
+      catch(e) { throw new Error('Server returned invalid response.'); }
+
+      if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+      if (!data.token) throw new Error('No approval token received — contact your admin.');
+
+      currentPendingToken = data.token;
+      try { sessionStorage.setItem('ca_pending_token', data.token); } catch(e) {}
+
       showView('pending');
-      startPolling(token);
+      startPolling(data.token);
+
     } catch(err) {
-      showToast('Error: ' + err.message);
-      btn.disabled = false; btn.textContent = 'Send Authorisation Request →';
+      let msg = err.message;
+      if (err.name === 'AbortError') msg = 'Request timed out. Check your connection and try again.';
+      else if (msg.includes('Failed to fetch')) msg = 'Cannot reach server. Check your connection.';
+      showToast('Error: ' + msg);
+      if (btn) { btn.disabled = false; btn.textContent = 'Send Authorisation Request →'; }
     }
   }
 
   // ===== POLLING =====
   async function startPolling(token) {
+    if (!token) { console.warn('startPolling: no token'); return; }
     if (pollingInterval) clearInterval(pollingInterval);
+
+    let pollCount = 0;
+    const MAX_POLLS = 600; // 30 minutes at 3s intervals
+
     pollingInterval = setInterval(async () => {
+      pollCount++;
+      // Auto-stop after 30 minutes to prevent runaway polling
+      if (pollCount > MAX_POLLS) {
+        clearInterval(pollingInterval);
+        pollingInterval = null;
+        currentPendingToken = null;
+        showToast('Request expired after 30 minutes. Please submit a new request.');
+        showView('employee');
+        return;
+      }
       try {
         const res = await fetch(`${API}/getApprovalCard`, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ token })
         });
-        if (!res.ok) return;
+        if (!res.ok) return; // Server error — silently retry
         const data = await res.json();
-        if (data.record && data.record.status !== 'Pending') {
+        if (data.record && data.record.status && data.record.status !== 'Pending') {
           clearInterval(pollingInterval);
+          pollingInterval = null;
           currentPendingToken = null;
+          try { sessionStorage.removeItem('ca_pending_token'); } catch(e) {}
           renderApprovalCard(data.record);
           showView('card');
         }
-      } catch(e) {}
+      } catch(e) {
+        // Network error during poll — silently continue (don't spam the user)
+        console.warn('Poll error (will retry):', e.message);
+      }
     }, 3000);
   }
 
@@ -1995,28 +2172,30 @@
 
   // ===== APPROVER DASHBOARD =====
   async function loadApproverDashboard() {
-    document.getElementById('dashboard-list').innerHTML = '<div class="spinner"></div>';
+    if (!currentUser) return;
+    const listEl = document.getElementById('dashboard-list');
+    if (listEl) listEl.innerHTML = '<div class="spinner"></div>';
     try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 12000);
       const res = await fetch(`${API}/listApprovalRequests`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ company_id: currentUser.company_id })
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ company_id: currentUser.company_id }),
+        signal: controller.signal
       });
-      const data = await res.json();
-      const order = { Critical:0, Urgent:1, Standard:2 };
-      allRequests = (data.records||[]).sort((a,b)=> {
-        if (order[a.urgency] !== order[b.urgency]) return order[a.urgency]-order[b.urgency];
-        return new Date(b.created_date)-new Date(a.created_date);
-      });
-      updatePendingCount();
-      renderList();
-      // Update notification badge
-      const pendingCount = allRequests.filter(r => r.status === 'Pending').length;
-      const badge = document.getElementById('notif-badge');
-      if (badge) {
-        badge.textContent = pendingCount > 9 ? '9+' : pendingCount;
-        badge.style.display = pendingCount > 0 ? 'flex' : 'none';
+      clearTimeout(timer);
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || `Server error ${res.status}`);
       }
-    } catch(err) {
-      document.getElementById('dashboard-list').innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Failed to load</div></div>`;
+      const data = await res.json();
+      allRequests = Array.isArray(data.requests) ? data.requests : [];
+      updatePendingCount();
+      renderList(currentTab);
+    } catch(e) {
+      let msg = e.name === 'AbortError' ? 'Connection timed out' : (e.message || 'Unknown error');
+      if (listEl) listEl.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Failed to load</div><div class="empty-sub">${msg}</div><button class="btn-main" style="margin-top:12px;max-width:180px" onclick="loadApproverDashboard()">Retry</button></div>`;
     }
   }
 
@@ -2096,15 +2275,44 @@
   function confirmApprove() { const note=document.getElementById('approve-note-text').value.trim(); const tok=approveTargetToken; closeApproveModal(); processDecision(tok,'Approved','',note); }
 
   async function processDecision(token, action, reason, note) {
+    if (!token) { showToast('No request token — please refresh and try again.'); return; }
+    if (!action) { showToast('Invalid action.'); return; }
+
+    // Disable buttons to prevent double-submit
+    document.querySelectorAll('#approve-modal button, #deny-modal button').forEach(b => b.disabled = true);
+
     try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 12000);
+
       const res = await fetch(`${API}/handleApproval`, {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({token, action, denial_reason: reason||'', approver_note: note||''})
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, action, denial_reason: reason || '', approver_note: note || '' }),
+        signal: controller.signal
       });
-      if (!res.ok) { const e=await res.json(); throw new Error(e.error||'Failed'); }
-      showToast(action==='Approved'?'✅ Approved':'❌ Denied');
+      clearTimeout(timer);
+
+      let data;
+      try { data = await res.json(); } catch(e) { throw new Error('Invalid server response'); }
+
+      if (!res.ok) throw new Error(data.error || `Action failed (${res.status})`);
+
+      // Close modals
+      const approveModal = document.getElementById('approve-modal');
+      const denyModal = document.getElementById('deny-modal');
+      if (approveModal) approveModal.style.display = 'none';
+      if (denyModal) denyModal.style.display = 'none';
+
+      showToast(action === 'Approved' ? '✅ Request approved' : '❌ Request denied');
       loadApproverDashboard();
-    } catch(err) { showToast('Error: '+err.message); }
+
+    } catch(err) {
+      let msg = err.name === 'AbortError' ? 'Connection timed out — try again.' : (err.message || 'Unknown error');
+      showToast('Error: ' + msg);
+    } finally {
+      document.querySelectorAll('#approve-modal button, #deny-modal button').forEach(b => b.disabled = false);
+    }
   }
 
   // ===== LOAD EMPLOYEE APPROVERS DROPDOWN =====
