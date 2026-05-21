@@ -2,18 +2,7 @@
   "type": "object",
   "properties": {
     "request_type": {
-      "type": "string",
-      "enum": [
-        "Loading Bay Allocation",
-        "Unloading Permission",
-        "After-Hours Delivery",
-        "Site Entry Approval",
-        "Paperwork Validation",
-        "Trailer Swap",
-        "Hazardous Cargo Approval",
-        "Restricted Area Access",
-        "Other"
-      ]
+      "type": "string"
     },
     "custom_type": {
       "type": "string"
@@ -40,12 +29,7 @@
       "type": "string"
     },
     "urgency": {
-      "type": "string",
-      "enum": [
-        "Standard",
-        "Urgent",
-        "Critical"
-      ]
+      "type": "string"
     },
     "approver_name": {
       "type": "string"
@@ -61,11 +45,15 @@
       "enum": [
         "Pending",
         "Approved",
-        "Denied"
-      ],
-      "default": "Pending"
+        "Denied",
+        "Cancelled",
+        "Expired"
+      ]
     },
     "denial_reason": {
+      "type": "string"
+    },
+    "approver_note": {
       "type": "string"
     },
     "approval_token": {
