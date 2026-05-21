@@ -19,7 +19,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Invalid or already used invite link' }, { status: 404 });
     }
 
-    // Peek mode — just validate the token exists
+    // PEEK MODE — just validate token, return role/company. NEVER write to DB.
     if (full_name === '__peek__') {
       return Response.json({ success: true, role: inviteUser.role, company_name: inviteUser.company_name });
     }
