@@ -1119,15 +1119,71 @@ Choose:
   async function assignUserToSite(userId, siteName) {
     const user = companyUsers.find(u => u.id === userId);
     if (!user) return;
+
     // Update locally
     user.department = siteName || '';
-    // Persist via backend
+
+    // If this is a driver being assigned to a named site, auto-grant access
+    // to all approvers currently in that site
+    if (user.role === 'driver' && siteName) {
+      const siteApproverIds = companyUsers
+        .filter(u => u.role === 'approver' && u.department === siteName)
+        .map(u => u.id);
+
+      if (siteApproverIds.length > 0) {
+        // Merge with any existing allowed approvers (don't remove previous access)
+        const existingIds = user.allowed_approvers || [];
+        const mergedIds = Array.from(new Set([...existingIds, ...siteApproverIds]));
+        user.allowed_approvers = mergedIds;
+        user.allow_all_approvers = false;
+
+        // Persist permissions
+        try {
+          await fetch(`${API}/clearauthSetPermissions`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              driver_id: userId,
+              allow_all_approvers: false,
+              allowed_approvers: mergedIds
+            })
+          });
+        } catch(e) { console.error('Failed to save auto-permissions', e); }
+      }
+    }
+
+    // If driver moved to a new site, also auto-grant access to that site's approvers
+    // AND auto-add this driver to any approver who has allow_all_approvers in new site
+    // Persist department change
     try {
       await fetch(`${API}/clearauthManageUser`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'update', id: userId, company_id: currentUser.company_id, department: siteName || '' })
       });
     } catch(e) { console.error('Failed to save site assignment', e); }
+  }
+
+  // Also called when an approver is moved to a site — auto-grant that approver
+  // access to all drivers already in that site
+  async function onApproverAssignedToSite(approverId, siteName) {
+    if (!siteName) return;
+    const siteDrivers = companyUsers.filter(u => u.role === 'driver' && u.department === siteName);
+    for (const driver of siteDrivers) {
+      const existingIds = driver.allowed_approvers || [];
+      if (!existingIds.includes(approverId)) {
+        const mergedIds = [...existingIds, approverId];
+        driver.allowed_approvers = mergedIds;
+        try {
+          await fetch(`${API}/clearauthSetPermissions`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              driver_id: driver.id,
+              allow_all_approvers: driver.allow_all_approvers || false,
+              allowed_approvers: mergedIds
+            })
+          });
+        } catch(e) { console.error('Failed to auto-grant approver to driver', e); }
+      }
+    }
   }
 
   // ===== DRAG & DROP (desktop) =====
@@ -1174,7 +1230,9 @@ Choose:
     document.querySelectorAll('.site-drop-zone').forEach(z => z.classList.remove('drag-active'));
     const card = document.getElementById('ucard-' + uid);
     if (card) card.classList.remove('dragging');
+    const user = companyUsers.find(u => u.id === uid);
     await assignUserToSite(uid, site);
+    if (user && user.role === 'approver' && site) await onApproverAssignedToSite(uid, site);
     renderUserSections();
     showToast(site ? `Moved to ${site}` : 'Removed from site');
   }
@@ -1249,7 +1307,9 @@ Choose:
     if (touchDragEl) touchDragEl.style.opacity = '';
 
     if (siteSection && touchDragUserId) {
+      const tUser = companyUsers.find(u => u.id === touchDragUserId);
       await assignUserToSite(touchDragUserId, targetSite);
+      if (tUser && tUser.role === 'approver' && targetSite) await onApproverAssignedToSite(touchDragUserId, targetSite);
       renderUserSections();
       showToast(targetSite ? `Moved to ${targetSite}` : 'Removed from site');
     }
@@ -1898,14 +1958,35 @@ Choose:
       // Approver permissions (drivers only)
       let updatePayload = { department: deptVal };
       if (profileUser.role === 'driver') {
-        const allowAll = document.getElementById('profile-allow-all-chk').checked;
-        const allowedIds = [];
+        const oldDept = profileUser.department || '';
+        const deptChanged = deptVal !== oldDept;
+
+        let allowAll = document.getElementById('profile-allow-all-chk').checked;
+        let allowedIds = [];
+
         if (!allowAll) {
           profileAllApprovers.forEach(a => {
             const chk = document.getElementById(`profile-chk-${a.id}`);
             if (chk && chk.checked) allowedIds.push(a.id);
           });
         }
+
+        // If the driver is being assigned to a new named site, auto-add all
+        // approvers in that site to their access list (on top of manual selections)
+        if (deptChanged && deptVal) {
+          const siteApproverIds = companyUsers
+            .filter(u => u.role === 'approver' && u.department === deptVal)
+            .map(u => u.id);
+          if (siteApproverIds.length > 0 && !allowAll) {
+            allowedIds = Array.from(new Set([...allowedIds, ...siteApproverIds]));
+            // Tick the checkboxes so the UI reflects it
+            siteApproverIds.forEach(aid => {
+              const chk = document.getElementById(`profile-chk-${aid}`);
+              if (chk) chk.checked = true;
+            });
+          }
+        }
+
         updatePayload.allow_all_approvers = allowAll;
         updatePayload.allowed_approvers = allowAll ? [] : allowedIds;
 
@@ -1914,6 +1995,23 @@ Choose:
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ driver_id: profileUser.id, allow_all_approvers: allowAll, allowed_approvers: allowedIds })
         });
+      }
+
+      // If an approver is being moved to a new site, auto-grant them to all
+      // drivers already in that site
+      if (profileUser.role === 'approver' && deptVal && deptVal !== (profileUser.department || '')) {
+        const siteDrivers = companyUsers.filter(u => u.role === 'driver' && u.department === deptVal);
+        for (const driver of siteDrivers) {
+          const existing = driver.allowed_approvers || [];
+          if (!existing.includes(profileUser.id) && !driver.allow_all_approvers) {
+            const merged = [...existing, profileUser.id];
+            driver.allowed_approvers = merged;
+            await fetch(`${API}/clearauthSetPermissions`, {
+              method: 'POST', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ driver_id: driver.id, allow_all_approvers: false, allowed_approvers: merged })
+            });
+          }
+        }
       }
 
       // Save department via manage user
