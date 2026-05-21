@@ -57,14 +57,14 @@
   .app-logo .dash { color: #C0CCDA; font-weight: 300; margin: 0 2px; }
   .header-right { display: flex; align-items: center; gap: 10px; }
   .header-badge { font-size: 0.63rem; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; padding: 5px 11px; border-radius: 20px; }
-  .badge-driver { background: #E0EEFF; color: #2563EB; }
+  .badge-employee { background: #E0EEFF; color: #2563EB; }
   .badge-approver { background: #D6F5EC; color: #0F9D6B; }
   .badge-company { background: #EDE9FE; color: #6D28D9; }
   .btn-logout { background: none; border: 1.5px solid var(--border); color: var(--grey); padding: 6px 13px; border-radius: 8px; font-size: 0.73rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
   .btn-logout:hover { border-color: var(--red); color: var(--red); background: var(--red-light); }
 
-  /* ===== DRIVER FORM ===== */
-  #view-driver { background: #F0F4FA; }
+  /* ===== EMPLOYEE FORM ===== */
+  #view-employee { background: #F0F4FA; }
   .form-body { flex: 1; padding: 20px 16px 100px; max-width: 600px; margin: 0 auto; width: 100%; }
   .section-title { font-size: 0.67rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--grey); margin-bottom: 10px; margin-top: 22px; }
   .section-title:first-child { margin-top: 0; }
@@ -178,8 +178,8 @@
   .invite-section { background: white; border-radius: 16px; border: 1px solid var(--border); padding: 20px; margin-bottom: 20px; box-shadow: var(--card-shadow); }
   .invite-section-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--grey); margin-bottom: 14px; }
   .invite-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .btn-invite-driver { padding: 14px; background: var(--blue-light); color: var(--blue); border: 1.5px solid #C5DEFF; border-radius: 12px; font-size: 0.88rem; font-weight: 700; cursor: pointer; text-align: center; transition: all 0.2s; }
-  .btn-invite-driver:hover { background: var(--blue); color: white; border-color: var(--blue); box-shadow: 0 3px 12px rgba(59,125,216,0.25); }
+  .btn-invite-employee { padding: 14px; background: var(--blue-light); color: var(--blue); border: 1.5px solid #C5DEFF; border-radius: 12px; font-size: 0.88rem; font-weight: 700; cursor: pointer; text-align: center; transition: all 0.2s; }
+  .btn-invite-employee:hover { background: var(--blue); color: white; border-color: var(--blue); box-shadow: 0 3px 12px rgba(59,125,216,0.25); }
   .btn-invite-approver { padding: 14px; background: var(--green-light); color: var(--green); border: 1.5px solid #B0EDD8; border-radius: 12px; font-size: 0.88rem; font-weight: 700; cursor: pointer; text-align: center; transition: all 0.2s; }
   .btn-invite-approver:hover { background: var(--green); color: white; border-color: var(--green); box-shadow: 0 3px 12px rgba(15,157,107,0.25); }
   .invite-link-box { margin-top: 14px; background: var(--grey-light); border-radius: 12px; padding: 14px; display: none; border: 1px solid var(--border); }
@@ -198,7 +198,7 @@
   .user-section-header.open { border-bottom-color: var(--border); background: #F7FAFF; }
   .user-section-left { display: flex; align-items: center; gap: 12px; }
   .user-section-icon { width: 38px; height: 38px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
-  .user-section-icon.driver { background: var(--blue-light); }
+  .user-section-icon.employee { background: var(--blue-light); }
   .user-section-icon.approver { background: var(--green-light); }
   .user-section-name { font-size: 0.95rem; font-weight: 800; color: var(--dark); }
   .user-section-count { font-size: 0.78rem; color: var(--grey); margin-top: 1px; }
@@ -247,7 +247,7 @@
   #view-invite-setup { background: var(--dark); align-items: center; justify-content: center; padding: 32px 20px; }
   .setup-card { width: 100%; max-width: 420px; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,0.4); }
   .setup-header { padding: 24px 28px 20px; }
-  .setup-header.driver { background: linear-gradient(135deg, #1E3A5F, var(--blue)); }
+  .setup-header.employee { background: linear-gradient(135deg, #1E3A5F, var(--blue)); }
   .setup-header.approver { background: linear-gradient(135deg, #14532D, var(--green)); }
   .setup-header-role { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 6px; }
   .setup-header-title { font-size: 1.5rem; font-weight: 900; color: white; margin-bottom: 4px; }
@@ -302,7 +302,7 @@
   .profile-back:hover { color: white; background: rgba(255,255,255,0.15); }
 
   .profile-avatar { width: 68px; height: 68px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.7rem; font-weight: 900; color: white; margin-bottom: 14px; position: relative; z-index: 1; }
-  .profile-avatar.driver { background: rgba(59,125,216,0.35); border: 2.5px solid rgba(122,184,255,0.6); }
+  .profile-avatar.employee { background: rgba(59,125,216,0.35); border: 2.5px solid rgba(122,184,255,0.6); }
   .profile-avatar.approver { background: rgba(15,157,107,0.35); border: 2.5px solid rgba(100,220,170,0.6); }
 
   .profile-name { font-size: 1.45rem; font-weight: 900; color: white; margin-bottom: 3px; position: relative; z-index: 1; }
@@ -310,7 +310,7 @@
 
   .profile-meta-row { display: flex; align-items: center; gap: 10px; position: relative; z-index: 1; flex-wrap: wrap; }
   .profile-role-badge { display: inline-block; padding: 5px 13px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-  .profile-role-badge.driver { background: rgba(59,125,216,0.3); color: #A8D0FF; border: 1px solid rgba(122,184,255,0.4); }
+  .profile-role-badge.employee { background: rgba(59,125,216,0.3); color: #A8D0FF; border: 1px solid rgba(122,184,255,0.4); }
   .profile-role-badge.approver { background: rgba(15,157,107,0.3); color: #90EDD0; border: 1px solid rgba(100,220,170,0.4); }
   .profile-status-pill { display: inline-flex; align-items: center; gap: 5px; padding: 5px 11px; border-radius: 20px; background: rgba(255,255,255,0.1); font-size: 0.72rem; font-weight: 600; color: rgba(255,255,255,0.6); }
   .profile-status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
@@ -379,7 +379,7 @@
   .role-subsection-header.open { border-bottom-color: var(--border); background: #F2F6FF; }
   .role-subsection-left { display: flex; align-items: center; gap: 10px; }
   .role-subsection-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; flex-shrink: 0; }
-  .role-subsection-icon.driver { background: var(--blue-light); }
+  .role-subsection-icon.employee { background: var(--blue-light); }
   .role-subsection-icon.approver { background: var(--green-light); }
   .role-subsection-title { font-size: 0.82rem; font-weight: 800; color: var(--dark); text-transform: uppercase; letter-spacing: 0.5px; }
   .role-subsection-count { font-size: 0.72rem; color: var(--grey); margin-left: 6px; }
@@ -461,12 +461,12 @@
   </div>
 </div>
 
-<!-- ===== DRIVER VIEW ===== -->
-<div id="view-driver" class="view">
+<!-- ===== EMPLOYEE VIEW ===== -->
+<div id="view-employee" class="view">
   <div class="app-header">
     <div class="app-logo"><span class="re">RE</span><span class="dash">-</span>Quest</div>
     <div class="header-right">
-      <span class="header-badge badge-driver">Driver</span>
+      <span class="header-badge badge-employee">Employee</span>
       <button class="btn-logout" onclick="logout()">Sign Out</button>
     </div>
   </div>
@@ -492,8 +492,8 @@
       <input type="text" id="custom-type" placeholder="e.g. Emergency bay access">
     </div>
     <div class="section-title">Your Details</div>
-    <div class="form-group"><label>Your Full Name</label><input type="text" id="driver-name" placeholder="e.g. James Williams"></div>
-    <div class="form-group"><label>Company / Operator</label><input type="text" id="driver-company" placeholder="e.g. Russell Transport Ltd"></div>
+    <div class="form-group"><label>Your Full Name</label><input type="text" id="employee-name" placeholder="e.g. James Williams"></div>
+    <div class="form-group"><label>Company / Operator</label><input type="text" id="employee-company" placeholder="e.g. Russell Transport Ltd"></div>
     <div class="form-group"><label>Vehicle Registration</label><input type="text" id="vehicle-reg" placeholder="e.g. PX21 ABC" style="text-transform:uppercase"></div>
     <div class="section-title">Location & Site</div>
     <div class="form-group"><label>Site Name</label><input type="text" id="site-name" placeholder="e.g. Tesco DC Daventry"></div>
@@ -574,7 +574,7 @@
     <div class="company-welcome">
       <div class="company-welcome-text">
         <h2 id="company-welcome-title">Welcome</h2>
-        <p>Manage your drivers and approvers below</p>
+        <p>Manage your employees and approvers below</p>
       </div>
       <div class="company-welcome-icon">🏢</div>
     </div>
@@ -583,11 +583,11 @@
     <div class="invite-section">
       <div class="invite-section-title">Send Invite Link</div>
       <div class="invite-btns">
-        <button class="btn-invite-driver" onclick="generateInvite('driver')">🚛 Invite a Driver</button>
+        <button class="btn-invite-employee" onclick="generateInvite('employee')">🚛 Invite a Employee</button>
         <button class="btn-invite-approver" onclick="generateInvite('approver')">✅ Invite an Approver</button>
       </div>
       <div class="invite-link-box" id="invite-link-box">
-        <div class="invite-link-label" id="invite-link-label">Driver Invite Link</div>
+        <div class="invite-link-label" id="invite-link-label">Employee Invite Link</div>
         <div class="invite-link-row">
           <div class="invite-link-url" id="invite-link-url"></div>
           <button class="btn-copy" id="copy-btn" onclick="copyInviteLink()">Copy</button>
@@ -745,7 +745,7 @@
       </div>
     </div>
 
-    <!-- Approver access section (drivers only) -->
+    <!-- Approver access section (employees only) -->
     <div class="profile-section" id="profile-access-section">
       <div class="profile-section-header">
         <span class="profile-section-icon">🔑</span>
@@ -843,15 +843,15 @@
   }
 
   function routeUser(user) {
-    if (user.role === 'driver') {
-      showView('driver');
+    if (user.role === 'employee') {
+      showView('employee');
       setTimeout(() => {
-        const c = document.getElementById('driver-company');
+        const c = document.getElementById('employee-company');
         if (c && !c.value) c.value = user.company_name || '';
-        const n = document.getElementById('driver-name');
+        const n = document.getElementById('employee-name');
         if (n && !n.value) n.value = user.full_name || '';
       }, 50);
-      loadDriverApprovers(user);
+      loadEmployeeApprovers(user);
     } else if (user.role === 'approver') {
       showView('approver');
       loadApproverDashboard();
@@ -900,7 +900,7 @@
     // We'll validate on submit. Just show the form.
     showView('invite-setup');
     // We don't know role yet without a separate lookup — show generic until submit reveals it
-    document.getElementById('setup-header').className = 'setup-header driver';
+    document.getElementById('setup-header').className = 'setup-header employee';
     document.getElementById('setup-role-label').textContent = 'New Account Setup';
     document.getElementById('setup-company-badge').textContent = 'Setting up your RE-Quest account';
   }
@@ -926,9 +926,9 @@
       if (!res.ok) throw new Error(data.error || 'Setup failed');
 
       // Show success + update header based on role
-      const role = data.user?.role || 'driver';
+      const role = data.user?.role || 'employee';
       document.getElementById('setup-header').className = `setup-header ${role}`;
-      document.getElementById('setup-role-label').textContent = role === 'approver' ? 'Approver Account' : 'Driver Account';
+      document.getElementById('setup-role-label').textContent = role === 'approver' ? 'Approver Account' : 'Employee Account';
       document.getElementById('setup-company-badge').textContent = data.user?.company_name || '';
       document.getElementById('setup-form').style.display = 'none';
       document.getElementById('setup-success').style.display = 'block';
@@ -967,9 +967,9 @@
 
   function renderUserSections() {
     buildCompanySites();
-    const drivers = companyUsers.filter(u => u.role === 'driver');
+    const employees = companyUsers.filter(u => u.role === 'employee');
     const approvers = companyUsers.filter(u => u.role === 'approver');
-    const allUsers = [...drivers, ...approvers];
+    const allUsers = [...employees, ...approvers];
     const container = document.getElementById('sites-container');
 
     // Build list: named sites first (from companySites), then unassigned if needed
@@ -980,9 +980,9 @@
 
     sitesToRender.forEach((site, si) => {
       const siteKey = 'site_' + si;
-      const siteDrivers = drivers.filter(u => u.department === site);
+      const siteEmployees = employees.filter(u => u.department === site);
       const siteApprovers = approvers.filter(u => u.department === site);
-      const total = siteDrivers.length + siteApprovers.length;
+      const total = siteEmployees.length + siteApprovers.length;
 
       html += `
       <div class="site-section" id="site-section-${si}"
@@ -994,7 +994,7 @@
             <div class="site-section-icon">📍</div>
             <div style="min-width:0">
               <div class="site-section-name">${site}</div>
-              <div class="site-section-meta">${total} member${total !== 1 ? 's' : ''} &middot; ${siteDrivers.length} driver${siteDrivers.length !== 1 ? 's' : ''} &middot; ${siteApprovers.length} approver${siteApprovers.length !== 1 ? 's' : ''}</div>
+              <div class="site-section-meta">${total} member${total !== 1 ? 's' : ''} &middot; ${siteEmployees.length} employee${siteEmployees.length !== 1 ? 's' : ''} &middot; ${siteApprovers.length} approver${siteApprovers.length !== 1 ? 's' : ''}</div>
             </div>
           </div>
           <div style="display:flex;align-items:center;gap:6px">
@@ -1006,7 +1006,7 @@
           <div class="site-drop-zone" id="drop-zone-${siteKey}">
             <div class="site-drop-zone-label">Drop here to assign to ${site}</div>
           </div>
-          ${renderRoleSubsection(siteDrivers, 'driver', siteKey + '-drivers')}
+          ${renderRoleSubsection(siteEmployees, 'employee', siteKey + '-employees')}
           ${renderRoleSubsection(siteApprovers, 'approver', siteKey + '-approvers')}
           ${total === 0 ? '<div class="empty-users" style="padding:12px 18px 16px;font-size:0.83rem;color:var(--grey);font-style:italic">No members yet — drag someone in or assign from their profile.</div>' : ''}
         </div>
@@ -1015,9 +1015,9 @@
 
     // Unassigned group
     if (unassigned.length > 0 || sitesToRender.length === 0) {
-      const uDrivers = drivers.filter(u => !u.department);
+      const uEmployees = employees.filter(u => !u.department);
       const uApprovers = approvers.filter(u => !u.department);
-      const uTotal = uDrivers.length + uApprovers.length;
+      const uTotal = uEmployees.length + uApprovers.length;
       html += `
       <div class="site-section" id="site-section-unassigned"
            ondragover="event.preventDefault();siteDropOver(event,null)"
@@ -1037,7 +1037,7 @@
           <div class="site-drop-zone" id="drop-zone-unassigned">
             <div class="site-drop-zone-label">Drop here to remove from site</div>
           </div>
-          ${renderRoleSubsection(uDrivers, 'driver', 'unassigned-drivers')}
+          ${renderRoleSubsection(uEmployees, 'employee', 'unassigned-employees')}
           ${renderRoleSubsection(uApprovers, 'approver', 'unassigned-approvers')}
           ${uTotal === 0 ? '<div class="empty-users" style="padding:12px 18px 16px;font-size:0.83rem;color:var(--grey);font-style:italic">Everyone is assigned to a site.</div>' : ''}
         </div>
@@ -1047,21 +1047,21 @@
     if (!html) html = `<div style="text-align:center;padding:40px 24px;color:var(--grey);font-size:0.88rem">No sites yet. Create your first site above.</div>`;
     container.innerHTML = html;
 
-    // Load approver permission checks for drivers
-    drivers.forEach(d => { if (d.status === 'active') loadApproverChecks(d.id, d.allowed_approvers || [], d.allow_all_approvers); });
+    // Load approver permission checks for employees
+    employees.forEach(d => { if (d.status === 'active') loadApproverChecks(d.id, d.allowed_approvers || [], d.allow_all_approvers); });
     // Bind touch drag events
     bindTouchDrag();
   }
 
   function renderRoleSubsection(users, role, key) {
     if (!users.length) return '';
-    const icon = role === 'driver' ? '🚛' : '✅';
+    const icon = role === 'employee' ? '🚛' : '✅';
     return `
     <div class="role-subsection">
       <div class="role-subsection-header open" onclick="toggleRoleSubsection('${key}')">
         <div class="role-subsection-left">
           <div class="role-subsection-icon ${role}">${icon}</div>
-          <span class="role-subsection-title">${role === 'driver' ? 'Drivers' : 'Approvers'}</span>
+          <span class="role-subsection-title">${role === 'employee' ? 'Employees' : 'Approvers'}</span>
           <span class="role-subsection-count">${users.length}</span>
         </div>
         <span class="role-subsection-chevron" style="transform:rotate(180deg)">▼</span>
@@ -1161,9 +1161,9 @@ Choose:
     // Update locally
     user.department = siteName || '';
 
-    // If this is a driver being assigned to a named site, auto-grant access
+    // If this is a employee being assigned to a named site, auto-grant access
     // to all approvers currently in that site
-    if (user.role === 'driver' && siteName) {
+    if (user.role === 'employee' && siteName) {
       const siteApproverIds = companyUsers
         .filter(u => u.role === 'approver' && u.department === siteName)
         .map(u => u.id);
@@ -1180,7 +1180,7 @@ Choose:
           await fetch(`${API}/clearauthSetPermissions`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              driver_id: userId,
+              employee_id: userId,
               allow_all_approvers: false,
               allowed_approvers: mergedIds
             })
@@ -1189,8 +1189,8 @@ Choose:
       }
     }
 
-    // If driver moved to a new site, also auto-grant access to that site's approvers
-    // AND auto-add this driver to any approver who has allow_all_approvers in new site
+    // If employee moved to a new site, also auto-grant access to that site's approvers
+    // AND auto-add this employee to any approver who has allow_all_approvers in new site
     // Persist department change
     try {
       await fetch(`${API}/clearauthManageUser`, {
@@ -1201,25 +1201,25 @@ Choose:
   }
 
   // Also called when an approver is moved to a site — auto-grant that approver
-  // access to all drivers already in that site
+  // access to all employees already in that site
   async function onApproverAssignedToSite(approverId, siteName) {
     if (!siteName) return;
-    const siteDrivers = companyUsers.filter(u => u.role === 'driver' && u.department === siteName);
-    for (const driver of siteDrivers) {
-      const existingIds = driver.allowed_approvers || [];
+    const siteEmployees = companyUsers.filter(u => u.role === 'employee' && u.department === siteName);
+    for (const employee of siteEmployees) {
+      const existingIds = employee.allowed_approvers || [];
       if (!existingIds.includes(approverId)) {
         const mergedIds = [...existingIds, approverId];
-        driver.allowed_approvers = mergedIds;
+        employee.allowed_approvers = mergedIds;
         try {
           await fetch(`${API}/clearauthSetPermissions`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              driver_id: driver.id,
-              allow_all_approvers: driver.allow_all_approvers || false,
+              employee_id: employee.id,
+              allow_all_approvers: employee.allow_all_approvers || false,
               allowed_approvers: mergedIds
             })
           });
-        } catch(e) { console.error('Failed to auto-grant approver to driver', e); }
+        } catch(e) { console.error('Failed to auto-grant approver to employee', e); }
       }
     }
   }
@@ -1359,10 +1359,10 @@ Choose:
   function renderUserList(users, role) {
     if (!users.length) return `<div class="empty-users">No members yet — send an invite link to add someone.</div>`;
     return users.map(u => {
-      const isDriver = role === 'driver';
+      const isEmployee = role === 'employee';
       const allowAll = u.allow_all_approvers;
       const allowedIds = u.allowed_approvers || [];
-      const permSection = isDriver ? `
+      const permSection = isEmployee ? `
         <div class="perm-section" id="perm-${u.id}">
           <div class="perm-header" onclick="togglePermSection('${u.id}')">
             <span class="perm-label">🔑 Approver Access</span>
@@ -1427,8 +1427,8 @@ Choose:
 
       const link = `${APP_URL}?invite=${data.token}`;
       urlEl.textContent = link;
-      labelEl.textContent = role === 'driver' ? '🚛 Driver Invite Link' : '✅ Approver Invite Link';
-      showToast(`${role === 'driver' ? 'Driver' : 'Approver'} invite link generated`);
+      labelEl.textContent = role === 'employee' ? '🚛 Employee Invite Link' : '✅ Approver Invite Link';
+      showToast(`${role === 'employee' ? 'Employee' : 'Approver'} invite link generated`);
 
       // Refresh user list after a short delay (new pending record created)
       setTimeout(loadCompanyUsers, 1000);
@@ -1500,7 +1500,7 @@ Choose:
     } catch(err) { showToast('Error: ' + err.message); }
   }
 
-  // ===== DRIVER FORM =====
+  // ===== EMPLOYEE FORM =====
   function handleTypeChange() {
     document.getElementById('custom-type-group').style.display =
       document.getElementById('req-type').value === 'Other' ? 'block' : 'none';
@@ -1513,8 +1513,8 @@ Choose:
 
   async function submitRequest() {
     const type = document.getElementById('req-type').value;
-    const driverName = document.getElementById('driver-name').value.trim();
-    if (!type || !driverName) { showToast('Please fill in request type and your name'); return; }
+    const employeeName = document.getElementById('employee-name').value.trim();
+    if (!type || !employeeName) { showToast('Please fill in request type and your name'); return; }
 
     const btn = document.getElementById('submit-btn');
     btn.disabled = true; btn.textContent = 'Sending...';
@@ -1527,8 +1527,8 @@ Choose:
     const payload = {
       request_type: type,
       custom_type: type === 'Other' ? document.getElementById('custom-type').value : '',
-      driver_name: driverName,
-      driver_company: document.getElementById('driver-company').value.trim(),
+      employee_name: employeeName,
+      employee_company: document.getElementById('employee-company').value.trim(),
       vehicle_reg: document.getElementById('vehicle-reg').value.trim().toUpperCase(),
       site_name: document.getElementById('site-name').value.trim(),
       location: document.getElementById('location').value.trim(),
@@ -1540,7 +1540,7 @@ Choose:
       status: 'Pending',
       approval_token: token,
       expires_at: new Date(Date.now() + 4*60*60*1000).toISOString(),
-      driver_user_id: currentUser ? currentUser.id : '',
+      employee_user_id: currentUser ? currentUser.id : '',
       approver_user_id: approverUserId,
     };
 
@@ -1600,7 +1600,7 @@ Choose:
         <div class="card-body">
           <div class="card-type-badge">${label}</div>
           <div class="card-identities">
-            <div class="identity-block"><div class="identity-role">Driver</div><div class="identity-name">${r.driver_name||'—'}</div><div class="identity-company">${r.driver_company||''}</div></div>
+            <div class="identity-block"><div class="identity-role">Employee</div><div class="identity-name">${r.employee_name||'—'}</div><div class="identity-company">${r.employee_company||''}</div></div>
             <div class="identity-block"><div class="identity-role">Approver</div><div class="identity-name">${r.approver_name||'—'}</div><div class="identity-company">${r.approver_role||''}</div></div>
           </div>
           <div style="height:14px"></div>
@@ -1620,12 +1620,12 @@ Choose:
           </div>
         </div>
       </div>
-      <button class="btn-new-req" onclick="resetDriverForm()">+ New Request</button>
+      <button class="btn-new-req" onclick="resetEmployeeForm()">+ New Request</button>
     `;
   }
 
-  function resetDriverForm() {
-    ['req-type','driver-name','vehicle-reg','site-name','location','details'].forEach(id => {
+  function resetEmployeeForm() {
+    ['req-type','employee-name','vehicle-reg','site-name','location','details'].forEach(id => {
       const el = document.getElementById(id); if (el) el.value = '';
     });
     // Reset approver dropdown (not text input)
@@ -1640,12 +1640,12 @@ Choose:
     document.querySelector('.urgency-btn.standard').classList.add('active');
     if (currentUser) {
       setTimeout(() => {
-        const c = document.getElementById('driver-company'); if (c) c.value = currentUser.company_name || '';
-        const n = document.getElementById('driver-name'); if (n) n.value = currentUser.full_name || '';
+        const c = document.getElementById('employee-company'); if (c) c.value = currentUser.company_name || '';
+        const n = document.getElementById('employee-name'); if (n) n.value = currentUser.full_name || '';
       }, 50);
-      loadDriverApprovers(currentUser);
+      loadEmployeeApprovers(currentUser);
     }
-    showView('driver');
+    showView('employee');
   }
 
   // ===== APPROVER DASHBOARD =====
@@ -1694,12 +1694,12 @@ Choose:
       const created = r.created_date ? new Date(r.created_date).toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '—';
       return `<div class="req-card">
         <div class="req-card-header ${(r.urgency||'standard').toLowerCase()}">
-          <div><div class="req-type-label">${label}</div><div class="req-meta">${r.driver_name||'—'} · ${r.vehicle_reg||'No reg'} · ${created}</div></div>
+          <div><div class="req-type-label">${label}</div><div class="req-meta">${r.employee_name||'—'} · ${r.vehicle_reg||'No reg'} · ${created}</div></div>
           <div class="urgency-tag ${r.urgency||'Standard'}">${r.urgency||'Standard'}</div>
         </div>
         <div class="req-card-body">
           <div class="req-details-row">
-            <div><div class="req-detail-label">Company</div><div class="req-detail-value">${r.driver_company||'—'}</div></div>
+            <div><div class="req-detail-label">Company</div><div class="req-detail-value">${r.employee_company||'—'}</div></div>
             <div><div class="req-detail-label">Site</div><div class="req-detail-value">${r.site_name||'—'}</div></div>
             <div><div class="req-detail-label">Location</div><div class="req-detail-value">${r.location||'—'}</div></div>
           </div>
@@ -1730,8 +1730,8 @@ Choose:
     } catch(err) { showToast('Error: '+err.message); }
   }
 
-  // ===== LOAD DRIVER APPROVERS DROPDOWN =====
-  async function loadDriverApprovers(user) {
+  // ===== LOAD EMPLOYEE APPROVERS DROPDOWN =====
+  async function loadEmployeeApprovers(user) {
     // Safety: ensure the element is a <select>; if it got replaced, recreate it
     let sel = document.getElementById('approver-select');
     if (!sel || sel.tagName !== 'SELECT') {
@@ -1748,7 +1748,7 @@ Choose:
     try {
       const res = await fetch(`${API}/clearauthGetApprovers`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ driver_id: user.id, company_id: user.company_id })
+        body: JSON.stringify({ employee_id: user.id, company_id: user.company_id })
       });
       const data = await res.json();
       const approvers = data.approvers || [];
@@ -1770,8 +1770,8 @@ Choose:
   // ===== PERMISSIONS (COMPANY DASHBOARD) =====
   let allCompanyApprovers = [];
 
-  async function loadApproverChecks(driverId, allowedIds, allowAll) {
-    const container = document.getElementById(`approver-checks-${driverId}`);
+  async function loadApproverChecks(employeeId, allowedIds, allowAll) {
+    const container = document.getElementById(`approver-checks-${employeeId}`);
     if (!container || !currentUser) return;
 
     // Use cached approvers if available
@@ -1796,7 +1796,7 @@ Choose:
 
     container.innerHTML = allCompanyApprovers.map(a => `
       <label class="approver-check-row">
-        <input type="checkbox" id="chk-${driverId}-${a.id}" ${allowedIds.includes(a.id) ? 'checked' : ''}>
+        <input type="checkbox" id="chk-${employeeId}-${a.id}" ${allowedIds.includes(a.id) ? 'checked' : ''}>
         <div>
           <div class="approver-check-name">${a.full_name}</div>
           <div class="approver-check-username">@${a.username}</div>
@@ -1805,22 +1805,22 @@ Choose:
     `).join('');
   }
 
-  function togglePermSection(driverId) {
-    const body = document.getElementById(`perm-body-${driverId}`);
-    const chevron = document.getElementById(`perm-chevron-${driverId}`);
+  function togglePermSection(employeeId) {
+    const body = document.getElementById(`perm-body-${employeeId}`);
+    const chevron = document.getElementById(`perm-chevron-${employeeId}`);
     const isOpen = body.style.display !== 'none';
     body.style.display = isOpen ? 'none' : 'block';
     chevron.textContent = isOpen ? '▼' : '▲';
     // Load checks when opened
     if (!isOpen) {
-      const driver = companyUsers.find(u => u.id === driverId);
-      if (driver) loadApproverChecks(driverId, driver.allowed_approvers || [], driver.allow_all_approvers);
+      const employee = companyUsers.find(u => u.id === employeeId);
+      if (employee) loadApproverChecks(employeeId, employee.allowed_approvers || [], employee.allow_all_approvers);
     }
   }
 
-  function toggleAllowAll(driverId) {
-    const allowAllChk = document.getElementById(`allow-all-${driverId}`);
-    const individualDiv = document.getElementById(`individual-perms-${driverId}`);
+  function toggleAllowAll(employeeId) {
+    const allowAllChk = document.getElementById(`allow-all-${employeeId}`);
+    const individualDiv = document.getElementById(`individual-perms-${employeeId}`);
     if (allowAllChk.checked) {
       individualDiv.style.opacity = '0.4';
       individualDiv.style.pointerEvents = 'none';
@@ -1830,27 +1830,27 @@ Choose:
     }
   }
 
-  async function savePermissions(driverId) {
-    const allowAllChk = document.getElementById(`allow-all-${driverId}`);
+  async function savePermissions(employeeId) {
+    const allowAllChk = document.getElementById(`allow-all-${employeeId}`);
     const allowAll = allowAllChk ? allowAllChk.checked : false;
     let allowedIds = [];
     if (!allowAll && allCompanyApprovers.length) {
       allCompanyApprovers.forEach(a => {
-        const chk = document.getElementById(`chk-${driverId}-${a.id}`);
+        const chk = document.getElementById(`chk-${employeeId}-${a.id}`);
         if (chk && chk.checked) allowedIds.push(a.id);
       });
     }
     try {
       const res = await fetch(`${API}/clearauthSetPermissions`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ driver_id: driverId, allow_all_approvers: allowAll, allowed_approvers: allowedIds })
+        body: JSON.stringify({ employee_id: employeeId, allow_all_approvers: allowAll, allowed_approvers: allowedIds })
       });
       if (!res.ok) throw new Error('Failed');
       // Update local data
-      const driver = companyUsers.find(u => u.id === driverId);
-      if (driver) { driver.allow_all_approvers = allowAll; driver.allowed_approvers = allowedIds; }
+      const employee = companyUsers.find(u => u.id === employeeId);
+      if (employee) { employee.allow_all_approvers = allowAll; employee.allowed_approvers = allowedIds; }
       // Update summary
-      const summary = document.getElementById(`perm-summary-${driverId}`);
+      const summary = document.getElementById(`perm-summary-${employeeId}`);
       if (summary) summary.textContent = allowAll ? 'All approvers' : (allowedIds.length === 0 ? 'None set' : allowedIds.length + ' approver(s)');
       showToast('Access saved ✓');
     } catch(e) { showToast('Error saving permissions'); }
@@ -1894,7 +1894,7 @@ Choose:
 
     // Show/hide approver access section
     const accessSection = document.getElementById('profile-access-section');
-    if (profileUser.role === 'driver') {
+    if (profileUser.role === 'employee') {
       accessSection.style.display = 'block';
       await loadProfileApprovers();
     } else {
@@ -1996,9 +1996,9 @@ Choose:
         deptVal = document.getElementById('profile-new-dept-input').value.trim();
       }
 
-      // Approver permissions (drivers only)
+      // Approver permissions (employees only)
       let updatePayload = { department: deptVal };
-      if (profileUser.role === 'driver') {
+      if (profileUser.role === 'employee') {
         const oldDept = profileUser.department || '';
         const deptChanged = deptVal !== oldDept;
 
@@ -2012,7 +2012,7 @@ Choose:
           });
         }
 
-        // If the driver is being assigned to a new named site, auto-add all
+        // If the employee is being assigned to a new named site, auto-add all
         // approvers in that site to their access list (on top of manual selections)
         if (deptChanged && deptVal) {
           const siteApproverIds = companyUsers
@@ -2034,22 +2034,22 @@ Choose:
         // Save permissions via backend
         await fetch(`${API}/clearauthSetPermissions`, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ driver_id: profileUser.id, allow_all_approvers: allowAll, allowed_approvers: allowedIds })
+          body: JSON.stringify({ employee_id: profileUser.id, allow_all_approvers: allowAll, allowed_approvers: allowedIds })
         });
       }
 
       // If an approver is being moved to a new site, auto-grant them to all
-      // drivers already in that site
+      // employees already in that site
       if (profileUser.role === 'approver' && deptVal && deptVal !== (profileUser.department || '')) {
-        const siteDrivers = companyUsers.filter(u => u.role === 'driver' && u.department === deptVal);
-        for (const driver of siteDrivers) {
-          const existing = driver.allowed_approvers || [];
-          if (!existing.includes(profileUser.id) && !driver.allow_all_approvers) {
+        const siteEmployees = companyUsers.filter(u => u.role === 'employee' && u.department === deptVal);
+        for (const employee of siteEmployees) {
+          const existing = employee.allowed_approvers || [];
+          if (!existing.includes(profileUser.id) && !employee.allow_all_approvers) {
             const merged = [...existing, profileUser.id];
-            driver.allowed_approvers = merged;
+            employee.allowed_approvers = merged;
             await fetch(`${API}/clearauthSetPermissions`, {
               method: 'POST', headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ driver_id: driver.id, allow_all_approvers: false, allowed_approvers: merged })
+              body: JSON.stringify({ employee_id: employee.id, allow_all_approvers: false, allowed_approvers: merged })
             });
           }
         }
@@ -2086,7 +2086,7 @@ Choose:
     const tabRow = document.getElementById('profile-req-tab-row');
 
     // Set tabs based on role
-    if (role === 'driver') {
+    if (role === 'employee') {
       tabRow.innerHTML = `
         <div class="req-history-tab active" id="prt-pending" onclick="switchProfileReqTab('pending')">Pending</div>
         <div class="req-history-tab" id="prt-past" onclick="switchProfileReqTab('past')">Past</div>`;
@@ -2117,14 +2117,14 @@ Choose:
     document.querySelectorAll('.req-history-tab').forEach(t => t.classList.remove('active'));
     const active = document.getElementById('prt-' + tab);
     if (active) active.classList.add('active');
-    renderProfileReqList(profileUser ? profileUser.role : 'driver');
+    renderProfileReqList(profileUser ? profileUser.role : 'employee');
   }
 
   function renderProfileReqList(role) {
     const listEl = document.getElementById('profile-req-list');
     let records;
 
-    if (role === 'driver') {
+    if (role === 'employee') {
       records = profileReqTab === 'pending'
         ? profileReqData.filter(r => r.status === 'Pending')
         : profileReqData.filter(r => r.status !== 'Pending');
@@ -2144,9 +2144,9 @@ Choose:
     listEl.innerHTML = records.map(r => {
       const label = r.request_type === 'Other' ? (r.custom_type || 'Other') : r.request_type;
       const created = r.created_date ? new Date(r.created_date).toLocaleDateString('en-GB', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }) : '—';
-      const meta = role === 'driver'
+      const meta = role === 'employee'
         ? `${r.approver_name || 'Unknown approver'} · ${created}`
-        : `${r.driver_name || 'Unknown driver'} · ${r.vehicle_reg || ''} · ${created}`;
+        : `${r.employee_name || 'Unknown employee'} · ${r.vehicle_reg || ''} · ${created}`;
       const denial = r.status === 'Denied' && r.denial_reason ? `<div style="font-size:0.72rem;color:#DC2626;margin-top:3px">Reason: ${r.denial_reason}</div>` : '';
       return `<div class="req-history-item">
         <div class="req-status-dot ${r.status}"></div>
