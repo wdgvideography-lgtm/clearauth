@@ -981,22 +981,31 @@
   // ===== INVITE SETUP =====
   async function loadInviteSetup(token) {
     inviteToken = token;
-    // Peek at the invite to get company + role
+    showView('invite-setup');
+    document.getElementById('setup-role-label').textContent = 'Verifying invite...';
+    document.getElementById('setup-company-badge').textContent = '';
+
     try {
       const res = await fetch(`${API}/clearauthRegister`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ invite_token: token, full_name: '__peek__', username: '__peek__', password: '__peek__' })
       });
-      // We expect a "username taken" or success — but really we just want to see if token is valid
-      // Instead, just show the form and validate on submit
-    } catch(e) {}
-
-    // We'll validate on submit. Just show the form.
-    showView('invite-setup');
-    // We don't know role yet without a separate lookup — show generic until submit reveals it
-    document.getElementById('setup-header').className = 'setup-header employee';
-    document.getElementById('setup-role-label').textContent = 'New Account Setup';
-    document.getElementById('setup-company-badge').textContent = 'Setting up your RE-Quest account';
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        document.getElementById('setup-role-label').textContent = 'Invalid or expired invite';
+        document.getElementById('setup-company-badge').textContent = 'Please contact your company admin for a new link';
+        document.getElementById('setup-submit-btn').disabled = true;
+        return;
+      }
+      const role = data.role || 'employee';
+      const companyName = data.company_name || '';
+      document.getElementById('setup-header').className = `setup-header ${role}`;
+      document.getElementById('setup-role-label').textContent = role === 'approver' ? 'Approver Account Setup' : 'Employee Account Setup';
+      document.getElementById('setup-company-badge').textContent = companyName ? `Setting up your account for ${companyName}` : 'Setting up your RE-Quest account';
+    } catch(e) {
+      document.getElementById('setup-role-label').textContent = 'New Account Setup';
+      document.getElementById('setup-company-badge').textContent = 'Setting up your RE-Quest account';
+    }
   }
 
   let setupPhotoUrl = null;
@@ -1045,16 +1054,13 @@
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Setup failed');
 
-      // Show success + update header based on role
-      const role = data.user?.role || 'employee';
-      document.getElementById('setup-header').className = `setup-header ${role}`;
-      document.getElementById('setup-role-label').textContent = role === 'approver' ? 'Approver Account' : 'Employee Account';
-      document.getElementById('setup-company-badge').textContent = data.user?.company_name || '';
-      document.getElementById('setup-form').style.display = 'none';
-      document.getElementById('setup-success').style.display = 'block';
-
+      // Auto-login after successful registration
+      currentUser = data.user;
+      sessionStorage.setItem('ca_user', JSON.stringify(data.user));
       // Clean URL
       window.history.replaceState({}, '', window.location.pathname);
+      // Route directly into the app
+      routeUser(data.user);
     } catch (err) {
       errEl.textContent = err.message;
       errEl.classList.add('show');
