@@ -855,6 +855,22 @@
   const API = 'https://assistant-36b1ac32.base44.app/functions';
   const APP_URL = window.location.origin + window.location.pathname;
 
+  // ===== SAFE FETCH — 15s timeout + abort controller on every request =====
+  async function safeFetch(url, options = {}) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15000);
+    try {
+      const res = await fetch(url, { ...options, signal: controller.signal });
+      return res;
+    } catch (err) {
+      if (err.name === 'AbortError') throw new Error('Request timed out. Please try again.');
+      throw err;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+
   let currentUser = null;
   let urgency = 'Standard';
   let currentTab = 'pending';
@@ -896,7 +912,7 @@
 
     btn.disabled = true; btn.textContent = 'Signing in...';
     try {
-      const res = await fetch(`${API}/clearauthLogin`, {
+      const res = await safeFetch(`${API}/clearauthLogin`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
       });
@@ -975,28 +991,49 @@
 
     // Restore session
     const stored = sessionStorage.getItem('ca_user');
-    if (stored) { currentUser = JSON.parse(stored); routeUser(currentUser); }
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (parsed && parsed.id && parsed.role) {
+          currentUser = parsed;
+          routeUser(currentUser);
+        } else {
+          sessionStorage.removeItem('ca_user');
+        }
+      } catch (e) {
+        sessionStorage.removeItem('ca_user');
+      }
+    }
   });
 
   // ===== INVITE SETUP =====
   async function loadInviteSetup(token) {
     inviteToken = token;
-    // Peek at the invite to get company + role
+    showView('invite-setup');
+    document.getElementById('setup-role-label').textContent = 'Verifying invite...';
+    document.getElementById('setup-company-badge').textContent = '';
+
     try {
-      const res = await fetch(`${API}/clearauthRegister`, {
+      const res = await safeFetch(`${API}/clearauthRegister`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ invite_token: token, full_name: '__peek__', username: '__peek__', password: '__peek__' })
       });
-      // We expect a "username taken" or success — but really we just want to see if token is valid
-      // Instead, just show the form and validate on submit
-    } catch(e) {}
-
-    // We'll validate on submit. Just show the form.
-    showView('invite-setup');
-    // We don't know role yet without a separate lookup — show generic until submit reveals it
-    document.getElementById('setup-header').className = 'setup-header employee';
-    document.getElementById('setup-role-label').textContent = 'New Account Setup';
-    document.getElementById('setup-company-badge').textContent = 'Setting up your RE-Quest account';
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        document.getElementById('setup-role-label').textContent = 'Invalid or expired invite';
+        document.getElementById('setup-company-badge').textContent = 'Please contact your company admin for a new link';
+        document.getElementById('setup-btn').disabled = true;
+        return;
+      }
+      const role = data.role || 'employee';
+      const companyName = data.company_name || '';
+      document.getElementById('setup-header').className = `setup-header ${role}`;
+      document.getElementById('setup-role-label').textContent = role === 'approver' ? 'Approver Account Setup' : 'Employee Account Setup';
+      document.getElementById('setup-company-badge').textContent = companyName ? `Setting up your account for ${companyName}` : 'Setting up your RE-Quest account';
+    } catch(e) {
+      document.getElementById('setup-role-label').textContent = 'New Account Setup';
+      document.getElementById('setup-company-badge').textContent = 'Setting up your RE-Quest account';
+    }
   }
 
   let setupPhotoUrl = null;
@@ -1038,23 +1075,20 @@
 
     btn.disabled = true; btn.textContent = 'Creating account...';
     try {
-      const res = await fetch(`${API}/clearauthRegister`, {
+      const res = await safeFetch(`${API}/clearauthRegister`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ invite_token: inviteToken, full_name: name, username, password, phone, photo_url: setupPhotoUrl })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Setup failed');
 
-      // Show success + update header based on role
-      const role = data.user?.role || 'employee';
-      document.getElementById('setup-header').className = `setup-header ${role}`;
-      document.getElementById('setup-role-label').textContent = role === 'approver' ? 'Approver Account' : 'Employee Account';
-      document.getElementById('setup-company-badge').textContent = data.user?.company_name || '';
-      document.getElementById('setup-form').style.display = 'none';
-      document.getElementById('setup-success').style.display = 'block';
-
+      // Auto-login after successful registration
+      currentUser = data.user;
+      sessionStorage.setItem('ca_user', JSON.stringify(data.user));
       // Clean URL
       window.history.replaceState({}, '', window.location.pathname);
+      // Route directly into the app
+      routeUser(data.user);
     } catch (err) {
       errEl.textContent = err.message;
       errEl.classList.add('show');
@@ -1066,16 +1100,42 @@
   async function loadCompanyUsers() {
     if (!currentUser) return;
     try {
-      const res = await fetch(`${API}/clearauthGetUsers`, {
+      const res = await safeFetch(`${API}/clearauthGetUsers`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ company_id: currentUser.company_id })
       });
       const data = await res.json();
       companyUsers = data.users || [];
+
+      // Load persisted site names from company record
+      if (data.company_sites && Array.isArray(data.company_sites)) {
+        companySites = data.company_sites;
+      } else if (currentUser.department) {
+        try {
+          const parsed = JSON.parse(currentUser.department);
+          if (Array.isArray(parsed)) companySites = parsed;
+        } catch(_) {}
+      }
+
       renderUserSections();
     } catch(err) {
       showToast('Failed to load users');
     }
+  }
+
+  async function saveCompanySites() {
+    if (!currentUser) return;
+    try {
+      await safeFetch(`${API}/clearauthManageUser`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'update',
+          user_id: currentUser.id,
+          department: JSON.stringify(companySites)
+        })
+      });
+      currentUser.department = JSON.stringify(companySites);
+    } catch(e) { console.error('Failed to save sites', e); }
   }
 
   // ===== SITE MANAGEMENT =====
@@ -1174,7 +1234,7 @@
   }
 
   function renderRoleSubsection(users, role, key) {
-    if (!users.length) return '';
+    if (!users || !users.length) return '';
     const icon = role === 'employee' ? '👤' : '✅';
     return `
     <div class="role-subsection">
@@ -1226,30 +1286,49 @@
     setTimeout(() => document.getElementById('new-site-name').focus(), 100);
   }
 
-  function openSiteOptions(siteName, si) {
-    if (confirm(`Site: "${siteName}"
+  async function deleteSite(siteName) {
+    const usersInSite = companyUsers.filter(u => u.department === siteName);
+    const msg = usersInSite.length > 0
+      ? `Delete site "${siteName}"? The ${usersInSite.length} member(s) will be moved to Unassigned.`
+      : `Delete site "${siteName}"?`;
+    if (!confirm(msg)) return;
+    // Move users to unassigned
+    for (const u of usersInSite) await assignUserToSite(u.id, '');
+    // Remove from list
+    companySites = companySites.filter(s => s !== siteName);
+    await saveCompanySites();
+    renderUserSections();
+    showToast(`Site "${siteName}" deleted`);
+  }
 
-Choose:
-• OK = Rename this site
-• Cancel = keep as is
-
-(To delete, rename it first then use the delete option)`)) {
-      editingSite = siteName;
-      document.getElementById('create-site-modal-title').textContent = 'Rename Site';
-      document.getElementById('confirm-site-btn').textContent = 'Save';
-      document.getElementById('new-site-name').value = siteName;
-      document.getElementById('create-site-error').textContent = '';
-      document.getElementById('create-site-error').classList.remove('show');
-      document.getElementById('create-site-modal').classList.add('open');
-      setTimeout(() => document.getElementById('new-site-name').focus(), 100);
+  function openSiteOptions(siteName) {
+    editingSite = siteName;
+    document.getElementById('create-site-modal-title').textContent = `Edit Site: ${siteName}`;
+    document.getElementById('confirm-site-btn').textContent = 'Rename';
+    document.getElementById('new-site-name').value = siteName;
+    document.getElementById('create-site-error').textContent = '';
+    document.getElementById('create-site-error').classList.remove('show');
+    // Add delete button to modal if not already present
+    const confirmBtn = document.getElementById('confirm-site-btn');
+    if (!document.getElementById('delete-site-btn')) {
+      const delBtn = document.createElement('button');
+      delBtn.id = 'delete-site-btn';
+      delBtn.textContent = '🗑 Delete Site';
+      delBtn.style.cssText = 'background:none;border:1.5px solid #EF4444;color:#EF4444;padding:10px 16px;border-radius:10px;font-size:0.82rem;font-weight:700;cursor:pointer;';
+      delBtn.onclick = () => { closeCreateSiteModal(); deleteSite(editingSite); };
+      confirmBtn.parentNode.insertBefore(delBtn, confirmBtn.nextSibling);
+    } else {
+      document.getElementById('delete-site-btn').onclick = () => { closeCreateSiteModal(); deleteSite(editingSite); };
     }
+    document.getElementById('create-site-modal').classList.add('open');
+    setTimeout(() => document.getElementById('new-site-name').focus(), 100);
   }
 
   function closeCreateSiteModal() {
     document.getElementById('create-site-modal').classList.remove('open');
   }
 
-  async function confirmCreateSite() {
+  async async function confirmCreateSite() {
     const name = document.getElementById('new-site-name').value.trim();
     const errEl = document.getElementById('create-site-error');
     if (!name) { errEl.textContent = 'Please enter a site name.'; errEl.classList.add('show'); return; }
@@ -1263,12 +1342,14 @@ Choose:
       for (const u of usersInSite) {
         await assignUserToSite(u.id, name);
       }
+      await saveCompanySites();
       showToast(`Site renamed to "${name}"`);
     } else {
       companySites.push(name);
       showToast(`Site "${name}" created`);
     }
 
+    await saveCompanySites();
     closeCreateSiteModal();
     renderUserSections();
   }
@@ -1297,10 +1378,10 @@ Choose:
 
         // Persist permissions
         try {
-          await fetch(`${API}/clearauthSetPermissions`, {
+          await safeFetch(`${API}/clearauthSetPermissions`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              employee_id: userId,
+              driver_id: userId,
               allow_all_approvers: false,
               allowed_approvers: mergedIds
             })
@@ -1313,7 +1394,7 @@ Choose:
     // AND auto-add this employee to any approver who has allow_all_approvers in new site
     // Persist department change
     try {
-      await fetch(`${API}/clearauthManageUser`, {
+      await safeFetch(`${API}/clearauthManageUser`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'update', user_id: userId, company_id: currentUser.company_id, department: siteName || '' })
       });
@@ -1331,10 +1412,10 @@ Choose:
         const mergedIds = [...existingIds, approverId];
         employee.allowed_approvers = mergedIds;
         try {
-          await fetch(`${API}/clearauthSetPermissions`, {
+          await safeFetch(`${API}/clearauthSetPermissions`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              employee_id: employee.id,
+              driver_id: employee.id,
               allow_all_approvers: employee.allow_all_approvers || false,
               allowed_approvers: mergedIds
             })
@@ -1498,7 +1579,7 @@ Choose:
   }
 
   function renderUserList(users, role) {
-    if (!users.length) return `<div class="empty-users">No members yet — send an invite link to add someone.</div>`;
+    if (!users || !users.length) return `<div class="empty-users">No members yet — send an invite link to add someone.</div>`;
     return users.map(u => {
       const isEmployee = role === 'employee';
       const allowAll = u.allow_all_approvers;
@@ -1559,7 +1640,7 @@ Choose:
     copyBtn.classList.remove('copied');
 
     try {
-      const res = await fetch(`${API}/clearauthInvite`, {
+      const res = await safeFetch(`${API}/clearauthInvite`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ company_id: currentUser.company_id, company_name: currentUser.company_name, role })
       });
@@ -1613,7 +1694,7 @@ Choose:
     try {
       const payload = { action: 'update', user_id: id, full_name: name, username };
       if (password) payload.password = password;
-      const res = await fetch(`${API}/clearauthManageUser`, {
+      const res = await safeFetch(`${API}/clearauthManageUser`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
@@ -1631,7 +1712,7 @@ Choose:
   async function deleteUser(id, name) {
     if (!confirm(`Delete ${name}? This cannot be undone.`)) return;
     try {
-      const res = await fetch(`${API}/clearauthManageUser`, {
+      const res = await safeFetch(`${API}/clearauthManageUser`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'delete', user_id: id })
       });
@@ -1703,12 +1784,12 @@ Choose:
       status: 'Pending',
       approval_token: token,
       expires_at: new Date(Date.now() + 4*60*60*1000).toISOString(),
-      employee_user_id: currentUser ? currentUser.id : '',
+      driver_user_id: currentUser ? currentUser.id : '',
       approver_user_id: approverUserId,
     };
 
     try {
-      const res = await fetch(`${API}/createApprovalRequest`, {
+      const res = await safeFetch(`${API}/createApprovalRequest`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
@@ -1724,11 +1805,11 @@ Choose:
   }
 
   // ===== POLLING =====
-  function startPolling(token) {
+  async function startPolling(token) {
     if (pollingInterval) clearInterval(pollingInterval);
     pollingInterval = setInterval(async () => {
       try {
-        const res = await fetch(`${API}/getApprovalCard`, {
+        const res = await safeFetch(`${API}/getApprovalCard`, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ token })
         });
@@ -1914,8 +1995,8 @@ Choose:
   async function loadApproverDashboard() {
     document.getElementById('dashboard-list').innerHTML = '<div class="spinner"></div>';
     try {
-      const res = await fetch(`${API}/listApprovalRequests`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({})
+      const res = await safeFetch(`${API}/listApprovalRequests`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ company_id: currentUser.company_id })
       });
       const data = await res.json();
       const order = { Critical:0, Urgent:1, Standard:2 };
@@ -2014,7 +2095,7 @@ Choose:
 
   async function processDecision(token, action, reason, note) {
     try {
-      const res = await fetch(`${API}/handleApproval`, {
+      const res = await safeFetch(`${API}/handleApproval`, {
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({token, action, denial_reason: reason||'', approver_note: note||''})
       });
@@ -2040,9 +2121,9 @@ Choose:
     if (!sel) return;
     sel.innerHTML = '<option value="">Loading...</option>';
     try {
-      const res = await fetch(`${API}/clearauthGetApprovers`, {
+      const res = await safeFetch(`${API}/clearauthGetApprovers`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ employee_id: user.id, company_id: user.company_id })
+        body: JSON.stringify({ driver_id: user.id, company_id: user.company_id })
       });
       const data = await res.json();
       const approvers = data.approvers || [];
@@ -2071,7 +2152,7 @@ Choose:
     // Use cached approvers if available
     if (!allCompanyApprovers.length) {
       try {
-        const res = await fetch(`${API}/clearauthGetApprovers`, {
+        const res = await safeFetch(`${API}/clearauthGetApprovers`, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ company_id: currentUser.company_id })
         });
@@ -2135,9 +2216,9 @@ Choose:
       });
     }
     try {
-      const res = await fetch(`${API}/clearauthSetPermissions`, {
+      const res = await safeFetch(`${API}/clearauthSetPermissions`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ employee_id: employeeId, allow_all_approvers: allowAll, allowed_approvers: allowedIds })
+        body: JSON.stringify({ driver_id: employeeId, allow_all_approvers: allowAll, allowed_approvers: allowedIds })
       });
       if (!res.ok) throw new Error('Failed');
       // Update local data
@@ -2236,7 +2317,7 @@ Choose:
     // Load all company approvers
     if (!allCompanyApprovers.length) {
       try {
-        const res = await fetch(`${API}/clearauthGetApprovers`, {
+        const res = await safeFetch(`${API}/clearauthGetApprovers`, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ company_id: currentUser.company_id })
         });
@@ -2338,9 +2419,9 @@ Choose:
         updatePayload.allowed_approvers = allowAll ? [] : allowedIds;
 
         // Save permissions via backend
-        await fetch(`${API}/clearauthSetPermissions`, {
+        await safeFetch(`${API}/clearauthSetPermissions`, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ employee_id: profileUser.id, allow_all_approvers: allowAll, allowed_approvers: allowedIds })
+          body: JSON.stringify({ driver_id: profileUser.id, allow_all_approvers: allowAll, allowed_approvers: allowedIds })
         });
       }
 
@@ -2353,16 +2434,16 @@ Choose:
           if (!existing.includes(profileUser.id) && !employee.allow_all_approvers) {
             const merged = [...existing, profileUser.id];
             employee.allowed_approvers = merged;
-            await fetch(`${API}/clearauthSetPermissions`, {
+            await safeFetch(`${API}/clearauthSetPermissions`, {
               method: 'POST', headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ employee_id: employee.id, allow_all_approvers: false, allowed_approvers: merged })
+              body: JSON.stringify({ driver_id: employee.id, allow_all_approvers: false, allowed_approvers: merged })
             });
           }
         }
       }
 
       // Save department via manage user
-      await fetch(`${API}/clearauthManageUser`, {
+      await safeFetch(`${API}/clearauthManageUser`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'update', user_id: profileUser.id, full_name: profileUser.full_name, username: profileUser.username, department: deptVal })
       });
@@ -2406,7 +2487,7 @@ Choose:
     listEl.innerHTML = '<div class="req-history-loading"><div class="spinner" style="margin:12px auto"></div></div>';
 
     try {
-      const res = await fetch(`${API}/getUserRequests`, {
+      const res = await safeFetch(`${API}/getUserRequests`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: userId, role })
       });
@@ -2440,7 +2521,7 @@ Choose:
         : profileReqData.filter(r => r.status !== 'Pending');
     }
 
-    if (!records.length) {
+    if (!records || !records.length) {
       listEl.innerHTML = `<div class="req-history-empty">${
         profileReqTab === 'pending' ? 'No pending requests.' : 'No past requests in the last 2 weeks.'
       }</div>`;
@@ -2477,11 +2558,11 @@ Choose:
     }
   }
 
-  async function deleteProfileUser() {
+  async async function deleteProfileUser() {
     if (!profileUser) return;
     if (!confirm(`Remove ${profileUser.full_name || 'this user'}? This cannot be undone.`)) return;
     try {
-      const res = await fetch(`${API}/clearauthManageUser`, {
+      const res = await safeFetch(`${API}/clearauthManageUser`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'delete', user_id: profileUser.id })
       });
@@ -2558,7 +2639,7 @@ Choose:
 
     btn.disabled = true; btn.textContent = 'Deleting...';
     try {
-      const res = await fetch(`${API}/clearauthDeleteSelf`, {
+      const res = await safeFetch(`${API}/clearauthDeleteSelf`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: currentUser.id, password })
       });
